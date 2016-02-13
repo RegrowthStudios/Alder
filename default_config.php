@@ -22,6 +22,10 @@
      */
     return array (
         "application_title" => "Example", // Title of the application.
+        "attachment" => array ( /* Attachment Details */
+            "directory" => APP_DIRECTORY . "/attachments/",
+            "checkMimeType" => true,
+        ),
         "cache" => array ( /* Cache Details */
             "namespace" => "sycamore_cache", // Namespace in which all application data is cached.
             "timeToLive" => 1800/*30 Mins*/, // How long does the data live for in cache?

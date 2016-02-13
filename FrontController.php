@@ -21,7 +21,6 @@
     
     use Sycamore\Application;
     use Sycamore\Dispatcher;
-    use Sycamore\Request;
     use Sycamore\Response;
     use Sycamore\Router;
     use Sycamore\Visitor;
@@ -83,10 +82,10 @@
          * Obtains the matched route from the router and 
          * dispatches via the dispatcher.
          *
-         * @param \Sycamore\Request
+         * @param \Zend\Http\PhpEnvironment\Request
          * @param \Sycamore\Response
          */
-        public function run(Request& $request)
+        public function run(\Zend\Http\PhpEnvironment\Request& $request)
         {
             // Prepare the response.
             $response = new Response;

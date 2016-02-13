@@ -19,6 +19,8 @@
 
     namespace Sycamore\Row;
     
+    use Sycamore\Row\Row;
+    
     abstract class RowObject extends Row
     {
         // Uneditable in API:

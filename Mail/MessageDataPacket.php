@@ -51,7 +51,7 @@
             return $this;
         }
         
-        public function setRecipient($recipientId)
+        public function addRecipient($recipientId)
         {
             if (!is_numeric($recipientId)) {
                 throw new \InvalidArgumentException("Recipient ID must be numeric.");
@@ -61,8 +61,11 @@
             return $this;
         }
         
-        public function setRecpients($recipientIds)
+        public function addRecpients($recipientIds)
         {
+            if (!is_array($recipientIds) || $recipientIds instanceof \Traversable) {
+                throw new \InvalidArgumentException("Recipient IDs must be traversable.");
+            }
             try {
                 foreach ($recipientIds as $recipientId) {
                     $this->setRecipient($recipientId);
@@ -74,5 +77,39 @@
             return $this;
         }
         
+        public function setSubject($subject)
+        {
+            if (!is_string($subject)) {
+                throw new \InvalidArgumentException("Subject must be a string.");
+            }
+            $this->subject = $subject;
+            
+            return $this;
+        }
         
+        public function addBodyBlock($bodyBlock)
+        {
+            if (!is_array($bodyBlock) || count($bodyBlock) != 2 || !is_string($bodyBlock[0]) || !is_string($bodyBlock[1])) {
+                throw new \InvalidArgumentException("Body block provided must be an array containing a (string) template name and (string) content.");
+            }
+            $this->bodyBlocks[] = $bodyBlock;
+            
+            return $this;
+        }
+        
+        public function addBodyBlocks($bodyBlocks)
+        {
+            if (!is_array($bodyBlocks) || $bodyBlocks instanceof \Traversable) {
+                throw new \InvalidArgumentException("Body blocks must be traversable.");
+            }
+            try {
+                foreach ($bodyBlocks as $bodyBlock) {
+                    $this->addBodyBlock($bodyBlock);
+                }
+            } catch (\InvalidArgumentException $ex) {
+                throw $ex;
+            }
+            
+            return $this;
+        }
     }

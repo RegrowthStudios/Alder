@@ -21,12 +21,11 @@
     
     use Sycamore\Row\Row;
     
-    abstract class RowObject extends Row
+    class Attachment extends Row
     {
-        // Uneditable in API:
+        // Uneditable in the API:
         public $id;
-        public $creationTime;
-        public $creatorId;
-        public $lastUpdateTime;
-        public $lastUpdatorId;
+        public $fileHandle;
+        public $fileType;
     }
+    

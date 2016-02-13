@@ -20,7 +20,6 @@
     namespace Sycamore;
     
     use Sycamore\Row\Route;
-    use Sycamore\Request;
 
     /**
      * Sycamore router class.
@@ -86,12 +85,12 @@
          * Checks all routes for if they match with the request passed in.
          * Returns matched route or false if no matches.
          *
-         * @param \Sycamore\Request
+         * @param \Zend\Http\PhpEnvironment\Request
          * @param \Sycamore\Response
          * 
          * @return \Sycamore\Row\Route|bool
          */
-        public function route(Request& $request) {
+        public function route(\Zend\Http\PhpEnvironment\Request& $request) {
             foreach ($this->routes as $route) {
                 if ($route->match($request)) {
                     return $route;

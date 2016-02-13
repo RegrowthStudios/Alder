@@ -19,7 +19,6 @@
 
     namespace Sycamore\Row;
     
-    use Sycamore\Request;
     use Sycamore\Row\RowObject;
     
     class Route extends RowObject
@@ -56,11 +55,11 @@
          * Assesses if the request matches this route.
          * If so, passes parameters in URI to the request.
          * 
-         * @param Request $request
+         * @param \Zend\Http\PhpEnvironment\Request $request
          * 
          * @return boolean
          */
-        public function match(Request& $request)
+        public function match(\Zend\Http\PhpEnvironment\Request& $request)
         {
             $keys = explode(",", $this->keys);
             // Compile pattern.

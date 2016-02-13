@@ -205,7 +205,8 @@
          * 
          * @return boolean
          */
-        public function getByDataPoint($dataPoint, $getFunc, $result, $forceDbFetch = false) {
+        public function getByDataPoint($dataPoint, $getFunc, $result, $forceDbFetch = false)
+        {
             $rawResult = $this->$getFunc($dataPoint, $forceDbFetch);
             if (is_null($rawResult)) {
                 return false;
@@ -228,7 +229,8 @@
          * 
          * @return boolean
          */
-        public function getByDataPointRange($dataPointMin, $dataPointMax, $getFunc, $result, $forceDbFetch = false) {
+        public function getByDataPointRange($dataPointMin, $dataPointMax, $getFunc, $result, $forceDbFetch = false)
+        {
             $rawResult = $this->$getFunc($dataPointMin, $dataPointMax, $forceDbFetch);
             if (is_null($rawResult)) {
                 return false;
@@ -245,7 +247,8 @@
          * 
          * @param int $id
          */
-        public function deleteById($id) {
+        public function deleteById($id)
+        {
             $this->tableGateway->delete(array("id" => (int) $id));
         }
         
@@ -257,7 +260,8 @@
          * @param int $id
          * @throws \Exception If id points to invalid row.
          */
-        public function save(\Sycamore\Row\Row $row, $id = 0) {
+        public function saveById(\Sycamore\Row\Row $row, $id = 0)
+        {
             if ($id == 0) {
                 $this->tableGateway->insert($row->toArray());
             } else {

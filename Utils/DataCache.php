@@ -20,6 +20,7 @@
     namespace Sycamore\Utils;
     
     use Sycamore\Application;
+    use Sycamore\Utils\ObjectData;
     
     use Zend\Cache\StorageFactory;
 
@@ -71,7 +72,7 @@
             if (!$success) {
                 return null;
             }
-            return unserialize($result);
+            return ObjectData::decode($result);
         }
         
         /**
@@ -86,7 +87,7 @@
             if (!$this->initialised) {
                 return false;
             }
-            $serializedData = serialize($data);
+            $serializedData = ObjectData::encode($data);
             return $this->cache->setItem($this->cacheName, $serializedData);
         }
          

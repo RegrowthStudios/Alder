@@ -21,7 +21,6 @@
     
     use Sycamore\Application;
     use Sycamore\Dispatcher;
-    use Sycamore\Request;
     use Sycamore\Response;
     use Sycamore\Router;
     use Sycamore\Visitor;
@@ -83,10 +82,10 @@
          * Obtains the matched route from the router and 
          * dispatches via the dispatcher.
          *
-         * @param \Sycamore\Request
+         * @param \Zend\Http\PhpEnvironment\Request
          * @param \Sycamore\Response
          */
-        public function run(Request& $request)
+        public function run(\Zend\Http\PhpEnvironment\Request& $request)
         {
             // Prepare the response.
             $response = new Response;
@@ -113,11 +112,11 @@
             
             // Dispatch request to appropriate controller.
             $result = $this->dispatcher->dispatch($route, $request, $response);
-            if ($result == ActionState::FAILED) {
+            if ($result === ActionState::FAILED) {
                 // TODO(Matthew): Handle 500 better.
                 $response->setResponseCode(500)->send();
                 exit();
-            } else if ($result == ActionState::DENIED_NOT_LOGGED_IN) {
+            } else if ($result === ActionState::DENIED_NOT_LOGGED_IN) {
                 // TODO(Matthew): Redirect to log in page or another landing page with message asking user to log in to access that page.
                 //                redirecting back to desired page on log in.
                 //                Consider how to deal with if the request is an API call.

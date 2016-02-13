@@ -39,17 +39,6 @@
          */
         public function getAction()
         {
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecuteGet", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-            
             // Attempt to acquire the provided data.
             $dataJson = filter_input(INPUT_GET, "data");
             
@@ -141,17 +130,6 @@
                 return ActionState::DENIED;
             }
             
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecutePost", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-            
             // Acquire the sent data, sanitised appropriately.
             $bannedId = filter_input(INPUT_POST, "bannedId", FILTER_SANITIZE_NUMBER_INT);
             $expiryTime = filter_input(INPUT_POST, "expiryTime", FILTER_SANITIZE_NUMBER_INT);
@@ -169,7 +147,7 @@
             
             // Update and save user state.
             $bannedUser->banned = 1;
-            $userTable->save($bannedUser, $bannedUser->id);
+            $userTable->saveById($bannedUser, $bannedUser->id);
             
             // Construct ban entry.
             $ban = new Ban;
@@ -180,7 +158,7 @@
             $ban->creatorId = Visitor::getInstance()->id;
             
             // Save new ban.
-            $banTable->save($ban);
+            $banTable->saveById($ban);
             
             // Let client know newsletter subscription creation was successful.
             $this->response->setResponseCode(200)->send();
@@ -205,18 +183,6 @@
             if (!$this->fetchData($dataProvided, INPUT_GET, $data)) {
                 $this->prepareExit();
                 return ActionState::DENIED;
-            }
-            
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecutePut", $this)) {
-                // If not logged in, or not the same user as to be edited, fail due to missing permissions.
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else if (Visitor::getInstance()->id != $id) {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
             }
             
             // Grab the needed tables.
@@ -245,8 +211,8 @@
                 $ban->state = $data["state"];
                 
                 // Save user and ban.
-                $userTable->save($user, $user->id);
-                $banTable->save($ban, $ban->id);
+                $userTable->saveById($user, $user->id);
+                $banTable->saveById($ban, $ban->id);
             }
             
             // Let client know user update was successful.

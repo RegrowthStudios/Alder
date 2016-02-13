@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Matthew Marshall
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,27 +18,27 @@
  */
 
     namespace Sycamore\Mail;
-    
+
     use Sycamore\Mail\Message;
     use Sycamore\Utils\TableCache;
-    
+
     class Recipient
     {
-        
+
         /**
          * Stores the recipient's ID in their appropriate table.
          *
          * @var int
          */
         protected $recipientId;
-        
+
         /**
          * Stores the recipients type.
          *
-         * @var atring 
+         * @var string
          */
         protected $recipientType;
-        
+
         public function __construct($recipientId, $recipientType)
         {
             if (!is_numeric($recipientId)) {
@@ -52,35 +52,35 @@
             $this->recipientId = (int) $recipientId;
             $this->recipientType = strtoupper($recipientType);
         }
-        
+
         /**
          * Gets most up to date recipient data and returns in array form.
          * Returns false if the recipient for which the instance was created doesn't exist.
-         * 
+         *
          * @return array|boolean
          */
         public function getRecipientData()
         {
             // Fetch set recipient type's config. (I promise this works if the IDE complains, feckin' things need to get with bitchin' 5.6).
             $recipientTypeData = self::RECIPIENT_TYPES[$this->recipientType];
-            
+
             // Fetch table for recipient.
             $table = TableCache::getTableFromCache($recipientTypeData["table"]);
-            
+
             // Fetch recipient's DB entry.
             $recipientRaw = $table->getById($this->recipientId);
-            
+
             // Check recipient exists.
             if (!$recipientRaw) {
                 return false;
             }
-            
+
             // Construct array of required recipient data.
             $recipient = array();
             foreach ($recipientTypeData["keys"] as $key) {
                 $recipient[$key] = $recipientRaw->$key;
             }
-            
+
             // Pass data array back.
             return $recipient;
         }

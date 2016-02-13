@@ -19,8 +19,6 @@
 
     namespace Sycamore;
     
-    use Sycamore\Request;
-    use Sycamore\Response;
     use Sycamore\Enums\ActionState;
     use Sycamore\Row\Route;
 
@@ -35,52 +33,55 @@
          * and response.
          * 
          * @param \Sycamore\Route $route
-         * @param \Sycamore\Request $request
+         * @param \Zend\Http\PhpEnvironment\Request $request
          * @param \Sycamore\Response $response
          * 
-         * @return int
+         * @return mixed
          */
-        public function dispatch(Route $route, Request& $request, Response& $response)
+        public function dispatch(\Sycamore\Route $route, \Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Response& $response)
         {
+            // Construct controller.
             $controller = $this->createController($request, $response, $route);
             
-            switch(filter_input(INPUT_SERVER, "REQUEST_METHOD")) {
-                case "GET":
-                    if (method_exists($controller, "getAction")) {
-                        return $controller->getAction();
-                    }
-                    break;
-                case "POST":
-                    if (method_exists($controller, "postAction")) {
-                        return $controller->postAction();
-                    }
-                    break;
-                case "DELETE":
-                    if (method_exists($controller, "deleteAction")) {
-                        return $controller->deleteAction();
-                    }
-                    break;
-                case "PUT":
-                    if (method_exists($controller, "putAction")) {
-                        return $controller->putAction();
-                    }
-                    break;
+            // Get request method and force to lower case.
+            $requestMethod = strtolower(filter_input(INPUT_SERVER, "REQUEST_METHOD"));
+            
+            // Construct action method name.
+            $action = $requestMethod . "Action";
+            
+            // Fail if no action method exists by constructed name.
+            if (!method_exists($controller, $action)) {
+                return ActionState::FAILED;
             }
             
-            return ActionState::FAILED;
+            // Trigger event to ensure permissions for action exist.
+            $event = "preExecute" . ucfirst($requestMethod);
+            if (!$this->eventManager->trigger($event, $controller)) {
+                if (!Visitor::getInstance()->isLoggedIn) {
+                    return ActionState::DENIED_NOT_LOGGED_IN;
+                } else {
+                    ErrorManager::addError("permission", "permission_missing");
+                    $this->prepareExit();
+                    return ActionState::DENIED;
+                }
+            }
+            
+            // Ultimately if everything else was successful,
+            // return result of calling the action from the controller.
+            return $controller->$action();
         }
   
         /**
          * Creates a new instance of the \Sycamore\Controller 
          * class stored in controllerClass.
          * 
-         * @param \Sycamore\Request $request
+         * @param \Zend\Http\PhpEnvironment\Request $request
          * @param \Sycamore\Resonse $response
          * @param \Sycamore\Route $route
          * 
-         * @return \Sycamore\Controller
+         * @return \Sycamore\Controller\Controller
          */
-        protected function createController(Request& $request, Response& $response, Route $route) {
+        protected function createController(\Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Resonse& $response, \Sycamore\Route $route) {
             if ($request->getUriAsArray()[0] == "api") {
                 $renderer = new \Sycamore\Renderer\JsonRenderer($response);
             } else {

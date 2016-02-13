@@ -270,6 +270,41 @@
         }
         
         /**
+         * Deletes rows matching the given identifiers.
+         * 
+         * @param Where|\Closure|string|array $identifiers
+         */
+        public function deleteByIdentifiers($identifiers)
+        {
+            $this->tableGateway->delete($identifiers);
+        }
+        
+        /**
+         * Updates rows matching the given identifiers.
+         * 
+         * @param \Sycamore\Row\Row $row
+         * @param Where|\Closure|string|array $identifiers
+         * @throws \OutOfBoundsException
+         */
+        public function updateByIdentifiers(\Sycamore\Row\Row $row, $identifiers) {
+            if ($this->tableGateway->select($identifiers)) {
+                $this->tableGateway->update($row->toArray(), $identifiers);
+            } else {
+                throw new \OutOfBoundsException("Record with the given identifiers does not exist.");
+            }
+        }
+        
+        /**
+         * Inserts a new row.
+         * 
+         * @param \Sycamore\Row\Row $row
+         */
+        public function insert(\Sycamore\Row\Row $row)
+        {
+            $this->tableGateway->insert($row->toArray());
+        }
+        
+        /**
          * Returns the last insert value of the TableGateway instance.
          * 
          * @return int

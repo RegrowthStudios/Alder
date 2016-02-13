@@ -39,17 +39,6 @@
          */
         public function getAction()
         {
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecuteGet", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-            
             // Attempt to acquire the provided data.
             $dataJson = filter_input(INPUT_GET, "data");
             
@@ -113,19 +102,6 @@
                 return ActionState::DENIED;
             }
             
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecutePost", $this)) {
-                // TODO(Matthew): Should we be treating non-logged in people differently?
-                //                Perhaps separate admin create and public create?
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-            
             // Ensure the email has valid formatting.
             if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
                 ErrorManager::addError("email", "invalid_email_format");
@@ -149,7 +125,7 @@
             $newsletterSubscriber->email = $data["email"];
             
             // Insert new newsletter subscriber into database.
-            $newsletterSubscriberTable->save($newsletterSubscriber);
+            $newsletterSubscriberTable->saveById($newsletterSubscriber);
             
             // Let client know newsletter subscription creation was successful.
             $this->response->setResponseCode(200)->send();
@@ -173,19 +149,7 @@
                 $this->prepareExit();
                 return ActionState::DENIED;
             }
-            
-            // Asses if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecuteDelete", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    // TODO(Matthew): How to delete own account?
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-                        
+                 
             // Get newsletter subscriber with provided delete key.
             $newsletterSubscriberTable = TableCache::getTableFromCache("NewsletterSubscriber");
             $newsletterSubscriber = $newsletterSubscriberTable->getByDeleteKey($deleteKey);

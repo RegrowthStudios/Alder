@@ -91,7 +91,7 @@
                 $mailMessage->creatorId = Visitor::getInstance()->id;
                 
                 // Save Message to database and get ID.
-                $mailMessageTable->save($mailMessage);
+                $mailMessageTable->saveById($mailMessage);
                 $messageId = $mailMessageTable->lastInsertValue();
                 
                 // Create a new cron job.
@@ -102,7 +102,7 @@
                 // Update mail message with cron job string for deleting purposes.
                 $mailMessage->id = $messageId;
                 $mailMessage->cronJob = $task->getJob();
-                $mailMessageTable->save($mailMessage, $messageId);
+                $mailMessageTable->saveById($mailMessage, $messageId);
                 
                 // Schedule the cron job.
                 Scheduler::getInstance()->addCronJobs($task);

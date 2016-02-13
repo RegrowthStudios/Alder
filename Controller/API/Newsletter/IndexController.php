@@ -39,17 +39,6 @@
          */
         public function getAction()
         {
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecuteGet", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-            
             // Attempt to acquire the provided data.
             $dataJson = filter_input(INPUT_GET, "data");
             
@@ -128,17 +117,6 @@
             if (!$this->fetchData($dataProvided, INPUT_POST, $data)) {
                 $this->prepareExit();
                 return ActionState::DENIED;
-            }
-            
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecutePost", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
             }
             
             // Fail if invalid data type.
@@ -230,17 +208,6 @@
                 return ActionState::DENIED;
             }
             
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecuteDelete", $this)) {
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
-            }
-            
             // Get newsletter with provided ID.
             $mailMessageTable = TableCache::getTableFromCache("MailMessage");
             $newsletter = $mailMessageTable->getById($data["id"]);
@@ -284,18 +251,6 @@
             if (!$this->fetchData($dataProvided, INPUT_GET, $data)) {
                 $this->prepareExit();
                 return ActionState::DENIED;
-            }
-            
-            // Assess if permissions needed are held by the user.
-            if (!$this->eventManager->trigger("preExecutePut", $this)) {
-                // If not logged in, or not the same user as to be edited, fail due to missing permissions.
-                if (!Visitor::getInstance()->isLoggedIn) {
-                    return ActionState::DENIED_NOT_LOGGED_IN;
-                } else if (Visitor::getInstance()->id != $id) {
-                    ErrorManager::addError("permission", "permission_missing");
-                    $this->prepareExit();
-                    return ActionState::DENIED;
-                }
             }
             
             // Get newsletter with provided ID.

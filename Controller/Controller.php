@@ -21,7 +21,6 @@
 
     use Sycamore\Application;
     use Sycamore\ErrorManager;
-    use Sycamore\Request;
     use Sycamore\Response;
     use Sycamore\Renderer\Renderer;
     use Sycamore\Utils\APIData;
@@ -39,7 +38,7 @@
         /**
          * Request object.
          *
-         * @var \Sycamore\Request
+         * @var \Zend\Http\PhpEnvironment\Request
          */
         protected $request;
         
@@ -74,11 +73,11 @@
         /**
          * Prepares request and response objects.
          * 
-         * @param \Sycamore\Request
+         * @param \Zend\Http\PhpEnvironment\Request
          * @param \Sycamore\Response
          * @param \Sycamore\Renderer\Renderer
          */
-        public function __construct(Request& $request, Response& $response, Renderer $renderer)
+        public function __construct(\Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Response& $response, \Sycamore\Renderer\Renderer $renderer)
         {
             $this->request = $request;
             $this->response = $response;

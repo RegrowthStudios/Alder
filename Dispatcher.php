@@ -19,8 +19,6 @@
 
     namespace Sycamore;
     
-    use Sycamore\Request;
-    use Sycamore\Response;
     use Sycamore\Enums\ActionState;
     use Sycamore\Row\Route;
 
@@ -35,12 +33,12 @@
          * and response.
          * 
          * @param \Sycamore\Route $route
-         * @param \Sycamore\Request $request
+         * @param \Zend\Http\PhpEnvironment\Request $request
          * @param \Sycamore\Response $response
          * 
          * @return mixed
          */
-        public function dispatch(Route $route, Request& $request, Response& $response)
+        public function dispatch(\Sycamore\Route $route, \Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Response& $response)
         {
             // Construct controller.
             $controller = $this->createController($request, $response, $route);
@@ -70,20 +68,20 @@
             
             // Ultimately if everything else was successful,
             // return result of calling the action from the controller.
-            return $controller->$action;
+            return $controller->$action();
         }
   
         /**
          * Creates a new instance of the \Sycamore\Controller 
          * class stored in controllerClass.
          * 
-         * @param \Sycamore\Request $request
+         * @param \Zend\Http\PhpEnvironment\Request $request
          * @param \Sycamore\Resonse $response
          * @param \Sycamore\Route $route
          * 
          * @return \Sycamore\Controller\Controller
          */
-        protected function createController(Request& $request, Response& $response, Route $route) {
+        protected function createController(\Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Resonse& $response, \Sycamore\Route $route) {
             if ($request->getUriAsArray()[0] == "api") {
                 $renderer = new \Sycamore\Renderer\JsonRenderer($response);
             } else {

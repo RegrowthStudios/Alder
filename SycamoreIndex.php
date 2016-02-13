@@ -22,8 +22,9 @@
     use Sycamore\Application;
     use Sycamore\Autoloader;
     use Sycamore\FrontController;
-    use Sycamore\Request;
     use Sycamore\Utils\Timer;
+    
+    use Zend\Http\PhpEnvironment\Request;
     
     class SycamoreIndex
     {
@@ -47,8 +48,7 @@
 
                 Application::initialise();
 
-                $page = ("/" . filter_input(INPUT_GET, "page", FILTER_SANITIZE_STRING)) ?: "/";
-                $request = new Request($page);
+                $request = new Request(false);
 
                 $frontController = new FrontController();
                 $frontController->run($request);

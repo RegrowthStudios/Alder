@@ -121,8 +121,6 @@
                 // TODO(Matthew): Redirect to log in page or another landing page with message asking user to log in to access that page.
                 //                redirecting back to desired page on log in.
                 //                Consider how to deal with if the request is an API call.
-            } else if ($result !== ActionState::SUCCESS) {
-                echo $result;
             }
         }
         

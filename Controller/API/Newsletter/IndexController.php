@@ -377,7 +377,7 @@
             $newsletter->lastUpdatorId = Visitor::getInstance()->id;
             
             // Commit changes.
-            $mailMessageTable->save($newsletter, $newsletter->id);
+            $mailMessageTable->saveById($newsletter, $newsletter->id);
             
             // Let client know newsletter update was successful.
             $this->response->setResponseCode(200)->send();

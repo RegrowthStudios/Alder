@@ -169,7 +169,7 @@
             
             // Update and save user state.
             $bannedUser->banned = 1;
-            $userTable->save($bannedUser, $bannedUser->id);
+            $userTable->saveById($bannedUser, $bannedUser->id);
             
             // Construct ban entry.
             $ban = new Ban;
@@ -180,7 +180,7 @@
             $ban->creatorId = Visitor::getInstance()->id;
             
             // Save new ban.
-            $banTable->save($ban);
+            $banTable->saveById($ban);
             
             // Let client know newsletter subscription creation was successful.
             $this->response->setResponseCode(200)->send();
@@ -245,8 +245,8 @@
                 $ban->state = $data["state"];
                 
                 // Save user and ban.
-                $userTable->save($user, $user->id);
-                $banTable->save($ban, $ban->id);
+                $userTable->saveById($user, $user->id);
+                $banTable->saveById($ban, $ban->id);
             }
             
             // Let client know user update was successful.

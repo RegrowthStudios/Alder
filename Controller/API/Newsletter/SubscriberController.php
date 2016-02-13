@@ -149,7 +149,7 @@
             $newsletterSubscriber->email = $data["email"];
             
             // Insert new newsletter subscriber into database.
-            $newsletterSubscriberTable->save($newsletterSubscriber);
+            $newsletterSubscriberTable->saveById($newsletterSubscriber);
             
             // Let client know newsletter subscription creation was successful.
             $this->response->setResponseCode(200)->send();

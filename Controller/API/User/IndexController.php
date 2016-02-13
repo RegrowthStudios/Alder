@@ -152,7 +152,7 @@
             
             // Save the new user to database.
             $userTable = TableCache::getTableFromCache("User");
-            $userTable->save($user);
+            $userTable->saveById($user);
             
             // Let client know user creation was successful.
             $this->response->setResponseCode(200)->send();
@@ -275,7 +275,7 @@
             $user->dateOfBirth   = isset($data["dateOfBirth"])   ? $data["dateOfBirth"]   : $user->dateOfBirth;
             
             // Commit changes.
-            $userTable->save($user, $user->id);
+            $userTable->saveById($user, $user->id);
             
             // Let client know user update was successful.
             $this->response->setResponseCode(200)->send();

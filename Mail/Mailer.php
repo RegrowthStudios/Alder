@@ -21,18 +21,14 @@
     
     use Sycamore\Application;
     use Sycamore\Visitor;
+    use Sycamore\Attachment\AttachmentManager;
     use Sycamore\Cron\Job;
     use Sycamore\Cron\Scheduler;
-    use Sycamore\Mail\Message;
     use Sycamore\Row\MailMessage;
-    use Sycamore\Utils\Directory;
     use Sycamore\Utils\ObjectData;
     use Sycamore\Utils\TableCache;
     
     use Zend\Mail\Transport\Factory as TransportFactory;
-    
-    // TODO(Matthew): Check for parameters in message and fill. I.e. check message for static parameters (i.e. dynamic date -> {DATE}) THEN clone message if each recipient's name needs to be placed into body.
-    //                Perhaps do this in a separate stage.
     
     /**
      * Singleton Mailer.
@@ -59,17 +55,23 @@
          * Sends a message via the mailer's transport.
          * 
          * @param \Sycamore\Mail\Message $message
-         * @param string $delayTo
          * @param string $purpose
+         * @param string $delayTo
          * @param int $creationTime
          */
-        public function sendMessage(Message $message, $delayTo = self::NO_DELAY, $purpose = NULL, $creationTime = NULL)
+        public function scheduleMessage(\Sycamore\Mail\MessageDataPacket $message, $purpose, $delayTo = self::NO_DELAY, $creationTime = NULL)
         {
             if ($delayTo === self::NO_DELAY) {
-                $this->transport->send($message);
+                $this->sendMessage($message);
             } else {
                 if (!is_string($delayTo)) {
                     throw new \InvalidArgumentException("Delay is expected to be a string.");
+                }
+                
+                // Get timestamp
+                $timestamp = strtotime($delayTo);
+                if (!$timestamp) {
+                    throw new \InvalidArgumentException("Delay provided was invalid date.");
                 }
                 
                 // Get current timestamp.
@@ -81,7 +83,7 @@
                 // Prepare the new mail message.
                 $mailMessage = new MailMessage();
                 $mailMessage->serialisedMessage = ObjectData::encode($message);
-                $mailMessage->sendTime = strtotime($delayTo);
+                $mailMessage->sendTime = $timestamp;
                 $mailMessage->purpose = (is_string($purpose) ? $purpose : "");
                 $mailMessage->sent = 0;
                 $mailMessage->cancelled = 0;
@@ -92,17 +94,16 @@
                 
                 // Save Message to database and get ID.
                 $mailMessageTable->saveById($mailMessage);
-                $messageId = $mailMessageTable->lastInsertValue();
+                $mailMessage->id = $mailMessageTable->lastInsertValue();
                 
                 // Create a new cron job.
                 $task = new Job();
-                $task->setTask("php " . APP_DIRECTORY . "/public/index.php email $messageId");
-                $task->setWhenUtc($delayTo);
+                $task->setTask("php " . APP_DIRECTORY . "/public/index.php email $mailMessage->id");
+                $task->setWhenUtc($timestamp);
                 
                 // Update mail message with cron job string for deleting purposes.
-                $mailMessage->id = $messageId;
                 $mailMessage->cronJob = $task->getJob();
-                $mailMessageTable->saveById($mailMessage, $messageId);
+                $mailMessageTable->saveById($mailMessage, $mailMessage->id);
                 
                 // Schedule the cron job.
                 Scheduler::getInstance()->addCronJobs($task);
@@ -117,17 +118,14 @@
          * 
          * @throws \InvalidArgumentException
          */
-        public function updateMessageSendTime(MailMessage& $mailMessage, $delayTo)
+        public function updateMessageSendTime(\Sycamore\Row\MailMessage& $mailMessage)
         {
             if ($delayTo == self::NO_DELAY) {
-                $this->transport->send(ObjectData::decode($mailMessage->serialisedMessage));
+                $this->sendMessage(ObjectData::decode($mailMessage->serialisedMessage));
             } else {
                 if (!is_string($delayTo)) {
                     throw new \InvalidArgumentException("Delay is expected to be a string.");
                 }
-                
-                // Update details.
-                $mailMessage->sendTime = strtotime($delayTo);
                 
                 // Remove old cron job.
                 Scheduler::getInstance()->removeCronJobs("/" . $mailMessage->cronJob . "/");
@@ -135,7 +133,7 @@
                 // Create a new cron job.
                 $task = new Job();
                 $task->setTask("php " . APP_DIRECTORY . "/public/index.php email $mailMessage->id");
-                $task->setWhenUtc($delayTo);
+                $task->setWhenUtc($mailMessage->sendTime);
                 
                 // Schedule the new cron job.
                 Scheduler::getInstance()->addCronJobs($task);
@@ -147,16 +145,35 @@
          * 
          * @param \Sycamore\Row\MailMessage $mailMessage
          */
-        public function stopMessageSend(MailMessage $mailMessage, $permanent = false)
+        public function stopMessageSend(\Sycamore\Row\MailMessage $mailMessage, $permanent = false)
         {
             // Remove cron job.
             Scheduler::getInstance()->removeCronJobs("/" . $mailMessage->cronJob . "/");
             
             // Delete attachments of message if stop is permanent.
             if ($permanent) {
-                // TODO(Matthew): Move to a dedicated attachments class?
-                Directory::delete(Application::getConfig()->newsletter->attachmentDirectory . $mailMessage->id . "/");
+                // Deserialise message data packet.
+                $message = ObjectData::decode($mailMessage->serialisedMessage);
+                
+                // Grab table.
+                $attachmentTable = TableCache::getTableFromCache("Attachment");
+                
+                // Delete each attachment in turn.
+                foreach ($message->getAttachments as $attachmentId) {
+                    $attachment = $attachmentTable->getById($attachmentId);
+                    AttachmentManager::removeAttachment($attachment);
+                }
             }
+        }
+        
+        public function sendMessage(\Sycamore\Mail\MessageDataPacket $message)
+        {
+            // TODO(Matthew): Implement. [Calls prepareMessage then sends the resulting (\Zend|\Sycamore)\Mail\Messages.]
+        }
+        
+        public function prepareMessage(\Sycamore\Mail\MessageDataPacket $message)
+        {
+            // TODO(Matthew): Implement. [Constructs a collection of (\Zend|\Sycamore)\Mail\Message objects and returns them.]
         }
         
         /**

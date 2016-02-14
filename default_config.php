@@ -61,7 +61,8 @@
         ),
         "language" => "en", // The language of the application.
         "newsletter" => array ( /* Newsletter Details */
-            "email" => "john.smith@example.com", // The email to send newsletters from.
+            "name" => "John Smith", // The name to send newsletters from by default.
+            "email" => "john.smith@example.com", // The email to send newsletters from by default.
             "attachmentDirectory" => APP_DIRECTORY . "/attachments/", // Location where temporary attachment files are stored.
         ),
         "security" => array ( /* Security Details */

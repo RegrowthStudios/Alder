@@ -21,15 +21,47 @@
     
     class MessageDataPacket
     {
+        /**
+         * Stores the type of message.
+         *
+         * @var string
+         */
         protected $type;
         
+        /**
+         * The ID of the sender.
+         *
+         * @var int
+         */
         protected $sender;
         
-        protected $recipients = array();
+        /**
+         * The collection of IDs of the recipient groups.
+         *
+         * @var array
+         */
+        protected $recipientGroups = array();
         
+        /**
+         * The subject of the message.
+         *
+         * @var string
+         */
         protected $subject;
         
-        protected $bodyBlocks;
+        /**
+         * The collection of body blocks of the message.
+         * 
+         * @var array
+         */
+        protected $bodyBlocks = array();
+        
+        /**
+         * The collection of attachments associated with the message.
+         *
+         * @var array
+         */
+        protected $attachments = array();
         
         public function __construct($messageType)
         {
@@ -41,34 +73,34 @@
             $this->type = strtoupper($messageType);
         }
         
-        public function setSender($sender)
+        public function setSender($senderId)
         {
-            if (!filter_var($sender, FILTER_SANITIZE_EMAIL)) {
-                throw new \InvalidArgumentException("Sender must be an email.");
+            if (!is_numeric($senderId)) {
+                throw new \InvalidArgumentException("Sender ID must be numeric.");
             }
-            $this->sender = $sender;
+            $this->sender = $senderId;
             
             return $this;
         }
         
-        public function addRecipient($recipientId)
+        public function addRecipientGroup($recipientGroupId)
         {
-            if (!is_numeric($recipientId)) {
-                throw new \InvalidArgumentException("Recipient ID must be numeric.");
+            if (!is_numeric($recipientGroupId)) {
+                throw new \InvalidArgumentException("Recipient group ID must be numeric.");
             }
-            $this->recipients[] = (int) $recipientId;
+            $this->recipients[] = (int) $recipientGroupId;
             
             return $this;
         }
         
-        public function addRecpients($recipientIds)
+        public function addRecpients($recipientGroupIds)
         {
-            if (!is_array($recipientIds) || $recipientIds instanceof \Traversable) {
-                throw new \InvalidArgumentException("Recipient IDs must be traversable.");
+            if (!is_array($recipientGroupIds) || $recipientGroupIds instanceof \Traversable) {
+                throw new \InvalidArgumentException("Recipient group IDs must be traversable.");
             }
             try {
-                foreach ($recipientIds as $recipientId) {
-                    $this->setRecipient($recipientId);
+                foreach ($recipientGroupIds as $recipientGroupId) {
+                    $this->addRecipient($recipientGroupId);
                 }
             } catch (\InvalidArgumentException $ex) {
                 throw $ex;
@@ -111,5 +143,61 @@
             }
             
             return $this;
+        }
+        
+        public function addAttachment($attachmentId)
+        {
+            if (!is_numeric($attachmentId)) {
+                throw new \InvalidArgumentException("Attachment ID must be numeric.");
+            }
+            $this->attachments[] = (int) $attachmentId;
+            
+            return $this;
+        }
+        
+        public function addAttachments($attachmentIds)
+        {
+            if (!is_array($attachmentIds) || $attachmentIds instanceof \Traversable) {
+                throw new \InvalidArgumentException("Attachment IDs must be traversable.");
+            }
+            try {
+                foreach ($attachmentIds as $attachmentId) {
+                    $this->addAttachment($attachmentId);
+                }
+            } catch (\InvalidArgumentException $ex) {
+                throw $ex;
+            }
+            
+            return $this;
+        }
+        
+        public function getType()
+        {
+            return $this->type;
+        }
+        
+        public function getSender()
+        {
+            return $this->sender;
+        }
+        
+        public function getRecipientGroups()
+        {
+            return $this->recipientGroups;
+        }
+        
+        public function getSubject()
+        {
+            return $this->subject;
+        }
+        
+        public function getBodyBlocks()
+        {
+            return $this->bodyBlocks;
+        }
+        
+        public function getAttachments()
+        {
+            return $this->attachments;
         }
     }

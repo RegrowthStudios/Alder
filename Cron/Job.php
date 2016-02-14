@@ -109,18 +109,13 @@
          * @return \Sycamore\Cron\Job
          * @throws \InvalidArgumentException
          */
-        public function setWhenUtc($utcWhen)
+        public function setWhenUtc($timestamp)
         {
-            if (!is_string($utcWhen)) {
-                throw new \InvalidArgumentException("Expected string for task.");
+            if (!is_numeric($timestamp)) {
+                throw new \InvalidArgumentException("Expected numeric timestamp for task.");
             }
             
-            $timestamp = strtotime($utcWhen);
-            if (!$timestamp) {
-                throw new \InvalidArgumentException("The provided date/time string was an invalid format.");
-            }
-            
-            $localDateTime = localtime($timestamp, true);
+            $localDateTime = localtime((int) $timestamp, true);
             
             $localWhen = $localDateTime["tm_min"] . " " . $localDateTime["tm_hour"] . " " . $localDateTime["tm_mday"] . " " . $localDateTime["mon"] + 1 . " *";
             

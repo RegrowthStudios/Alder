@@ -19,6 +19,7 @@
 
     namespace Sycamore\Mail;
     
+    use Sycamore\Application;
     use Sycamore\Utils\TableCache;
     
     use Zend\Mail\Message as ZendMessage;
@@ -26,16 +27,6 @@
     
     class Message extends ZendMessage
     {
-        /**
-         * Collection of possible message types and associated data.
-         * 
-         * @var array
-         */
-        const TYPES = array (
-            "NEWSLETTER" => array ( 
-                "recipient" => array( "table" => "NewsletterSubscriber", "keys" => array ( "email", "preferredName" ))
-            ),
-        );
         
         
         

@@ -45,7 +45,7 @@
         /**
          * Adds a route to the routes stored.
          *
-         * @param \Sycamore\Route $route
+         * @param \Sycamore\Row\Route $route
          * 
          * @return \Sycamore\Router
          */

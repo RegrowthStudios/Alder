@@ -57,9 +57,9 @@
                     "password" => "", // Password of user on SMTP server.
                     "ssl" => "", // SSL method to use.
                 )
-            )
+            ),
         ),
-        "language" => "en", // The language of the application.
+        "language" => "en_GB", // The language of the application. (http://www.roseindia.net/tutorials/I18N/locales-list.shtml has a list of possible locales.)
         "newsletter" => array ( /* Newsletter Details */
             "name" => "John Smith", // The name to send newsletters from by default.
             "email" => "john.smith@example.com", // The email to send newsletters from by default.

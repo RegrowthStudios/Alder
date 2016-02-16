@@ -19,26 +19,35 @@
 
     namespace Sycamore;
     
+    use Sycamore\Application;
     use Sycamore\Enums\ActionState;
-    use Sycamore\Row\Route;
 
+    use Zend\EventManager\EventManager;
+    
     /**
      * Sycamore dispatcher class.
      */
     class Dispatcher
     {
         /**
+         * The event manager.
+         * 
+         * @var \Zend\EventManager\EventManagerInterface
+         */
+        protected $eventManager;
+        
+        /**
          * Creates a controller for the route, and then calls 
          * execute from within the controller passing in the request
          * and response.
          * 
-         * @param \Sycamore\Route $route
+         * @param \Sycamore\Row\Route $route
          * @param \Zend\Http\PhpEnvironment\Request $request
          * @param \Sycamore\Response $response
          * 
          * @return mixed
          */
-        public function dispatch(\Sycamore\Route $route, \Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Response& $response)
+        public function dispatch(\Sycamore\Row\Route $route, \Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Response& $response)
         {
             // Construct controller.
             $controller = $this->createController($request, $response, $route);
@@ -77,11 +86,11 @@
          * 
          * @param \Zend\Http\PhpEnvironment\Request $request
          * @param \Sycamore\Resonse $response
-         * @param \Sycamore\Route $route
+         * @param \Sycamore\Row\Route $route
          * 
          * @return \Sycamore\Controller\Controller
          */
-        protected function createController(\Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Resonse& $response, \Sycamore\Route $route) {
+        protected function createController(\Zend\Http\PhpEnvironment\Request& $request, \Sycamore\Resonse& $response, \Sycamore\Row\Route $route) {
             if ($request->getUriAsArray()[0] == "api") {
                 $renderer = new \Sycamore\Renderer\JsonRenderer($response);
             } else {
@@ -90,5 +99,12 @@
             
             $controllerStr = $route->controller;
             return new $controllerStr($request, $response, $renderer);
+        }
+        
+        public function __construct()
+        {
+            $this->eventManager = new EventManager();
+            $this->eventManager->setIdentifiers("action");
+            $this->eventManager->setSharedManager(Application::getSharedEventsManager());
         }
     }

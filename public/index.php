@@ -30,7 +30,7 @@
     define("MODULES_DIRECTORY", APP_DIRECTORY."/modules");
     define("LIBRARY_DIRECTORY", APP_DIRECTORY."/library");
     define("CONFIG_DIRECTORY", APP_DIRECTORY."/config");
-    define("SYCAMORE_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
+    define("SYCAMORE_LIBRARY_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
     
     // Define possible ENV states.
     define("PRODUCTION", "production");
@@ -51,13 +51,13 @@
     try {
         if (ENV != PRODUCTION) {
             // Get and begin timer.
-            require (SYCAMORE_DIRECTORY . "/Utils/Timer.php");
+            require (SYCAMORE_LIBRARY_DIRECTORY . "/Utils/Timer.php");
             $timer = new Timer();
             $timer->begin();
         }
 
         // Prepare autoloader.
-        require (SYCAMORE_DIRECTORY . "/autoload_register.php");
+        require (SYCAMORE_LIBRARY_DIRECTORY . "/library_autoload_register.php");
 
         // Initialise application.
         Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run();

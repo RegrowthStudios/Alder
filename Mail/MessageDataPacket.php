@@ -68,7 +68,7 @@
             if (!is_string($messageType)) {
                 throw new \InvalidArgumentException("Recipient type must be a string.");
             } else if (!in_array(strtoupper($messageType), array_keys(Message::TYPES))) {
-                throw new \InvalidArgumentException("Recipient type must be one of those defined in Recipient::recipientTypes.");
+                throw new \InvalidArgumentException("Recipient type must be one of those defined in Recipient::TYPES.");
             }
             $this->type = strtoupper($messageType);
         }

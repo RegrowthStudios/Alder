@@ -19,15 +19,8 @@
 
     namespace Sycamore\Controller;
 
-    use Sycamore\Application;
     use Sycamore\ErrorManager;
-    use Sycamore\Response;
-    use Sycamore\Renderer\Renderer;
     use Sycamore\Utils\APIData;
-    
-    use Zend\EventManager\EventManager;
-    use Zend\EventManager\EventManagerAwareInterface;
-    use Zend\EventManager\EventManagerInterface;
     
     /**
      * Abstract Sycamore controller class. 
@@ -64,13 +57,6 @@
         protected $properties = null;
         
         /**
-         * The event manager.
-         * 
-         * @var \Zend\EventManager\EventManagerInterface
-         */
-        protected $eventManager;
-        
-        /**
          * Prepares request and response objects.
          * 
          * @param \Zend\Http\PhpEnvironment\Request
@@ -82,10 +68,6 @@
             $this->request = $request;
             $this->response = $response;
             $this->renderer = $renderer;
-            
-            // Prepare event manager.
-            $this->setEventManager(new EventManager());
-            $this->eventManager->setSharedManager(Application::getSharedEventsManager());
         }
         
         /**
@@ -146,37 +128,6 @@
             }
             $this->response->send();
             $this->renderer->render($renderContent);
-        }
-        
-        /**
-         * Sets the event manager for the controller.
-         * 
-         * @param \Zend\EventManager\EventManagerInterface $eventManager
-         * 
-         * @return \Sycamore\Controller\Controller
-         */
-        public function setEventManager(EventManagerInterface $eventManager)
-        {
-            $eventManager->setIdentifiers(array (
-                "action",
-                __CLASS__,
-                get_called_class(),
-            ));
-            $this->eventManager = $eventManager;
-            return $this;
-        }
-        
-        /**
-         * Gets the event manager instance for this controller.
-         * 
-         * @return \Zend\EventManager\EventManagerInterface
-         */
-        public function getEventManager()
-        {
-            if (!$this->eventManager) {
-                $this->setEventManager(new EventManager());
-            }
-            return $this->eventManager;
         }
 //        
 //        /**

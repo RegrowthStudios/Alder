@@ -48,13 +48,12 @@
             // Try to bootsrap application and kick off execution.
             try {
                 // Get and begin timer.
-                require(SYCAMORE_DIRECTORY . "/Utils/Timer.php");
+                require (SYCAMORE_DIRECTORY . "/Utils/Timer.php");
                 $timer = new Timer();
                 $timer->begin();
 
                 // Prepare autoloader.
-                require(SYCAMORE_DIRECTORY . "/Autoloader.php");
-                Autoloader::getInstance()->setupAutoloader();
+                require (SYCAMORE_DIRECTORY . "/autoload_register.php");
 
                 // Initialise application.
                 Application::initialise();

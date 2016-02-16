@@ -31,30 +31,50 @@
         /**
          * Initialises the Sycamore autoloader, application and front controller.
          */
-        public static function run($appDir)
+        public static function run($appDir, $debug = false)
         {
+            // If in debug mode, show errors.
+            if ($debug) {
+                error_reporting(E_ALL);
+                ini_set("display_errors", 1);
+            }
+            
+            // Define a bunch of directory constants.
             define("APP_DIRECTORY", $appDir);
             define("LIBRARY_DIRECTORY", APP_DIRECTORY."/library");
             define("CONFIG_DIRECTORY", APP_DIRECTORY."/conf");
             define("SYCAMORE_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
             
-            try {    
+            // Try to bootsrap application and kick off execution.
+            try {
+                // Get and begin timer.
                 require(SYCAMORE_DIRECTORY . "/Utils/Timer.php");
                 $timer = new Timer();
                 $timer->begin();
 
+                // Prepare autoloader.
                 require(SYCAMORE_DIRECTORY . "/Autoloader.php");
                 Autoloader::getInstance()->setupAutoloader();
 
+                // Initialise application.
                 Application::initialise();
 
+                // Construct request object.
                 $request = new Request(false);
 
+                // Run front controller, executing appropriate controller action.
                 $frontController = new FrontController();
                 $frontController->run($request);
 
+                // End timer.
                 $timer->end();
-                file_put_contents(APP_DIRECTORY . "/logs/timings.txt", "Process Time: ".$timer->getDuration()."s  -  Request: $page\n", FILE_APPEND);
+                
+                // Create timings file if it doesn't exist, then write contents of request and time to respond to request.
+                $timingFile = APP_DIRECTORY . "/logs/timings.csv";
+                if (!is_file($timingFile)) {
+                    file_put_contents($timingFile, "Processing Times, Request URI, Request GET, Request POST, Request Headers");
+                }
+                file_put_contents($timingFile, "{$timer->getDuration()}, {$request->getUriString()}, {$request->getQuery()->toString()}, {$request->getPost()->toString()}, {$request->getHeaders()->toString()}", FILE_APPEND);
             } catch (Exception $ex) {
                 self::logCriticalError($ex);
                 exit();

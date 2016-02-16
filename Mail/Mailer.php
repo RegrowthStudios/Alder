@@ -35,6 +35,9 @@
      */
     class Mailer
     {
+        /**
+         * Parameter to signal no delay on initial scheduling.
+         */
         const NO_DELAY = "none";
         
         /**
@@ -114,19 +117,15 @@
          * Update the time at which to send a message.
          * 
          * @param \Sycamore\Row\MailMessage $mailMessage
-         * @param string $delayTo
+         * @param bool $sendNow
          * 
          * @throws \InvalidArgumentException
          */
-        public function updateMessageSendTime(\Sycamore\Row\MailMessage& $mailMessage)
+        public function updateMessageSendTime(\Sycamore\Row\MailMessage& $mailMessage, $sendNow = false)
         {
-            if ($delayTo == self::NO_DELAY) {
+            if ($sendNow == self::NO_DELAY) {
                 $this->sendMessage(ObjectData::decode($mailMessage->serialisedMessage));
             } else {
-                if (!is_string($delayTo)) {
-                    throw new \InvalidArgumentException("Delay is expected to be a string.");
-                }
-                
                 // Remove old cron job.
                 Scheduler::getInstance()->removeCronJobs("/" . $mailMessage->cronJob . "/");
                 
@@ -173,7 +172,31 @@
         
         public function prepareMessage(\Sycamore\Mail\MessageDataPacket $message)
         {
-            // TODO(Matthew): Implement. [Constructs a collection of (\Zend|\Sycamore)\Mail\Message objects and returns them.]
+            /* Global Preparation Section */
+            
+            // TODO(Matthew): Create a class that can parse a string and add in global parameters. Utilise Zend\I18n
+            
+            /* Per Recipient Preparation Section */
+            
+            // Get recipient groups for the message.
+            $recipientGroups = $message->getRecipientGroups();
+            
+            // Fetch appropriate tables.
+            $recipientTable = TableCache::getTableFromCache($message->getType()["recipientTable"]);
+            $recipientGroupMapsTable = TableCache::getTableFromCache($message->getType()["recipientGroupMapsTable"]);
+            
+            // Get recipients.
+            $recipients = NULL;
+            if (empty($recipientGroups)) {
+                $recipients = $recipientTable->fetchAll();
+            } else {
+                foreach ($recipientGroups as $recipientGroupId) {
+                    $recipientIds = $recipientGroupMapsTable->getByGroupId($recipientGroupId);
+                    foreach ($recipientIds as $recipientId) {
+                        $recipients[] = $recipientTable->getById($recipientId);
+                    }
+                }
+            }
         }
         
         /**

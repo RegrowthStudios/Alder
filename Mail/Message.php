@@ -27,7 +27,12 @@
     
     class Message extends ZendMessage
     {
-        
+        const TYPES = array (
+            "NEWSLETTER" => array ( 
+                "recipientTable" => "NewsletterSubscriber",
+                "recipientGroupMapsTable" => "NewsletterSubscriberGroupMap"
+            )
+        );
         
         
         

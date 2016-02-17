@@ -20,6 +20,7 @@
     namespace Sycamore;
     
     return array (
+        // TODO(Matthew): Get order write so api_XXX_index overwrites api_XXX.
         "router" => array (
             "routes" => array (
                 "api_user_index" => array (
@@ -28,15 +29,47 @@
                         "route" => "/api/user[/:action]",
                         "defaults" => array (
                             "controller" => "Sycamore\Controller\API\User\Index",
+                            "action" => "index",
                         ),
                     ),
                 ),
                 "api_user" => array (
                     "type" => "Zend\Mvc\Router\Http\Segment",
                     "options" => array (
-                        "route" => "/api/user[/:controller/:action]",
+                        "route" => "/api/user[/:controller[/:action]]",
                         "defaults" => array (
                             "__NAMESPACE__" => "Sycamore\Controller\API\User",
+                            "action" => "index",
+                        ),
+                    ),
+                ),
+                "api_newsletter_index" => array (
+                    "type" => "Zend\Mvc\Router\Http\Segment",
+                    "options" => array (
+                        "route" => "/api/newsletter[/:action]",
+                        "defaults" => array (
+                            "controller" => "Sycamore\Controller\API\Newsletter\Index",
+                            "action" => "index",
+                        ),
+                    ),
+                ),
+                "api_newsletter" => array (
+                    "type" => "Zend\Mvc\Router\Http\Segment",
+                    "options" => array (
+                        "route" => "/api/newsletter[/:controller[/:action]]",
+                        "defaults" => array (
+                            "__NAMESPACE__" => "Sycamore\Controller\API\Newsletter",
+                            "action" => "index",
+                        ),
+                    ),
+                ),
+                "api_attachment_index" => array (
+                    "type" => "Zend\Mvc\Router\Http\Segment",
+                    "options" => array (
+                        "route" => "/api/attachment[/:action]",
+                        "defaults" => array (
+                            "controller" => "Sycamore\Controller\API\Attachment\Index",
+                            "action" => "index",
                         ),
                     ),
                 ),
@@ -45,6 +78,10 @@
         "controllers" => array (
             "invokables" => array (
                 "Sycamore\Controller\API\User\Index" => "Sycamore\Controller\API\User\IndexController",
+                "Sycamore\Controller\API\User\Ban" => "Sycamore\Controller\API\User\BanController",
+                "Sycamore\Controller\API\Newsletter\Index" => "Sycamore\Controller\API\Newsletter\IndexController",
+                "Sycamore\Controller\API\Newsletter\Subscriber" => "Sycamore\Controller\API\Newsletter\SubscriberController",
+                "Sycamore\Controller\API\Attachment\Index" => "Sycamore\Controller\API\Attachment\IndexController",
             ),
         ),
     );

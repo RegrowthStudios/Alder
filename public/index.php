@@ -49,6 +49,7 @@
 
     // Try to bootsrap application and kick off execution.
     try {
+        // Time the request to response time if not in production.
         if (ENV != PRODUCTION) {
             // Get and begin timer.
             require (SYCAMORE_LIBRARY_DIRECTORY . "/Utils/Timer.php");
@@ -62,9 +63,6 @@
         // Initialise application.
         Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run();
 
-        // Initialise application.
-        //Application::initialise();
-
         // Construct request object.
         $request = new Request(false);
 
@@ -72,6 +70,7 @@
         $frontController = new FrontController();
         $frontController->run($request);
 
+        // Store the resulting timing if not in production.
         if (ENV != PRODUCTION) {
             // End timer.
             $timer->end();
@@ -84,6 +83,7 @@
             file_put_contents($timingFile, "{$timer->getDuration()}, {$request->getUriString()}, {$request->getQuery()->toString()}, {$request->getPost()->toString()}, {$request->getHeaders()->toString()}", FILE_APPEND);
         }
     } catch (Exception $ex) {
+        // Log error if a critical exception occurred.
         error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL 
                 . "Error Code: " . $ex->getCode() . PHP_EOL 
                 . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL 
@@ -91,4 +91,3 @@
                 . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString();
         exit();
     }
-            

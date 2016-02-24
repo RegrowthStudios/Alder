@@ -24,7 +24,6 @@
     
     use Zend\Db\ResultSet\ResultSet;
     use Zend\Db\Sql\Select;
-    use Zend\Db\Sql\Sql;
     use Zend\Db\TableGateway\TableGateway;
 
     /**
@@ -49,7 +48,7 @@
         /**
          * Constructs table gateway for table object.
          */
-        public function __construct($table, Row $row, $features = null, Sql $sql = null)
+        public function __construct($table, Row $row, $features = null, \Zend\Db\Sql\Sql $sql = null)
         {
             $this->table = Application::getConfig()->db->tablePrefix . $table;
             

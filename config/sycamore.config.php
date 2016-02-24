@@ -18,9 +18,7 @@
  */
 
     return array (
-        "modules" => array (
-            "Sycamore",
-        ),
+        "modules" => glob(MODULES_DIRECTORY."/*", GLOB_ONLYDIR),
         "module_listener_options" => array (
             "module_paths" => array (
                 MODULES_DIRECTORY

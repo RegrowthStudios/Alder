@@ -23,11 +23,12 @@
     use Sycamore\Enums\ActionState;
 
     use Zend\EventManager\EventManager;
+    use Zend\EventManager\EventManagerAwareInterface;
     
     /**
      * Sycamore dispatcher class.
      */
-    class Dispatcher
+    class Dispatcher implements EventManagerAwareInterface
     {
         /**
          * The event manager.
@@ -101,10 +102,39 @@
             return new $controllerStr($request, $response, $renderer);
         }
         
+        /**
+         * Prepares event manager for dispatcher.
+         */
         public function __construct()
         {
-            $this->eventManager = new EventManager();
-            $this->eventManager->setIdentifiers("action");
-            $this->eventManager->setSharedManager(Application::getSharedEventsManager());
+            $this->setEventManager(new EventManager());
+        }
+        
+        /**
+         * Sets the event manager for the dispatcher.
+         * 
+         * @param \Zend\EventManager\EventManagerInterface $eventManager
+         * 
+         * @return \Sycamore\Dispatcher
+         */
+        public function setEventManager(\Zend\EventManager\EventManagerInterface $eventManager)
+        {
+            $eventManager->setIdentifiers("action");
+            $eventManager->setSharedManager(Application::getSharedEventsManager());
+            $this->eventManager = $eventManager;
+            return $this;
+        }
+        
+        /**
+         * Gets the event manager instance for the dispatcher.
+         * 
+         * @return \Zend\EventManager\EventManagerInterface
+         */
+        public function getEventManager()
+        {
+            if (!$this->eventManager) {
+                $this->setEventManager(new EventManager());
+            }
+            return $this->eventManager;
         }
     }

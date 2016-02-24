@@ -23,6 +23,8 @@
     use Sycamore\Utils\Timer;
     
     use Zend\Http\PhpEnvironment\Request;
+    use Zend\Log\Logger;
+    use Zend\Log\Writer\Stream as WriteStream;
     use Zend\Mvc\Application;
     
     // Define a bunch of directory constants.
@@ -30,6 +32,7 @@
     define("MODULES_DIRECTORY", APP_DIRECTORY."/modules");
     define("LIBRARY_DIRECTORY", APP_DIRECTORY."/library");
     define("CONFIG_DIRECTORY", APP_DIRECTORY."/config");
+    define("LOGS_DIRECTORY", APP_DIRECTORY."/logs");
     define("SYCAMORE_LIBRARY_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
     
     // Define possible ENV states.
@@ -59,6 +62,16 @@
 
         // Prepare autoloader.
         require (SYCAMORE_LIBRARY_DIRECTORY . "/library_autoload_register.php");
+        
+        // Prepare error logger (use trigger_error to write via this logger).
+        $errorStream = @fopen(LOGS_DIRECTORY."/errors.log", "a");
+        if (!$errorStream) {
+            throw new Exception("Failed to open error log file.");
+        }
+        $errorWriter = new WriteStream($errorStream);
+        $errorLogger = new Logger();
+        $errorLogger->addWriter($errorWriter);
+        Logger::registerErrorHandler($errorLogger);
 
         // Initialise application.
         Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run();
@@ -76,11 +89,11 @@
             $timer->end();
 
             // Create timings file if it doesn't exist, then write contents of request and time to respond to request.
-            $timingFile = APP_DIRECTORY . "/logs/timings.csv";
+            $timingFile = APP_DIRECTORY . LOGS_DIRECTORY."/timings.csv";
             if (!is_file($timingFile)) {
                 file_put_contents($timingFile, "Processing Times, Request URI, Request GET, Request POST, Request Headers");
             }
-            file_put_contents($timingFile, "{$timer->getDuration()}, {$request->getUriString()}, {$request->getQuery()->toString()}, {$request->getPost()->toString()}, {$request->getHeaders()->toString()}", FILE_APPEND);
+            file_put_contents($timingFile, "{$timer->getDuration()},{$request->getUriString()},{$request->getQuery()->toString()},{$request->getPost()->toString()},{$request->getHeaders()->toString()}", FILE_APPEND);
         }
     } catch (Exception $ex) {
         // Log error if a critical exception occurred.

@@ -178,5 +178,5 @@
             $routeMatch->setParam('action', $action);
             $e->setResult($return);
             return $return;
-    }
+        }
     }

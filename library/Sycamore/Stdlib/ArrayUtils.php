@@ -17,12 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-    namespace Sycamore\Utils;
+    namespace Sycamore\Stdlib;
 
+    use Zend\Stdlib\ArrayUtils as ZendArrayUtils;
+    
     /**
-     * ArrayValidation holds functions for checking the existence of keys and values in arrays.
+     * Holds functions for checking the existence of keys and values in arrays.
      */
-    class ArrayValidation
+    class ArrayUtils extends ZendArrayUtils
     {
         /**
          * Recursively checks if a value exists in an array.

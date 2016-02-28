@@ -43,7 +43,7 @@
         {
             if (!isset(self::$tableCache[$class]))
             {
-                $classPath = "Sycamore\\Model\\$class";
+                $classPath = "Sycamore\\Table\\$class";
                 self::$tableCache[$class] = new $classPath();
             }
 

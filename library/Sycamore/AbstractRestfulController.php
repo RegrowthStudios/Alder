@@ -19,7 +19,6 @@
 
     namespace Sycamore;
     
-    use Zend\Http\Request;
     use Zend\Mvc\Controller\AbstractRestfulController;
     
     /**
@@ -160,8 +159,8 @@
                     $data = $this->processBodyContent($request);
 
                     if ($id !== false) {
-                        $action = 'update';
-                        $return = $this->update($id, $data);
+                        $action = 'replace';
+                        $return = $this->replace($id, $data);
                         break;
                     }
 

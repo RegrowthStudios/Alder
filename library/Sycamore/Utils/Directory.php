@@ -24,10 +24,22 @@
      */
     class Directory
     {
-        public static function delete($path)
+        /**
+         * Delete a directory if empty or directory and contents if force flag is true.
+         * If the path points directly to a file, that file will be deleted.
+         * 
+         * @param string $path
+         * @param bool $force
+         * 
+         * @return boolean
+         */
+        public static function delete($path, $force = false)
         {
             if (is_dir($path)) {
                 $files = array_diff(scandir($path), array('.', '..'));
+                if (!empty($files) && !$force) {
+                    return false;
+                }
                 foreach ($files as $file) {
                     self::delete(realpath($path) . '/' . $file);
                 }

@@ -44,6 +44,9 @@
     // ENV state stored in a PHP file to get around Nginx not supporting setting environment variables a la Apache.
     define("ENV", require (CONFIG_DIRECTORY . "/env.state.php"));
 
+    // Define value to set config values to that MUST be overridden by a given installation.
+    define("CHANGE_THIS", "CHANGE");
+    
     // If in a debug mode, show errors.
     if (ENV != PRODUCTION) {
         error_reporting(E_ALL);
@@ -72,6 +75,7 @@
         $errorLogger = new Logger();
         $errorLogger->addWriter($errorWriter);
         Logger::registerErrorHandler($errorLogger);
+        Logger::registerExceptionHandler($errorLogger);
 
         // Initialise application.
         Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run();

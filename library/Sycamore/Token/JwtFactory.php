@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2016 Matthew Marshall
+ * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
     
     use Sycamore\Application;
     use Sycamore\Stdlib\AbstractFactory;
+    use Sycamore\Token\Jwt;
     
     use Lcobucci\JWT\Builder;
     use Lcobucci\JWT\Signer\Key;
@@ -32,15 +33,6 @@
      */
     class JwtFactory extends AbstractFactory
     {
-        const SIGNERS = array (
-            "HS256" => array ( "loc" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha256", "asymmetric" => false),
-            "HS384" => array ( "loc" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha384", "asymmetric" => false),
-            "HS512" => array ( "loc" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha512", "asymmetric" => false),
-            "RS256" => array ( "loc" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha256", "asymmetric" => true),
-            "RS384" => array ( "loc" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha384", "asymmetric" => true),
-            "RS512" => array ( "loc" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha512", "asymmetric" => true),
-        );
-        
         // TODO(Matthew): Update Application::getConfig() calls to new scheme.
         /**
          * Creates a JWT token from an array, or array-like set of data.
@@ -48,13 +40,17 @@
          * Data form should be similar to:
          * array (
          *   "signMethod" => "HS512",
-         *   "privateKey" => <PRIVATE_KEY>,
-         *   "privateKeyPassphrase" => <PRIVATE_KEY_PASSPHRASE>
+         *   "key" => <KEY>,
+         *   "keyPassphrase" => <KEY_PASSPHRASE>
          *   "tokenLifetime" => 36400,
-         *   "sub" => "user", // OPTIONAL
-         *   "aud" => "example.com", // OPTIONAL
-         *   "iat" => time(), // OPTIONAL
-         *   "nbf" => time(), // OPTIONAL
+         *   "registeredClaims" => array ( // OPTIONAL
+         *     "iss" => "example.org",
+         *     "sub" => "user", 
+         *     "aud" => "example.com", // Alternatively: ["example.com", "example.org"].
+         *     "iat" => time(),
+         *     "nbf" => time(),
+         *     "jti" => "12ae2qawd24",
+         *   ),
          *   "applicationPayload" => array ( // OPTIONAL
          *     "id" => 1,
          *     "username" => "JohnSmith42",
@@ -74,48 +70,59 @@
          */
         public static function create($data)
         {
-            $data = static::validateData($data);
+            // Verify provided data is array-like.
+            $verifiedData = static::validateData($data);
             
+            // Acquire private key or fail.
             $privateKey = Application::getConfig()->security->tokenPrivateKey;
-            if (isset($data["privateKey"])) {
-                $privateKey = $data["privateKey"];
+            if (isset($verifiedData["key"])) {
+                $privateKey = $verifiedData["key"];
             }
-            if (!$privateKey || $privateKey == CHANGE_THIS) {
-                throw new \InvalidArgumentException("The private key provided via data or application config is invalid.");
+            if (!$privateKey || $privateKey == DEFAULT_VAL) {
+                throw new \InvalidArgumentException("The key provided via data or application config is invalid.");
             }
             
+            // Acquire signing method or fail.
             $signMethod = Application::getConfig()->security->tokenHashAlgorithm;
-            if (isset($data["signMethod"])) {
-                $signMethod = $data["signMethod"];
+            if (isset($verifiedData["signMethod"])) {
+                $signMethod = $verifiedData["signMethod"];
             }
-            if (!isset(self::SIGNERS[$signMethod])) {
+            if (Jwt::SIGNERS[$signMethod] !== NULL) {
                 throw new \InvalidArgumentException("The sign method provided via data or application config is an invalid method.");
             }
             
-            if (!isset($data["tokenLifetime"])) {
+            // Fail if no lifetime specified for token.
+            if (!isset($verifiedData["tokenLifetime"])) {
                 throw new \DomainException("Token factory expects a token lifetime to be specified.");
             }
             
-            $time = time();
-            
-            $token = (new Builder())->setIssuer(Application::getConfig()->domain)
-                                       ->setAudience(isset($data["aud"]) ? $data["aud"] : Application::getConfig()->domain)
-                                       ->setIssuedAt(isset($data["iat"]) ? $data["iat"] : $time)
-                                       ->setExpiration((isset($data["iat"]) ? $data["iat"] : $time) + $data["tokenLifetime"])
-                                       ->setNotBefore(isset($data["nbf"]) ? $data["nbf"] : $time)
-                                       ->setId(Rand::getString(12, NULL, true), true);
-            
-            if (isset($data["sub"])) {
-                $token->setSubject($data["sub"]);
+            $registeredClaims = array();
+            if (isset($verifiedData["registeredClaims"])) {
+                $registeredClaims = $verifiedData["registeredClaims"];
             }
             
-            if (isset($data["applicationPayload"])) {
-                $token->set(Application::getConfig()->domain, $data["applicationPayload"]);
+            // Construct token and registered claims.
+            $time = time();            
+            $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : Application::getConfig()->domain)
+                                    ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : Application::getConfig()->domain)
+                                    ->setIssuedAt(   isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
+                                    ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time + $verifiedData["tokenLifetime"])
+                                    ->setNotBefore(  isset($registeredClaims["nbf"]) ? $registeredClaims["nbf"] : $time)
+                                    ->setId(        (isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12, NULL, true)), true);
+            // Set subject if specified.
+            if (isset($registeredClaims["sub"])) {
+                $token->setSubject($registeredClaims["sub"]);
             }
             
-            if (isset($data["privateClaims"])) {
-                if (is_array($data["privateClaims"])) {
-                    foreach ($data["privateClaims"] as $key => $value) {
+            // Add application payload if provided.
+            if (isset($verifiedData["applicationPayload"])) {
+                $token->set(Application::getConfig()->domain, $verifiedData["applicationPayload"]);
+            }
+            
+            // Add additional private claims if specified.
+            if (isset($verifiedData["privateClaims"])) {
+                if (is_array($verifiedData["privateClaims"])) {
+                    foreach ($verifiedData["privateClaims"] as $key => $value) {
                         $token->set($key, $value);
                     }
                 } else {
@@ -123,23 +130,25 @@
                 }
             }
             
+            // Create private key object if signing method is asymmetric, otherwise use private key string.
             $key = $privateKey;
-            
             $passphrase = NULL;
-            if (self::SIGNERS[$signMethod]["asymmetric"]) {
-                if (Application::getConfig()->security->tokenPrivateKeyPassphrase !== CHANGE_THIS) {
+            if (Jwt::SIGNERS[$signMethod]["asymmetric"]) {
+                if (Application::getConfig()->security->tokenPrivateKeyPassphrase !== DEFAULT_VAL) {
                     $passphrase = Application::getConfig()->security->tokenPrivateKeyPassphrase;
                 }
-                if (isset($data["privateKeyPassphrase"])) {
-                    $passphrase = $data["privateKeyPassphrase"];
+                if (isset($verifiedData["keyPassphrase"])) {
+                    $passphrase = $verifiedData["keyPassphrase"];
                 }
                 $key = new Key($privateKey, $passphrase);
             }
             
-            $signer = new self::SIGNERS[$signMethod]["loc"]();
+            // Sign token.
+            $signer = new Jwt::SIGNERS[$signMethod]["class"]();
             $token->sign($signer, $key);
             
-            return $token->getToken();
+            // Return JWT object.
+            return (new Jwt(strval($token->getToken())));
         }
     }
     

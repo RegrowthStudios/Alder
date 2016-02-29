@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2016 Matthew Marshall
+ * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,27 +19,14 @@
 
     namespace Sycamore\Stdlib;
     
-    use Sycamore\Stdlib\ArrayUtils;
+    use Sycamore\Stdlib\ArrayUtils\ArrayLikeValidation;
     
     abstract class AbstractFactory
     {
         abstract public static function create($data);
         
-        protected static function validateData($data)
+        protected static function validateData($data, $arrayOnly = false)
         {
-            if (is_array($data)) {
-                return $data;
-            }
-            
-            if ($data instanceof \Traversable) {
-                $data = ArrayUtils::iteratorToArray($data);
-                return $data;
-            }
-            
-            if (!$data instanceof \ArrayAccess) {
-                throw new \InvalidArgumentException(get_class($this) . " expected an array, or object that implemens \Traversable or \ArrayAccess.");
-            }
-            
-            return $data;
+            return ArrayLikeValidation::validateData($data, get_class($this), $arrayOnly);
         }
     }

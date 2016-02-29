@@ -1,7 +1,7 @@
   <?php
 
 /* 
- * Copyright (C) 2016 Matthew Marshall
+ * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

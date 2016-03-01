@@ -2,3 +2,5 @@ nbproject/
 library/Zend/
 library/Lcobucci/
 library/Sycamore/OLD/
+modules/Sycamore/src/Sycamore/Controller/API/OLD/
+logs/

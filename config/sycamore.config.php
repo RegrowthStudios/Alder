@@ -17,8 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+    $moduleDirs = glob(MODULES_DIRECTORY."/*", GLOB_ONLYDIR);
+    foreach($moduleDirs as $key => $moduleDir) {
+        $moduleDirs[$key] = end(explode("/", $moduleDir));
+    }
+    
     return array (
-        "modules" => glob(MODULES_DIRECTORY."/*", GLOB_ONLYDIR),
+        "modules" => $moduleDirs,
         "module_listener_options" => array (
             "module_paths" => array (
                 MODULES_DIRECTORY

@@ -19,10 +19,8 @@
 
     namespace Sycamore;
 
-    use Sycamore\FrontController;
     use Sycamore\Utils\Timer;
     
-    use Zend\Http\PhpEnvironment\Request;
     use Zend\Log\Logger;
     use Zend\Log\Writer\Stream as WriteStream;
     use Zend\Mvc\Application;
@@ -60,16 +58,16 @@
             // Get and begin timer.
             require (SYCAMORE_LIBRARY_DIRECTORY . "/Utils/Timer.php");
             $timer = new Timer();
-            $timer->begin();
+            $timer->start();
         }
-
+        
         // Prepare autoloader.
-        require (SYCAMORE_LIBRARY_DIRECTORY . "/library_autoload_register.php");
+        require (APP_DIRECTORY . "/library_autoload_register.php");
         
         // Prepare error logger (use trigger_error to write via this logger).
         $errorStream = @fopen(LOGS_DIRECTORY."/errors.log", "a");
         if (!$errorStream) {
-            throw new Exception("Failed to open error log file.");
+            throw new \Exception("Failed to open error log file.");
         }
         $errorWriter = new WriteStream($errorStream);
         $errorLogger = new Logger();
@@ -78,28 +76,39 @@
         Logger::registerExceptionHandler($errorLogger);
 
         // Initialise application.
-        Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run();
-
-        // Construct request object.
-        $request = new Request(false);
-
-        // Run front controller, executing appropriate controller action.
-        $frontController = new FrontController();
-        $frontController->run($request);
+        $request = Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run()->getRequest();
 
         // Store the resulting timing if not in production.
         if (ENV != PRODUCTION) {
             // End timer.
-            $timer->end();
+            $timer->stop();
 
             // Create timings file if it doesn't exist, then write contents of request and time to respond to request.
-            $timingFile = APP_DIRECTORY . LOGS_DIRECTORY."/timings.csv";
-            if (!is_file($timingFile)) {
-                file_put_contents($timingFile, "Processing Times, Request URI, Request GET, Request POST, Request Headers");
+            $timingFile = LOGS_DIRECTORY."/timings.json";
+            $data = NULL;
+            if (is_file($timingFile)) {
+                $data = json_decode(file_get_contents($timingFile), true);
+            } else {
+                $data = [
+                    "time" => [],
+                    "uri" => [],
+                    "query" => [],
+                    "post" => [],
+                    "headers" => []
+                ];
             }
-            file_put_contents($timingFile, "{$timer->getDuration()},{$request->getUriString()},{$request->getQuery()->toString()},{$request->getPost()->toString()},{$request->getHeaders()->toString()}", FILE_APPEND);
+            $data["time"][] = $timer->getDuration();
+            $data["uri"][] = $request->getUriString();
+            $data["query"][] = $request->getQuery()->toString();
+            $data["post"][] = $request->getPost()->toString();
+            $headers = preg_split("/\s\s+/",$request->getHeaders()->toString());
+            if (empty(end($headers))) {
+                array_pop($headers);
+            }
+            $data["header"][] = $headers;
+            file_put_contents($timingFile, json_encode($data));
         }
-    } catch (Exception $ex) {
+    } catch (\Exception $ex) {
         // Log error if a critical exception occurred.
         error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL 
                 . "Error Code: " . $ex->getCode() . PHP_EOL 

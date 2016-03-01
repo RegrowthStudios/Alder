@@ -19,6 +19,11 @@
 
     namespace Sycamore;
     
+    use Sycamore\Data\API;
+    
+    use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+    use Zend\ModuleManager\Feature\ConfigProviderInterface;
+    use Zend\Mvc\Application;
     use Zend\Mvc\ModuleRouteListener;
     use Zend\Mvc\MvcEvent;
     use Zend\View\Model\JsonModel;
@@ -26,8 +31,16 @@
     /**
      * Module class for Sycamore.
      */
-    class Module
+    class Module implements AutoloaderProviderInterface, ConfigProviderInterface
     {
+        /**
+         * Define the module directory constant.
+         */
+        public function __construct()
+        {
+            define("SYCAMORE_MODULE_DIRECTORY", MODULES_DIRECTORY."/Sycamore");
+        }
+        
         /**
          * Initialises listeners during the bootstrap process.
          * 
@@ -35,16 +48,15 @@
          */
         public function onBootstrap(\Zend\Mvc\MvcEvent $e)
         {
-            define("SYCAMORE_MODULE_DIRECTORY", MODULES_DIRECTORY."/Sycamore");
-            
             $eventManager = $e->getApplication()->getEventManager();
             $moduleRouteListener = new ModuleRouteListener();
             $moduleRouteListener->attach($eventManager);
             
-            $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, array ($this, "onDispatchError"), 0);
-            $eventManager->attach(MvcEvent::EVENT_RENDER_ERROR, array ($this, "onRenderError"), 0);
+            $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, array ($this, "onDispatchError"), 10);
+            //$eventManager->attach(MvcEvent::EVENT_RENDER_ERROR, array ($this, "onRenderError"), 10);
         }
         
+        // TODO(Matthew): Use a language object for strings presented to user.
         /**
          * Returns a JSON model of the dispatch error in the provided event. Returns void if no error exists.
          * 
@@ -54,63 +66,32 @@
          */
         public function onDispatchError(\Zend\Mvc\MvcEvent $e)
         {
-            return $this->getJsonModelError($e);
+            $e->stopPropagation();
+            $response = $e->getResponse();
+            if ($e->getError() == Application::ERROR_ROUTER_NO_MATCH) {
+                $response->setStatusCode(404);
+                $response->setContent(API::encode(["error" => "No route match was found for the given URI."]));
+            } else if ($e->getError() == Application::ERROR_CONTROLLER_NOT_FOUND 
+                    || $e->getError() == Application::ERROR_CONTROLLER_INVALID
+                    || $e->getError() == Application::ERROR_CONTROLLER_CANNOT_DISPATCH
+                    || $e->getError() == Application::ERROR_EXCEPTION) {
+                $response->setStatusCode(500);
+                $response->setContent(API::encode(["error" => "A critical error has occurred in processing this request. Please contact the service provider."]));
+            }
+            return $response;
         }
         
-        /**
-         * Returns a JSON model of the render error in the provided event. Returns void if no error exists.
-         * 
-         * @param MvcEvent $e
-         * 
-         * @return mixed
-         */
-        public function onRenderError(\Zend\Mvc\MvcEvent $e)
-        {
-            return $this->getJsonModelError($e);
-        }
-        
-        // TODO(Matthew): Record stacktrace in log, do NOT send to client.
-        /**
-         * Returns a JSON model of the error in the provided event. Returns void if no error exists.
-         * 
-         * @param MvcEvent $e
-         * 
-         * @return mixed
-         */
-        public function getJsonModelError(\Zend\Mvc\MvcEvent $e)
-        {
-            $error = $e->getError();
-            if (!$error) {
-                return;
-            }
-            
-            $exception = $e->getParam("exception");
-            $exceptionJson = array();
-            if ($exception) {
-                $exceptionJson = array (
-                    "class" => get_class($exception),
-                    "file" => $exception->getFile(),
-                    "line" => $exception->getLine(),
-                    "message" => $exception->getMessage(),
-                    "stacktrace" => $exception->getTraceAsString()
-                );
-            }
-            
-            $errorJson = array (
-                "message" => "An error occurred during execution. Please try again later.",
-                "error" => $error,
-                "exception" => $exceptionJson
-            );
-            if ($error == 'error-router-no-match') {
-                $errorJson['message'] = 'Resource not found.';
-            }
-            
-            $model = new JsonModel(array('errors' => array($errorJson)));
-
-            $e->setResult($model);
-
-            return $model;
-        }
+//        /**
+//         * Returns a JSON model of the render error in the provided event. Returns void if no error exists.
+//         * 
+//         * @param MvcEvent $e
+//         * 
+//         * @return mixed
+//         */
+//        public function onRenderError(\Zend\Mvc\MvcEvent $e)
+//        {
+//            return $this->getJsonModelError($e);
+//        }
         
         /**
          * Returns an array of configuration options for the module.

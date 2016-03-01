@@ -19,12 +19,12 @@
 
     namespace Sycamore;
     
-    use Zend\Mvc\Controller\AbstractRestfulController;
+    use Zend\Mvc\Controller\AbstractRestfulController as ZendAbstractRestfulController;
     
     /**
      * Extension of the Zend RESTful controller.
      */
-    class AbstractRestfulController extends AbstractRestfulController
+    class AbstractRestfulController extends ZendAbstractRestfulController
     {
         /**
          * Contains data about the OPTIONS request method, generalised for all controllers.
@@ -50,7 +50,7 @@
         /**
          * Prepares and sends the OPTIONS header & body for the given controller instance.
          */
-        protected function options()
+        public function options()
         {
             $allowHeader = (isset($this->options["allow-header"])) ? $this->options["allow-header"] . "," . $this->preOptions["allow-header"] : $this->preOptions["allow-header"];
             $body = (isset($this->options["body"])) ? array_merge($this->options["body"], $this->preOptions["body"]) : $this->preOptions["body"];

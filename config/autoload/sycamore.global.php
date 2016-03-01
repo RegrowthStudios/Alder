@@ -77,8 +77,8 @@
                 "simpleHashAlgorithm" => "sha256", // The hashing algorithm to be used for simple hashes - no sensitive data is hashed using this.
                 "sessionLength" => 43200/*12 Hours*/, // How long should log in session last if not extended?
                 "sessionLengthExtended" => 2629740,/*~1 Month*/ // How long should an extended log-in session last?
-                "tokenPrivateKey" => DEFAULT_VAL, // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.
-                "tokenPublicKey" => DEFAULT_VAL, // The key used for verifying JWTs IF an asymmetric hash algorithm is specified. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the public RSA key file.
+                "tokenPrivateKey" => DEFAULT_VAL, /* CHANGE THIS */ // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.
+                "tokenPublicKey" => DEFAULT_VAL, /* CHANGE THIS */ // The key used for verifying JWTs IF an asymmetric hash algorithm is specified. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the public RSA key file.
                 "tokenHashAlgorithm" => "HS256", // The hashing algorithm used for the signing of JWTs. Allowed values: HS256, HS384, HS512, RS256, RS384, RS512. HS values are Hmac symmetric key methods, RS values are asymmetric RSA public/private key methods.
                 "verifyTokenLifetime" => 21600/*6 Hours*/ // How long does a verification token last?
             ),

@@ -24,53 +24,33 @@
         // TODO(Matthew): Investigate more dynamic route construction (vs. performance).
         "router" => array (
             "routes" => array (
-                "api_user_index" => array (
-                    "type" => "Zend\Mvc\Router\Http\Segment",
-                    "options" => array (
-                        "route" => "/api/user[/:action]",
-                        "defaults" => array (
-                            "controller" => "Sycamore\Controller\API\User\Index",
-                            "action" => "index",
-                        ),
-                    ),
-                ),
                 "api_user" => array (
                     "type" => "Zend\Mvc\Router\Http\Segment",
                     "options" => array (
-                        "route" => "/api/user[/:controller[/:action]]",
+                        "route" => "/api/user[/:controller]",
                         "defaults" => array (
                             "__NAMESPACE__" => "Sycamore\Controller\API\User",
-                            "action" => "index",
-                        ),
-                    ),
-                ),
-                "api_newsletter_index" => array (
-                    "type" => "Zend\Mvc\Router\Http\Segment",
-                    "options" => array (
-                        "route" => "/api/newsletter[/:action]",
-                        "defaults" => array (
-                            "controller" => "Sycamore\Controller\API\Newsletter\Index",
-                            "action" => "index",
+                            "controller" => "Sycamore\Controller\API\User\Index",
                         ),
                     ),
                 ),
                 "api_newsletter" => array (
                     "type" => "Zend\Mvc\Router\Http\Segment",
                     "options" => array (
-                        "route" => "/api/newsletter[/:controller[/:action]]",
+                        "route" => "/api/newsletter[/:controller]",
                         "defaults" => array (
                             "__NAMESPACE__" => "Sycamore\Controller\API\Newsletter",
-                            "action" => "index",
+                            "controller" => "Sycamore\Controller\API\Newsletter\Index",
                         ),
                     ),
                 ),
-                "api_attachment_index" => array (
+                "api_attachment" => array (
                     "type" => "Zend\Mvc\Router\Http\Segment",
                     "options" => array (
-                        "route" => "/api/attachment[/:action]",
+                        "route" => "/api/attachment[/:controller]",
                         "defaults" => array (
+                            "__NAMESPACE__" => "Sycamore\Controller\API\Attachment",
                             "controller" => "Sycamore\Controller\API\Attachment\Index",
-                            "action" => "index",
                         ),
                     ),
                 ),

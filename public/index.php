@@ -31,6 +31,7 @@
     define("LIBRARY_DIRECTORY", APP_DIRECTORY."/library");
     define("CONFIG_DIRECTORY", APP_DIRECTORY."/config");
     define("LOGS_DIRECTORY", APP_DIRECTORY."/logs");
+    define("TEMP_DIRECTORY", APP_DIRECTORY."/temp");
     define("SYCAMORE_LIBRARY_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
     
     // Define possible ENV states.
@@ -44,6 +45,20 @@
 
     // Define value to set config values to that MUST be overridden by a given installation.
     define("DEFAULT_VAL", "CHANGE");
+    
+    // Define appropriate OS constant.
+    define("UNIX", "UNIX");
+    define("WINDOWS", "WINDOWS");
+    switch (php_uname("s")) {
+        case "FreeBSD":
+        case "Linux":
+        case "Solaris":
+            define("OS", UNIX);
+            break;
+        case "Windows NT":
+            define("OS", WINDOWS);
+            break;
+    }
     
     // If in a debug mode, show errors.
     if (ENV != PRODUCTION) {

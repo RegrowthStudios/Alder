@@ -19,7 +19,7 @@
 
     namespace Sycamore;
     
-    use Sycamore\Data\API;
+    use Sycamore\Serialiser\API;
     
     use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
     use Zend\ModuleManager\Feature\ConfigProviderInterface;

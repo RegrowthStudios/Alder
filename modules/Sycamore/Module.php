@@ -76,7 +76,11 @@
                     || $e->getError() == Application::ERROR_CONTROLLER_CANNOT_DISPATCH
                     || $e->getError() == Application::ERROR_EXCEPTION) {
                 $response->setStatusCode(500);
-                $response->setContent(API::encode(["error" => "A critical error has occurred in processing this request. Please contact the service provider."]));
+                if (ENV != PRODUCTION) {
+                    $response->setContent(API::encode(["error" => "A critical error: \n    " . $e->getError() . "\nhas occurred in processing this request. Please contact the service provider."]));
+                } else {
+                    $response->setContent(API::encode(["error" => "A critical error has occurred in processing this request. Please contact the service provider."]));
+                }
             }
             return $response;
         }

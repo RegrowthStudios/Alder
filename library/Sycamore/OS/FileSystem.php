@@ -22,7 +22,7 @@
     /**
      * Helper class for dealing with directories.
      */
-    class Directory
+    class FileSystem
     {
         /**
          * Delete a directory if empty or directory and contents if force flag is true.
@@ -48,5 +48,36 @@
                 return unlink($path);
             }
             return false;
+        }
+        
+        /**
+         * If related directories to filename do not exist they are created given force parameter is true.
+         * If filename does not exist the file is created, otherwise the existing file is overwritten unless FILE_APPEND is set.
+         * 
+         * @param string $filename
+         * @param mixed $data
+         * @param bool $force
+         * @param int $flags
+         * @param resource $context
+         * 
+         * @return int
+         */
+        public static function filePutContents($filename, $data, $force = true, $flags = 0, $context = NULL)
+        {
+            if ($force) {
+                $filepathParts = explode(DIRECTORY_SEPARATOR, $filename);
+                $file = array_pop($filepathParts);
+                if (empty($filepathParts[0])) {
+                    array_shift($filepathParts);
+                }
+                $filepath = "";
+                foreach ($filepathParts as $part) {
+                    if (!is_dir($filepath .= DIRECTORY_SEPARATOR . $part)) {
+                        mkdir($filepath);
+                    }
+                }
+            }
+            
+            return file_put_contents($filename, $data, $flags, $context);
         }
     }

@@ -134,7 +134,7 @@
                     }
                 }
             }
-            return $this->set("date", $date);
+            return $this->set("executiveDate", $date);
         }
         
         /**
@@ -143,7 +143,7 @@
         public function getExecutiveDate()
         {
             try {
-                return $this->get("date");
+                return $this->get("executiveDate");
             } catch (\Exception $ex) {
                 throw $ex;
             }
@@ -153,7 +153,7 @@
          * {@inheritdoc}
          */
         public function hasExecutiveDate() {
-            return $this->has("date");
+            return $this->has("executiveDate");
         }
         
         /**
@@ -170,7 +170,7 @@
                     }
                 }
             }
-            return $this->set("time", $time);
+            return $this->set("executiveTime", $time);
         }
         
         /**
@@ -179,7 +179,7 @@
         public function getExecutiveTime()
         {
             try {
-                return $this->get("time");
+                return $this->get("executiveTime");
             } catch (\Exception $ex) {
                 throw $ex;
             }
@@ -189,7 +189,7 @@
          * {@inheritdoc}
          */
         public function hasExecutiveTime() {
-            return $this->has("time");
+            return $this->has("executiveTime");
         }
         
         /**
@@ -200,7 +200,7 @@
             if (!is_string($months)) {
                 throw new \InvalidArgumentException("Months were expected to be passed in as a string.");
             }
-            return $this->set("months", $months);
+            return $this->set("executiveMonths", $months);
         }
         
         /**
@@ -209,7 +209,7 @@
         public function getExecutiveMonths()
         {
             try {
-                return $this->get("months");
+                return $this->get("executiveMonths");
             } catch (\Exception $ex) {
                 throw $ex;
             }
@@ -220,7 +220,7 @@
          */
         public function hasExecutiveMonths()
         {
-            return $this->has("months");
+            return $this->has("executiveMonths");
         }
         
         /**
@@ -231,7 +231,7 @@
             if (!is_string($days)) {
                 throw new \InvalidArgumentException("Days were expected to be passed in as a string.");
             }
-            return $this->set("days", $days);
+            return $this->set("executiveDays", $days);
         }
         
         /**
@@ -240,7 +240,7 @@
         public function getExecutiveDays()
         {
             try {
-                return $this->get("days");
+                return $this->get("executiveDays");
             } catch (\Exception $ex) {
                 throw $ex;
             }
@@ -251,7 +251,7 @@
          */
         public function hasExecutiveDays()
         {
-            return $this->has("days");
+            return $this->has("executiveDays");
         }
         
         /**
@@ -266,7 +266,7 @@
                 case self::SCHEDULE_DAILY:
                 case self::SCHEDULE_WEEKLY:
                 case self::SCHEDULE_MONTHLY:
-                    return $this->set("schedule_type", $scheduleType);
+                    return $this->set("scheduleType", $scheduleType);
                 default:
                     throw new \InvalidArgumentException("Provided schedule type was not a valid option.");
             }
@@ -280,7 +280,7 @@
         public function getScheduleType()
         {
             try {
-                return $this->get("schedule_type");
+                return $this->get("scheduleType");
             } catch (\Exception $ex) {
                 throw $ex;
             }
@@ -289,20 +289,29 @@
         /**
          * {@inheritdoc}
          */
-        public function hasScheduleType() {
-            return $this->has("schedule_type");
+        public function hasScheduleType()
+        {
+            return $this->has("scheduleType");
         }
         
         /**
          * {@inheritdoc}
          */
-        public function getId($creationResult)
+        public function getId()
         {
             try {
                 return $this->get("id");
             } catch (\Exception $ex) {
                 throw $ex;
             }
+        }
+        
+        /**
+         * {@inheritdoc}
+         */
+        public function toArray()
+        {
+            return $this->data;
         }
         
         /**

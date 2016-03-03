@@ -25,8 +25,15 @@
     {
         abstract public static function create($data);
         
+        /**
+         * {@inheritdoc}
+         */
         protected static function validateData($data, $arrayOnly = false)
         {
-            return ArrayLikeValidation::validateData($data, get_class($this), $arrayOnly);
+            try {
+                return ArrayLikeValidation::validateData($data, get_class($this), $arrayOnly);
+            } catch (\InvalidArgumentException $ex) {
+                throw $ex;
+            }
         }
     }

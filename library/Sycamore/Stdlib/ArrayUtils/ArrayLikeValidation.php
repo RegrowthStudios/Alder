@@ -31,6 +31,7 @@
          * 
          * @param mixed $data
          * @param string $class
+         * @param bool $arrayOnly
          * 
          * @return array|\ArrayAccess
          * @throws \InvalidArgumentException

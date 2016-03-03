@@ -195,7 +195,7 @@
         /**
          * Sets the schedule type for this task.
          * 
-         * @param type $scheduleType
+         * @param string $scheduleType
          * 
          * @return self
          * 
@@ -222,14 +222,20 @@
         /**
          * Gets the identifier for this task after creation in OS.
          * 
-         * @todo [Matthew] Consider better way to getId given different method for UNIX-systems/windows.
-         * 
-         * @param string $creationResult
+         * @todo [Matthew] Consider better way to get ID given different method for cron/at/schtask.
          * 
          * @return string
          * 
          * @throws \InvalidArgumentException
          * @throws \Exception
          */
-        public function getId($creationResult);
+        public function getId();
+        
+        /**
+         * Converts the task to an array and returns it. This array is 
+         * compatible with the task factory.
+         * 
+         * @return array
+         */
+        public function toArray();
     }

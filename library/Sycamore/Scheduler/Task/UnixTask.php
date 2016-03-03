@@ -70,6 +70,9 @@
                 // Add job to the command line call.
                 $task .= " -f $filepath";
             } else {
+                // Set the ID for this task.
+                $this->set("id", Rand::getString(16, Rand::ALPHANUMERIC));
+                
                 // Add time components to cron task.
                 if ($this->hasExecutiveTime()) {
                     $time = $this->getExecutiveTime();
@@ -114,35 +117,44 @@
         /**
          * Sets the file handle for this task.
          */
-        protected function setShellFileHandle()
+        public function setShellFileHandle()
         {
-            $this->set("file_handle", Rand::getString(16, Rand::ALPHANUMERIC) . ".sh");
+            $this->set("shellFileHandle", Rand::getString(16, Rand::ALPHANUMERIC) . ".sh");
         }
         
         /**
          * Gets the file handle for this task.
          */
-        protected function getShellFileHandle()
+        public function getShellFileHandle()
         {
-            return $this->get("file_handle");
+            return $this->get("shellFileHandle");
         }
         
         /**
          * Determines if a file handle has already been set for this task.
          */
-        protected function hasShellFileHandle()
+        public function hasShellFileHandle()
         {
-            return $this->has("file_handle");
+            return $this->has("shellFileHandle");
         }
         
         /**
-         * {@inheritdoc}
+         * Sets the ID of the task based on result of creating the task in the OS.
+         * Should ONLY be used for SCHEDULE_ONCE tasks.
+         * 
+         * @param string $creationResult The result of creating the task in the OS shell.
+         * 
+         * @throws \InvalidArgumentException if the creation result parameter is not a string.
+         * @throws \BadMethodCallException if the call is made on a task already set as a SCHEDULE_ONCE task.
          */
-        public function getId($creationResult)
+        public function setId($creationResult)
         {
             if (!is_string($creationResult)) {
                 throw new \InvalidArgumentException("Creation result was expected to be a string.");
             }
-            return explode(" ", $creationResult)[1];
+            if ($this->hasScheduleType() && $this->getScheduleType() != self::SCHEDULE_ONCE) {
+                throw new \BadMethodCallException("Should only set ID for SCHEDULE_ONCE tasks.");
+            }
+            $this->set("id", explode(" ", $creationResult)[1]);
         }
     }

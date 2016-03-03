@@ -47,8 +47,8 @@
     define("DEFAULT_VAL", "CHANGE");
     
     // Define appropriate OS constant.
-    define("UNIX", "UNIX");
-    define("WINDOWS", "WINDOWS");
+    define("UNIX", "Unix");
+    define("WINDOWS", "Windows");
     switch (php_uname("s")) {
         case "FreeBSD":
         case "Linux":

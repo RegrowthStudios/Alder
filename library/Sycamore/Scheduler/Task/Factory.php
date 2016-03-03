@@ -19,3 +19,39 @@
  * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
  */
 
+    namespace Sycamore\Scheduler\Task;
+    
+    use Sycamore\Stdlib\AbstractFactory;
+    
+    class Factory extends AbstractFactory
+    {
+        /**
+         * Creates a task object from the given data based on the OS the server is running in.
+         * 
+         * @param array|\Traversable $data
+         * 
+         * @return \Sycamore\Scheduler\Task\TaskInterface
+         */
+        public static function create($data)
+        {
+            try {
+                $validatedData = static::validateData($data, true);
+            } catch (\InvalidArgumentException $ex) {
+                throw $ex;
+            }
+            
+            $taskClassName = OS . "Task";
+            $task = new $taskClassName();
+            
+            foreach ($validatedData as $key => $value) {
+                $func = "set" . ucfirst($key);
+                if (method_exists($task, $func)) {
+                    $task->{$func}($value);
+                } else {
+                    throw new \InvalidArgumentException("No property, $key, exists in $taskClassName.");
+                }
+            }
+            
+            return $task;
+        }
+    }

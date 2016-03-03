@@ -28,6 +28,16 @@
     
     class Scheduler
     {
+        /**
+         * Adds a set of tasks to the OS schedule.
+         * 
+         * @param array|\Traversable $tasks
+         * 
+         * @return bool
+         * 
+         * @throws \InvalidArgumentException if tasks are not in array-like form or if any 
+         * individual task is not an instance of the task interface.
+         */
         public static function addTasks(& $tasks)
         {
             // Ensure tasks are in array-like form.

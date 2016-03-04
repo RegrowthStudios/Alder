@@ -226,10 +226,16 @@
          * 
          * @return string
          * 
-         * @throws \InvalidArgumentException
          * @throws \Exception
          */
         public function getId();
+        
+        /**
+         * Determines if the ID has been set.
+         * 
+         * @returns bool
+         */
+        public function hasId();
         
         /**
          * Converts the task to an array and returns it. This array is 

@@ -42,7 +42,7 @@
         {
             // Ensure tasks are in array-like form.
             try {
-                $validTasks = ArrayLikeValidation::validateData($task, get_class($this), true);
+                $validTasks = ArrayLikeValidation::validateData($tasks, get_class($this), true);
             } catch (\InvalidArgumentException $ex) {
                 throw $ex;
             }
@@ -115,7 +115,52 @@
             return true;
         }
         
-        // TODO(Matthew): Add removeTask and removeCronTask functions.
+        public function removeTasks(& $tasks)
+        {
+            // Ensure tasks are in array-like form.
+            try {
+                $validTasks = ArrayLikeValidation::validateData($tasks, get_class($this), true);
+            } catch (\InvalidArgumentException $ex) {
+                throw $ex;
+            }
+            
+            // Ensure individual tasks are of valid type.
+            foreach ($validTasks as $validTask) {
+                if (!$validTask instanceof TaskInterface) {
+                    throw new \InvalidArgumentException("A task was not an instance of a TaskInterface");
+                } else if (!$validTask->hasId()) {
+                    throw new \InvalidTaskException("The task provided has no ID, therefore cannot be removed.");
+                }
+            }
+            
+            // Add tasks given all are valid.
+            foreach ($validTasks as $validTask) {
+                try {
+                    static::removeTask($validTask);
+                } catch (\InvalidTaskException $ex) {
+                    throw $ex; // Should NOT get here.
+                }
+            }
+            
+            // Return true on success.
+            return true;
+        }
+        
+        public function removeTask(TaskInterface&  $task)
+        {
+            // Attempt to grab task ID.
+            try {
+                $id = $task->getId();
+            } catch (\Exception $ex) {
+                throw new \InvalidTaskException("The task provided has no ID, therefore cannot be removed.");
+            }
+            
+            
+        }
+        
+        public function removeCronTask(TaskInterface& $task)
+        {
+        }
         
         /**
          * Constructs and returns the crontab filepath for the given crontab ID.

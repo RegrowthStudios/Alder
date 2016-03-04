@@ -309,6 +309,14 @@
         /**
          * {@inheritdoc}
          */
+        public function hasId()
+        {
+            return $this->has("id");
+        }
+        
+        /**
+         * {@inheritdoc}
+         */
         public function toArray()
         {
             return $this->data;

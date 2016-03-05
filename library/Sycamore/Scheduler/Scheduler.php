@@ -26,8 +26,6 @@
     use Sycamore\Scheduler\Adapter\WindowsAdapter;
     use Sycamore\Scheduler\Task\TaskInterface;
     use Sycamore\Stdlib\ArrayUtils\ArrayLikeValidation;
-    use Sycamore\OS\FileSystem;
-    use Sycamore\OS\Shell;
     
     class Scheduler
     {
@@ -36,27 +34,28 @@
          *
          * @var \Sycamore\Scheduler\AdapterInterface
          */
-        protected $taskCreator;
+        protected $adapter;
         
         public function __construct($adapter = NULL)
         {
             if ($adapter instanceof AdapterInterface) {
-                $taskCreator = $adapter;
+                $taskAdapter = $adapter;
             } else if (is_string($adapter)) {
                 if (class_exists($adapter)) {
-                    $taskCreator = new $adapter();
+                    $taskAdapter = new $adapter();
                 } else {
                     throw new \InvalidArgumentException("The scheduler adapter class name provided does not map to an existing adapter.");
                 }
             } else {
                 if (OS == WINDOWS) {
-                    $taskCreator = new WindowsAdapter();
+                    $taskAdapter = new WindowsAdapter();
                 } else {
                     // Not definitely UNIX or UNIX-like, but probably.
                     // TODO(Matthew): Consider safer solution than assuming non Windows is always UNIX or UNIX-like.
-                    $taskCreator = new UnixAdapter();
+                    $taskAdapter = new UnixAdapter();
                 }
             }
+            $this->adapter = $taskAdapter;
         }
         
         /**
@@ -103,45 +102,7 @@
          */
         public function addTask(TaskInterface& $task)
         {
-//            // Ensure GB-styled dates and times work as expected.
-//            setlocale(LC_TIME, "en_GB");
-//            // Add task as per the type of task.
-//            if (OS == WINDOWS || $task->getScheduleType() == TaskInterface::SCHEDULE_ONCE) {
-//                $result = Shell::execute($task->getTask());
-//            } else {
-//                static::addCronTask($task);
-//            }
-            $this->taskCreator->addTask($task);
-            
-            // Return true on success.
-            return true;
-        }
-        
-        /**
-         * Adds the provided cron task to the crontab.
-         * 
-         * @param TaskInterface $task
-         * 
-         * @return bool
-         */
-        protected function addCronTask(TaskInterface& $task)
-        {
-            // Get task string and ID.
-            $taskStr = $task->getTask();
-            $id = $task->getId();
-            
-            // Construct filepath for crontab.
-            $filepath = static::getCrontabFilepath($id);
-            
-            // Put task into file.
-            FileSystem::filePutContents($filepath, $taskStr);
-            
-            // Apply file as crontab.
-            $applyCronTaskCmd = "crontab $filepath";
-            Shell::execute($applyCronTaskCmd);
-            
-            // Delete file.
-            unlink($filepath);
+            $this->adapter->addTask($task);
             
             // Return true on success.
             return true;
@@ -178,31 +139,24 @@
             return true;
         }
         
+        /**
+         * Removes the provied task from the OS.
+         * 
+         * @param \Sycamore\Scheduler\Task\TaskInterface $task The task to be removed.
+         * 
+         * @return boolean True if successful (only result for now).
+         * 
+         * @throws \InvalidTaskException if the task provided has no ID (i.e. has not been added to the OS).
+         */
         public function removeTask(TaskInterface&  $task)
         {
             // Attempt to grab task ID.
-            try {
-                $id = $task->getId();
-            } catch (\Exception $ex) {
+            if (!$task->hasId()) {
                 throw new \InvalidTaskException("The task provided has no ID, therefore cannot be removed.");
             }
             
+            $this->adapter->removeTask($task);
             
-        }
-        
-        public function removeCronTask(TaskInterface& $task)
-        {
-        }
-        
-        /**
-         * Constructs and returns the crontab filepath for the given crontab ID.
-         * 
-         * @param string $id
-         * 
-         * @return string
-         */
-        protected function getCrontabFilepath($id)
-        {
-            return TEMP_DIRECTORY . "/crontab/" . $id . ".txt";
+            return true;
         }
     }

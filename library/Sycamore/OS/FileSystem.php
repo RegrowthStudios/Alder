@@ -28,10 +28,10 @@
          * Delete a directory if empty or directory and contents if force flag is true.
          * If the path points directly to a file, that file will be deleted.
          * 
-         * @param string $path
-         * @param bool $force
+         * @param string $path The path of the directory to delete.
+         * @param bool $force Whether the directory should be deleted when it contains contents.
          * 
-         * @return boolean
+         * @return boolean True if delete was succesful, false otherwise.
          */
         public static function delete($path, $force = false)
         {
@@ -54,15 +54,15 @@
          * If related directories to filename do not exist they are created given force parameter is true.
          * If filename does not exist the file is created, otherwise the existing file is overwritten unless FILE_APPEND is set.
          * 
-         * @param string $filename
-         * @param mixed $data
-         * @param bool $force
-         * @param int $flags
-         * @param resource $context
+         * @param string $filename The filename into which to put contents.
+         * @param mixed $data The data to be put into the file.
+         * @param int $flags Flags to use. E.g. FILE_APPEND.
+         * @param bool $force Whether to create necessary directories.
+         * @param resource $context A valid context resource created with <b>stream_context_create</b>.
          * 
-         * @return int
+         * @return int The number of bytes written to the file or false on failure.
          */
-        public static function filePutContents($filename, $data, $force = true, $flags = 0, $context = NULL)
+        public static function filePutContents($filename, $data, $flags = 0, $force = true, $context = NULL)
         {
             if ($force) {
                 $filepathParts = explode(DIRECTORY_SEPARATOR, $filename);

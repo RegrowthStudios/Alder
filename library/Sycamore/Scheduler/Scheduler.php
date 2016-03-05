@@ -21,6 +21,9 @@
 
     namespace Sycamore\Scheduler;
     
+    use Sycamore\Scheduler\Adapter\AdapterInterface;
+    use Sycamore\Scheduler\Adapter\UnixAdapter;
+    use Sycamore\Scheduler\Adapter\WindowsAdapter;
     use Sycamore\Scheduler\Task\TaskInterface;
     use Sycamore\Stdlib\ArrayUtils\ArrayLikeValidation;
     use Sycamore\OS\FileSystem;
@@ -28,6 +31,34 @@
     
     class Scheduler
     {
+        /**
+         * Stores the adapter appropriate for the given OS.
+         *
+         * @var \Sycamore\Scheduler\AdapterInterface
+         */
+        protected $taskCreator;
+        
+        public function __construct($adapter = NULL)
+        {
+            if ($adapter instanceof AdapterInterface) {
+                $taskCreator = $adapter;
+            } else if (is_string($adapter)) {
+                if (class_exists($adapter)) {
+                    $taskCreator = new $adapter();
+                } else {
+                    throw new \InvalidArgumentException("The scheduler adapter class name provided does not map to an existing adapter.");
+                }
+            } else {
+                if (OS == WINDOWS) {
+                    $taskCreator = new WindowsAdapter();
+                } else {
+                    // Not definitely UNIX or UNIX-like, but probably.
+                    // TODO(Matthew): Consider safer solution than assuming non Windows is always UNIX or UNIX-like.
+                    $taskCreator = new UnixAdapter();
+                }
+            }
+        }
+        
         /**
          * Adds a set of tasks to the OS schedule.
          * 
@@ -38,7 +69,7 @@
          * @throws \InvalidArgumentException if tasks are not in array-like form or if any 
          * individual task is not an instance of the task interface.
          */
-        public static function addTasks(& $tasks)
+        public function addTasks(& $tasks)
         {
             // Ensure tasks are in array-like form.
             try {
@@ -70,16 +101,17 @@
          * 
          * @return bool
          */
-        public static function addTask(TaskInterface& $task)
+        public function addTask(TaskInterface& $task)
         {
-            // Ensure GB-styled dates and times work as expected.
-            setlocale(LC_TIME, "en_GB");
-            // Add task as per the type of task.
-            if (OS == WINDOWS || $task->getScheduleType() == TaskInterface::SCHEDULE_ONCE) {
-                $result = Shell::execute($task->getTask());
-            } else {
-                static::addCronTask($task);
-            }
+//            // Ensure GB-styled dates and times work as expected.
+//            setlocale(LC_TIME, "en_GB");
+//            // Add task as per the type of task.
+//            if (OS == WINDOWS || $task->getScheduleType() == TaskInterface::SCHEDULE_ONCE) {
+//                $result = Shell::execute($task->getTask());
+//            } else {
+//                static::addCronTask($task);
+//            }
+            $this->taskCreator->addTask($task);
             
             // Return true on success.
             return true;
@@ -92,7 +124,7 @@
          * 
          * @return bool
          */
-        protected static function addCronTask(TaskInterface& $task)
+        protected function addCronTask(TaskInterface& $task)
         {
             // Get task string and ID.
             $taskStr = $task->getTask();
@@ -169,7 +201,7 @@
          * 
          * @return string
          */
-        protected static function getCrontabFilepath($id)
+        protected function getCrontabFilepath($id)
         {
             return TEMP_DIRECTORY . "/crontab/" . $id . ".txt";
         }

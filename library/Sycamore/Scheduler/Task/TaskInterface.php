@@ -41,6 +41,17 @@
         public function getTask();
         
         /**
+         * Returns the command to remove this task, or false if
+         * the task removal reqires more work than just the execution
+         * of a command (e.g. crontab).
+         * 
+         * @return string
+         * 
+         * @throws \Exception
+         */
+        public function getTaskRm();
+        
+        /**
          * Sets the task string to be exactly the given string.
          * 
          * @param string $task

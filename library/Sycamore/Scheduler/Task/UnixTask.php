@@ -24,11 +24,26 @@
     use Sycamore\OS\FileSystem;
     use Sycamore\Scheduler\Exception\MissingExecuteTimeException;
     use Sycamore\Scheduler\Exception\MissingDataException;
+    use Sycamore\Scheduler\Exception\UnusedTaskException;
     use Sycamore\Scheduler\Task\AbstractTask;
     use Sycamore\Stdlib\Rand;
     
     class UnixTask extends AbstractTask
     {
+        /**
+         * {@inheritdoc}
+         */
+        public function getTaskRm()
+        {
+            if (!$this->hasId()) {
+                throw new UnusedTaskException("Task has not been used yet, so no ID to construct a remove command with.");
+            }
+            if ($this->getScheduleType() != self::SCHEDULE_ONCE) {
+                return false;
+            }
+            return "atrm {$this->getId()}";
+        }
+        
         /**
          * {@inheritdoc}
          */
@@ -49,7 +64,7 @@
             if ($st == self::SCHEDULE_ONCE) {
                 $task = $this->constructAtTaskString();
             } else {
-                $task = $this->constructAtCronTaskString();
+                $task = $this->constructCronTaskString();
             }
             
             // Set the modified state to false.
@@ -59,6 +74,11 @@
             $this->task = $task;
         }
         
+        /**
+         * Construct the at command for the task.
+         * 
+         * @return string The resulting at command.
+         */
         protected function constructAtTaskString()
         {
             $task = "at ";
@@ -82,13 +102,20 @@
 
             // Add job to the command line call.
             $task .= " -f $filepath";
+            
+            return $task;
         }
         
-        protected function constructAtCronTaskString()
+        /**
+         * Construct the crontab task string for the task.
+         * 
+         * @return string The resulting crontab task string.
+         */
+        protected function constructCronTaskString()
         {
             // Set the ID for this task.
-            $this->set("id", Rand::getString(16, Rand::ALPHANUMERIC));
-
+            $this->set("id", uniqid(Rand::getString(5, Rand::ALPHANUMERIC)));
+            
             // Add time components to cron task.
             if ($this->hasExecutiveTime()) {
                 $time = $this->getExecutiveTime();
@@ -122,6 +149,8 @@
 
             // Add job.
             $task .= $this->getJob();
+            
+            return $task;
         }
         
         /**

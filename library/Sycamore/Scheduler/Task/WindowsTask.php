@@ -23,6 +23,7 @@
     
     use Sycamore\Scheduler\Exception\MissingDataException;
     use Sycamore\Scheduler\Exception\MissingExecuteTimeException;
+    use Sycamore\Scheduler\Exception\UnusedTaskException;
     use Sycamore\Scheduler\Task\AbstractTask;
     use Sycamore\Stdlib\Rand;
     
@@ -40,6 +41,17 @@
         /**
          * {@inheritdoc}
          */
+        public function getTaskRm()
+        {
+            if (!$this->hasId()) {
+                throw new UnusedTaskException("Task has not been used yet, so no ID to construct a remove command with.");
+            }
+            return "schtasks /Delete /Tn {$this->getId()} /F";
+        }
+        
+        /**
+         * {@inheritdoc}
+         */
         protected function buildTask()
         {
             if (!$this->hasScheduleType()
@@ -51,7 +63,7 @@
             }
             
             // Set the ID for this task.
-            $this->set("id", Rand::getString(16, Rand::ALPHANUMERIC));
+            $this->set("id", uniqid(Rand::getString(5, Rand::ALPHANUMERIC)));
             
             // Get the schedule type.
             $st = $this->getScheduleType();

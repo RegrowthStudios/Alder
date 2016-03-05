@@ -31,8 +31,7 @@
          * 
          * @return mixed Returns NULL if no output or an error occurred, otherwise the output of the executed command.
          * 
-         * @throws \InvalidArgumentException
-         * @throws \Exception
+         * @throws \InvalidArgumentException if command is not a string.
          */
         public static function execute($command, array& $output = NULL, & $returnVar = NULL, $dir = APP_DIRECTORY, $captureStdErr = true)
         {

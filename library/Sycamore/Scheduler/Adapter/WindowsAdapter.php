@@ -34,10 +34,14 @@
             // Ensure GB-styled dates and times work as expected.
             setlocale(LC_TIME, "en_GB");
             
-            
+            // Add task via shell.
+            $result = Shell::execute($task->getTask());
             
             // Reset to default locale afterwards.
             setlocale(LC_TIME, "");
+            
+            // Return result of execution of task.
+            return $result;
         }
         
         /**
@@ -45,6 +49,10 @@
          */
         public function removeTask(\Sycamore\Scheduler\Task\TaskInterface $task)
         {
+            // Remove task via shell.
+            $result = Shell::execute($task->getTaskRm());
             
+            // Return result of execution of task removal.
+            return $result;
         }
     }

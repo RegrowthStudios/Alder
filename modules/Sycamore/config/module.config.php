@@ -20,8 +20,6 @@
     namespace Sycamore;
     
     return array (
-        // TODO(Matthew): Get order write so api_XXX_index overwrites api_XXX.
-        // TODO(Matthew): Investigate more dynamic route construction (vs. performance).
         "router" => array (
             "routes" => array (
                 "api_user" => array (
@@ -54,6 +52,18 @@
                         ),
                     ),
                 ),
+            ),
+        ),
+        "service_manager" => array (
+            "factories" => array (
+                "Zend\Db\Adapter\Adapter" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                    $config = $serviceManager->get("Config")["Sycamore"];
+                    $adapter = new \Zend\Db\Adapter\Adapter($config["db"]["adapter"]);
+                    
+                    \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter($adapter);
+                    
+                    return $adapter;
+                },
             ),
         ),
         "controllers" => array (

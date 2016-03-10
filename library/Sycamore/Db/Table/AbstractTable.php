@@ -22,13 +22,13 @@
     namespace Sycamore\Db\Table;
     
     use Sycamore\Cache\CacheUtils;
-    use Sycamore\Db\Row\AbstractRow;
+    use Sycamore\Db\Row\AbstractRowInterface;
     
     use Zend\Db\TableGateway\AbstractTableGateway;
     use Zend\Db\TableGateway\Feature\FeatureSet;
     use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
+    use Zend\Db\ResultSet\ResultSet;
     use Zend\ServiceManager\ServiceManager;
-    use Zend\Db\ResultSet\ResultSetInterface;
     
     class AbstractTable extends AbstractTableGateway
     {
@@ -45,10 +45,8 @@
          * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this application instance.
          * @param string $table The name of the table for this instance.
          * @param \Zend\Db\ResultSet\ResultSetInterface $row The row object to construct with results of queries.
-         * 
-         * @throws \InvalidArgumentException if row is not a string or instance of \Zend\Db\RowGateway\RowGatewayInterface.
          */
-        public function __construct(ServiceManager& $serviceManager, $table, ResultSetInterface& $resultSetPrototype = null)
+        public function __construct(ServiceManager& $serviceManager, $table, AbstractRowInterface& $row = NULL)
         {
             // Set service manager for this table gateway instance.
             $this->serviceManager = $serviceManager;
@@ -62,7 +60,10 @@
             $this->featureSet->addFeature(new GlobalAdapterFeature());
             
             // Set the result set prototype as provided as as generic if none provided.
-            $this->resultSetPrototype = ($resultSetPrototype) ?: new ResultSet();
+            $this->resultSetPrototype = new ResultSet();
+            if ($row) {
+                $this->resultSetPrototype->setArrayObjectPrototype($row);
+            }
             
             // Initialise the table gateway. Sets up SQL object 
             $this->initialize();

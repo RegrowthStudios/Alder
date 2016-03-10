@@ -17,9 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+    // Dynamically determine modules installed.
     $moduleDirs = glob(MODULES_DIRECTORY."/*", GLOB_ONLYDIR);
     foreach($moduleDirs as $key => $moduleDir) {
-        $moduleDirs[$key] = end(explode("/", $moduleDir));
+        $explode = explode("/", $moduleDir);
+        $moduleDirs[$key] = end($explode);
     }
     
     return array (
@@ -35,7 +37,7 @@
             "config_cache_key" => "sycamore_config",
             "module_map_cache_enabled" => (ENV == PRODUCTION),
             "module_map_cache_key" => "sycamore_module_map",
-            "cache_dir" => APP_DIRECTORY . "/cache/config",
+            "cache_dir" => CACHE_DIRECTORY . "/config",
             "check_dependencies" => (ENV != PRODUCTION),
         ),
     );

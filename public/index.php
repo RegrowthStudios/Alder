@@ -32,6 +32,7 @@
     define("CONFIG_DIRECTORY", APP_DIRECTORY."/config");
     define("LOGS_DIRECTORY", APP_DIRECTORY."/logs");
     define("TEMP_DIRECTORY", APP_DIRECTORY."/temp");
+    define("CACHE_DIRECTORY", APP_DIRECTORY."/cache");
     define("SYCAMORE_LIBRARY_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
     
     // Define possible ENV states.
@@ -92,7 +93,10 @@
         Logger::registerExceptionHandler($errorLogger);
 
         // Initialise application.
-        $request = Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"))->run()->getRequest();
+        $application = Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"));
+        $application->getServiceManager()->setService("ErrorLogger", $errorLogger);
+        $request = $application->getRequest();
+        $application->run();
 
         // Store the resulting timing if not in production.
         if (ENV != PRODUCTION) {

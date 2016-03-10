@@ -19,7 +19,7 @@
 
     namespace Sycamore\Stdlib;
     
-    use Sycamore\Stdlib\ArrayUtils\ArrayLikeValidation;
+    use Sycamore\Stdlib\ArrayUtils;
     
     abstract class AbstractFactory
     {
@@ -31,7 +31,7 @@
         protected static function validateData($data, $arrayOnly = false)
         {
             try {
-                return ArrayLikeValidation::validateData($data, get_class($this), $arrayOnly);
+                return ArrayUtils::validateArrayLike($data, get_class($this), $arrayOnly);
             } catch (\InvalidArgumentException $ex) {
                 throw $ex;
             }

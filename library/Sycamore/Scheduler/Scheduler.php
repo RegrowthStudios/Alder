@@ -25,7 +25,7 @@
     use Sycamore\Scheduler\Adapter\UnixAdapter;
     use Sycamore\Scheduler\Adapter\WindowsAdapter;
     use Sycamore\Scheduler\Task\TaskInterface;
-    use Sycamore\Stdlib\ArrayUtils\ArrayLikeValidation;
+    use Sycamore\Stdlib\ArrayUtils;
     
     class Scheduler
     {
@@ -72,7 +72,7 @@
         {
             // Ensure tasks are in array-like form.
             try {
-                $validTasks = ArrayLikeValidation::validateData($tasks, get_class($this), true);
+                $validTasks = ArrayUtils::validateArrayLike($tasks, get_class($this), true);
             } catch (\InvalidArgumentException $ex) {
                 throw $ex;
             }
@@ -112,7 +112,7 @@
         {
             // Ensure tasks are in array-like form.
             try {
-                $validTasks = ArrayLikeValidation::validateData($tasks, get_class($this), true);
+                $validTasks = ArrayUtils::validateArrayLike($tasks, get_class($this), true);
             } catch (\InvalidArgumentException $ex) {
                 throw $ex;
             }

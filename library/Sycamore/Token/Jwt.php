@@ -20,7 +20,7 @@
     namespace Sycamore\Token;
     
     use Sycamore\Application;
-    use Sycamore\Stdlib\ArrayUtils\ArrayLikeValidation;
+    use Sycamore\Stdlib\ArrayUtils;
     
     use Lcobucci\JWT\Signer\Key;
     use Lcobucci\JWT\Parser;
@@ -200,7 +200,7 @@
          */
         public function validate($data)
         {
-            $verifiedData = ArrayLikeValidation::validateData($data, get_class($this));
+            $verifiedData = ArrayUtils::validateArrayLike($data, get_class($this));
             
             // Acquire signing method or fail.
             $signMethod = Application::getConfig()->security->tokenHashAlgorithm;

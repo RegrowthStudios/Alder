@@ -22,7 +22,7 @@
      */
     return array (
         "Sycamore" => array (
-            "application_title" => "Example", // Title of the application.
+            "applicationTitle" => "Example", // Title of the application.
             "attachment" => array ( /* Attachment Details */
                 "directory" => APP_DIRECTORY . "/attachments/",
                 "checkMimeType" => true,
@@ -30,18 +30,28 @@
             "cache" => array ( /* Cache Details */
                 "namespace" => "sycamore_cache", // Namespace in which all application data is cached.
                 "timeToLive" => 1800/*30 Mins*/, // How long does the data live for in cache?
-            ),
-            "cron" => array ( /* Cron Details */
-                "directory" => APP_DIRECTORY . "/cron/", // Location where temporary cron files are stored.
+                "adapter" => "memcache", // Name of the type of cache to use.
+                "plugins" => array ( /* Cache Plugin Details */
+                    "clearExpired" => array ( /* Cache Clearing Plugin */
+                        "clearingFactor" => 100, // The probability that the clearing function will be called on a caching operation (1/n, where n is the value here).
+                    ),
+                    "ignoreUserAbort" => array ( /* User Abort Plugin */
+                        "exitOnAbort" => false, // Whether the cache script should be aborted on user closing connection with server.
+                    ),
+                    "optimise" => array ( /* Optimisation Plugin */
+                        "optimisingFactor" => 100, // The probability that the optimisation function will be called on a caching operation (1/n, where n is the value here).
+                    )
+                ),
             ),
             "db" => array ( /* Database Details */
-                "driver" => "pdo_mysql", // The driver to use for database interfacing.
-                "params" => array (
-                    "host" => "localhost", // The host of the database.
-                    "port" => "3306", // The port to connect to the database via.
-                    "username" => "", // The username to connect to the database with.
-                    "password" => "", // The password to connect to the database with.
-                    "dbname" => "" // The name of the database.
+                "adapter" => array (
+                    "driver" => "Pdo_Mysql", // The driver of the database. Values: "Mysqli", "Sqlsrv", "Pdo_Sqlite", "Pdo_Mysql",...
+                    "database" => "", // The name of the database for the Sycamore application.
+                    "host" => "localhost", // The host IP of the database.
+                    "port" => "3306", // The port over which to connect to the database.
+                    "username" => "", // The username with which to connect to the database.
+                    "password" => "", // The password with which to connect to the database.
+                    "charset" => "utf8", // The charset to use in communicating with database.
                 ),
                 "tablePrefix" => "",
             ),

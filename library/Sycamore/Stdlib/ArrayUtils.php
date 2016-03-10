@@ -62,4 +62,24 @@
             }
             return false;
         }
+        
+        public static function recursiveAsort(& $array)
+        {
+            foreach ($array as & $value) {
+                if (is_array($value)) {
+                    static::recursiveAsort($value);
+                }
+            }
+            return asort($array);
+        }
+        
+        public static function recursiveKsort(& $array)
+        {
+            foreach ($array as & $value) {
+                if (is_array($value)) {
+                    static::recursiveAsort($value);
+                }
+            }
+            return ksort($array);
+        }
     }

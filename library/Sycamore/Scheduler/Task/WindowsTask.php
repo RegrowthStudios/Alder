@@ -25,7 +25,7 @@
     use Sycamore\Scheduler\Exception\MissingExecuteTimeException;
     use Sycamore\Scheduler\Exception\UnusedTaskException;
     use Sycamore\Scheduler\Task\AbstractTask;
-    use Sycamore\Stdlib\Rand;
+    use Sycamore\Stdlib\UniqueID;
     
     class WindowsTask extends AbstractTask
     {
@@ -63,7 +63,7 @@
             }
             
             // Set the ID for this task.
-            $this->set("id", uniqid(Rand::getString(5, Rand::ALPHANUMERIC)));
+            $this->set("id", UniqueID::generate());
             
             // Get the schedule type.
             $st = $this->getScheduleType();

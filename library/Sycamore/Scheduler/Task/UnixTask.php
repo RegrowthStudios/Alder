@@ -26,7 +26,7 @@
     use Sycamore\Scheduler\Exception\MissingDataException;
     use Sycamore\Scheduler\Exception\UnusedTaskException;
     use Sycamore\Scheduler\Task\AbstractTask;
-    use Sycamore\Stdlib\Rand;
+    use Sycamore\Stdlib\UniqueID;
     
     class UnixTask extends AbstractTask
     {
@@ -114,7 +114,7 @@
         protected function constructCronTaskString()
         {
             // Set the ID for this task.
-            $this->set("id", uniqid(Rand::getString(5, Rand::ALPHANUMERIC)));
+            $this->set("id", UniqueID::generate());
             
             // Add time components to cron task.
             if ($this->hasExecutiveTime()) {

@@ -19,14 +19,17 @@
 
     namespace Sycamore;
     
+    use Sycamore\Cache\TableCache;
     use Sycamore\Serialiser\API;
     
+    use Zend\Cache\Storage\Plugin;
+    use Zend\Cache\StorageFactory;
     use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
     use Zend\ModuleManager\Feature\ConfigProviderInterface;
     use Zend\Mvc\Application;
     use Zend\Mvc\ModuleRouteListener;
     use Zend\Mvc\MvcEvent;
-    use Zend\View\Model\JsonModel;
+    use Zend\ServiceManager\ServiceManager;
     
     /**
      * Module class for Sycamore.
@@ -53,7 +56,9 @@
             $moduleRouteListener->attach($eventManager);
             
             $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, array ($this, "onDispatchError"), 10);
-            //$eventManager->attach(MvcEvent::EVENT_RENDER_ERROR, array ($this, "onRenderError"), 10);
+            
+            $serviceManager = $e->getApplication()->getServiceManager();
+            $this->prepareServices($serviceManager);
         }
         
         // TODO(Matthew): Use a language object for strings presented to user.
@@ -68,13 +73,18 @@
         {
             $e->stopPropagation();
             $response = $e->getResponse();
+            $exception = $e->getParam("exception");
             if ($e->getError() == Application::ERROR_ROUTER_NO_MATCH) {
                 $response->setStatusCode(404);
                 $response->setContent(API::encode(["error" => "No route match was found for the given URI."]));
             } else if ($e->getError() == Application::ERROR_CONTROLLER_NOT_FOUND 
                     || $e->getError() == Application::ERROR_CONTROLLER_INVALID
                     || $e->getError() == Application::ERROR_CONTROLLER_CANNOT_DISPATCH
-                    || $e->getError() == Application::ERROR_EXCEPTION) {
+                    || $e->getError() == Application::ERROR_EXCEPTION
+                    || $exception) {
+                if ($exception) {
+                    $e->getApplication()->getServiceManager()->get("Logger")->crit($exception);
+                }
                 $response->setStatusCode(500);
                 if (ENV != PRODUCTION) {
                     $response->setContent(API::encode(["error" => "A critical error: \n    " . $e->getError() . "\nhas occurred in processing this request. Please contact the service provider."]));
@@ -84,19 +94,7 @@
             }
             return $response;
         }
-        
-//        /**
-//         * Returns a JSON model of the render error in the provided event. Returns void if no error exists.
-//         * 
-//         * @param MvcEvent $e
-//         * 
-//         * @return mixed
-//         */
-//        public function onRenderError(\Zend\Mvc\MvcEvent $e)
-//        {
-//            return $this->getJsonModelError($e);
-//        }
-        
+                
         /**
          * Returns an array of configuration options for the module.
          * 
@@ -121,5 +119,71 @@
                     )
                 )
             );
+        }
+        
+        /**
+         * Prepares all of the services required by the Sycamore module.
+         * 
+         * @param ServiceManager $serviceManager The service manager to attach the created services to.
+         */
+        protected function prepareServices(ServiceManager& $serviceManager)
+        {
+            $this->createDatabaseCacheService($serviceManager);
+            $this->createSycamoreTableCacheService($serviceManager);
+        }
+        
+        /**
+         * Creates the database caching service.
+         * 
+         * @param ServiceManager $serviceManager The service manager to attach the database caching services to.
+         */
+        protected function createDatabaseCacheService(ServiceManager& $serviceManager)
+        {
+            $cacheConfig = $serviceManager->get("Config")["Sycamore"]["cache"];
+            
+            $cache = StorageFactory::factory(array (
+                "adapter" => $cacheConfig["adapter"],
+                "options" => array (
+                    "ttl" => $cacheConfig["timeToLive"],
+                ),
+                "namespace" => $cacheConfig["namespace"]
+            ));
+            
+            $pluginsConfig = $cacheConfig["plugins"];
+            
+            $clearExpired = new Plugin\ClearExpiredByFactor();
+            $clearExpired->setOptions(array (
+                "clearing_factor" => $pluginsConfig["clearExpired"]["clearingFactor"]
+            ));
+            $cache->addPlugin($clearExpired);
+            
+            $ignoreUserAbort = new Plugin\IgnoreUserAbort();
+            $ignoreUserAbort->setOptions(array (
+                "exit_on_abort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"]
+            ));
+            $cache->addPlugin($ignoreUserAbort);
+            
+            $optimise = new Plugin\OptimizeByFactor();
+            $optimise->setOptions(array (
+                "optimizing_factor" => $pluginsConfig["optimise"]["optimisingFactor"]
+            ));
+            $cache->addPlugin($optimise);
+            
+            $serialiser = new Plugin\Serializer();
+            $cache->addPlugin($serialiser);
+            
+            $serviceManager->setService("DbCache", $cache);
+        }
+        
+        /**
+         * Creates the Sycamore table caching service.
+         * 
+         * @param ServiceManager $serviceManager The service manager to attach the Sycamore table caching services to.
+         */
+        protected function createSycamoreTableCacheService(ServiceManager& $serviceManager)
+        {
+            $tableCache = new TableCache("Sycamore\\Table\\");
+            
+            $serviceManager->setService("SycamoreTableCache", $tableCache);
         }
     }

@@ -63,6 +63,15 @@
             return false;
         }
         
+        /**
+         * Recursively asorts the given array.
+         * 
+         * @uses asort
+         * 
+         * @param array $array The array to be sorted.
+         * 
+         * @return bool True on success, False on failure.
+         */
         public static function recursiveAsort(& $array)
         {
             foreach ($array as & $value) {
@@ -73,6 +82,15 @@
             return asort($array);
         }
         
+        /**
+         * Recursively ksorts the given array.
+         * 
+         * @uses ksort
+         * 
+         * @param array $array The array to be sorted.
+         * 
+         * @return bool True on success, False on failure.
+         */
         public static function recursiveKsort(& $array)
         {
             foreach ($array as & $value) {
@@ -81,5 +99,37 @@
                 }
             }
             return ksort($array);
+        }
+        
+        /**
+         * Checks data is array-like, and returns as an array-accessible type.
+         * 
+         * @param mixed $data
+         * @param string $class
+         * @param bool $arrayOnly
+         * 
+         * @return array|\ArrayAccess
+         * @throws \InvalidArgumentException
+         */
+        public static function validateArrayLike($data, $class, $arrayOnly = false)
+        {
+            if (is_array($data)) {
+                return $data;
+            }
+            
+            if ($data instanceof \Traversable) {
+                $data = ArrayUtils::iteratorToArray($data);
+                return $data;
+            }
+            
+            if ($arrayOnly) {
+                throw new \InvalidArgumentException($class . "expected an array or \Traversable object.");
+            }
+            
+            if (!$data instanceof \ArrayAccess) {
+                throw new \InvalidArgumentException($class . " expected an array, or object that implemens \Traversable or \ArrayAccess.");
+            }
+            
+            return $data;
         }
     }

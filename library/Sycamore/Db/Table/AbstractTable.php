@@ -30,19 +30,33 @@
     use Zend\Db\ResultSet\ResultSet;
     use Zend\ServiceManager\ServiceManager;
     
-    class AbstractTable extends AbstractTableGateway
+    /**
+     * Sycamore-specific implementation of Zend's abstract table gateway.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     * @abstract
+     */
+    abstract class AbstractTable extends AbstractTableGateway
     {
         /**
-         * The service manager for this application instance. 
+         * The service manager for this application instance.
          *
          * @var \Zend\ServiceManager\ServiceManager
          */
         protected $serviceManager;
         
         /**
+         * Collection of allowed keys for this table.
+         *
+         * @var array
+         */
+        protected $allowedKeys = array();
+        
+        /**
          * Prepares the table with the DB adapter and local settings.
          * 
-         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this application instance.
+         * @param \Zend\ServiceManager\ServiceManager $serviceManager The service manager for this application instance.
          * @param string $table The name of the table for this instance.
          * @param \Zend\Db\ResultSet\ResultSetInterface $row The row object to construct with results of queries.
          */

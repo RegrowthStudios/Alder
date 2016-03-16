@@ -21,12 +21,20 @@
 
     namespace Sycamore\Db\Row;
     
+    /**
+     * Interface setting out contract for all row objects.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     interface AbstractRowInterface
     {
         /**
-         * Enters the data provided into the row instance.
+         * Enters the data provided into the row instance, exchaning it for the old data.
          * 
          * @param array|\Traversable $data The data to be exchanged into the row instance.
+         * 
+         * @return array The old data of this row instance.
          * 
          * @throws \InvalidArgumentException if data provided is not an array.
          */

@@ -27,11 +27,14 @@
         
         protected $tables = array();
         
-        public function __construct($namespace)
+        protected $serviceManager;
+        
+        public function __construct(ServiceManager& $serviceManager, $namespace)
         {
             if (!is_string($namespace)) {
                 throw new \InvalidArgumentException("The namespace provided must be a string!");
             }
+            $this->serviceManager = $serviceManager;
             $this->namespace = $namespace;
         }
         
@@ -42,7 +45,7 @@
             }
             if (isset($this->tables[$tableName])) {
                 $classPath = $this->namespace . $tableName;
-                $this->tables[] = new $classPath();
+                $this->tables[] = new $classPath($this->serviceManager);
             }
             
             return $this->tables[$tableName];

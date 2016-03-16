@@ -47,13 +47,6 @@
         protected $serviceManager;
         
         /**
-         * Collection of allowed keys for this table.
-         *
-         * @var array
-         */
-        protected $allowedKeys = array();
-        
-        /**
          * Prepares the table with the DB adapter and local settings.
          * 
          * @param \Zend\ServiceManager\ServiceManager $serviceManager The service manager for this application instance.

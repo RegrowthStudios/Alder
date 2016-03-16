@@ -182,7 +182,7 @@
          */
         protected function createSycamoreTableCacheService(ServiceManager& $serviceManager)
         {
-            $tableCache = new TableCache("Sycamore\\Table\\");
+            $tableCache = new TableCache($serviceManager, "Sycamore\\Table\\");
             
             $serviceManager->setService("SycamoreTableCache", $tableCache);
         }

@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/**
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
  */
 
-    namespace Sycamore\Stdlib;
+    namespace Sycamore\Db\Row;
     
-    use Sycamore\Stdlib\ArrayUtils;
-    
-    abstract class AbstractFactory
+    interface AbstractRowInterface
     {
-        abstract public static function create($data);
+        /**
+         * Enters the data provided into the row instance.
+         * 
+         * @param array|\Traversable $data The data to be exchanged into the row instance.
+         * 
+         * @throws \InvalidArgumentException if data provided is not an array.
+         */
+        public function exchangeArray($data);
         
         /**
-         * {@inheritdoc}
+         * Returns the data in this row instance in array form.
+         * 
+         * @return array The data in this row instance.
          */
-        protected static function validateData($data, $arrayOnly = false)
-        {
-            try {
-                return ArrayUtils::validateArrayLike($data, get_class($this), $arrayOnly);
-            } catch (\InvalidArgumentException $ex) {
-                throw $ex;
-            }
-        }
+        public function toArray();
     }
+    

@@ -64,6 +64,9 @@
                     
                     return $adapter;
                 },
+                "Sycamore\User\Security" => function(\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                    return new \Sycamore\User\Security($serviceManager);
+                }
             ),
         ),
         "controllers" => array (

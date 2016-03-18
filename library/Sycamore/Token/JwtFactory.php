@@ -21,19 +21,22 @@
     
     use Sycamore\Application;
     use Sycamore\Stdlib\AbstractFactory;
+    use Sycamore\Stdlib\Rand;
     use Sycamore\Token\Jwt;
     
     use Lcobucci\JWT\Builder;
     use Lcobucci\JWT\Signer\Key;
     
-    use Zend\Math\Rand;
+    use Zend\ServiceManager\ServiceLocatorInterface;
     
     /**
      * Factory for constructing JWT tokens.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      */
     class JwtFactory extends AbstractFactory
     {
-        // TODO(Matthew): Update Application::getConfig() calls to new scheme.
         /**
          * Creates a JWT token from an array, or array-like set of data.
          * 
@@ -65,16 +68,19 @@
          * 
          * @param array|\Traversable|\ArrayAccess $data
          * 
-         * @return type
+         * @return \Sycamore\Token\Jwt
          * @throws \DomainException
          */
-        public static function create($data)
+        public static function create(ServiceLocatorInterface& $serviceManager, $data)
         {
             // Verify provided data is array-like.
             $verifiedData = static::validateData($data);
             
+            // Grab application config.
+            $config = $serviceManager->get("Config")["Sycamore"];
+            
             // Acquire private key or fail.
-            $privateKey = Application::getConfig()->security->tokenPrivateKey;
+            $privateKey = $config["security"]["tokenPrivateKey"];
             if (isset($verifiedData["key"])) {
                 $privateKey = $verifiedData["key"];
             }
@@ -83,7 +89,7 @@
             }
             
             // Acquire signing method or fail.
-            $signMethod = Application::getConfig()->security->tokenHashAlgorithm;
+            $signMethod = $config["security"]["tokenHashAlgorithm"];
             if (isset($verifiedData["signMethod"])) {
                 $signMethod = $verifiedData["signMethod"];
             }
@@ -102,13 +108,14 @@
             }
             
             // Construct token and registered claims.
-            $time = time();            
-            $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : Application::getConfig()->domain)
-                                    ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : Application::getConfig()->domain)
+            $time = time();
+            $domain = $config["domain"]
+            $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : $domain)
+                                    ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : $domain)
                                     ->setIssuedAt(   isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
                                     ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time + $verifiedData["tokenLifetime"])
                                     ->setNotBefore(  isset($registeredClaims["nbf"]) ? $registeredClaims["nbf"] : $time)
-                                    ->setId(        (isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12, NULL, true)), true);
+                                    ->setId(        (isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12, Rand::ALPHANUMERIC, true)), true);
             // Set subject if specified.
             if (isset($registeredClaims["sub"])) {
                 $token->setSubject($registeredClaims["sub"]);
@@ -116,7 +123,7 @@
             
             // Add application payload if provided.
             if (isset($verifiedData["applicationPayload"])) {
-                $token->set(Application::getConfig()->domain, $verifiedData["applicationPayload"]);
+                $token->set($domain, $verifiedData["applicationPayload"]);
             }
             
             // Add additional private claims if specified.
@@ -134,8 +141,9 @@
             $key = $privateKey;
             $passphrase = NULL;
             if (Jwt::SIGNERS[$signMethod]["asymmetric"]) {
-                if (Application::getConfig()->security->tokenPrivateKeyPassphrase !== DEFAULT_VAL) {
-                    $passphrase = Application::getConfig()->security->tokenPrivateKeyPassphrase;
+                $defaultPrivateKeyPassphrase = $config["security"]["tokenPrivateKeyPassphrase"];
+                if ($defaultPrivateKeyPassphrase !== DEFAULT_VAL) {
+                    $passphrase = $defaultPrivateKeyPassphrase;
                 }
                 if (isset($verifiedData["keyPassphrase"])) {
                     $passphrase = $verifiedData["keyPassphrase"];
@@ -148,7 +156,7 @@
             $token->sign($signer, $key);
             
             // Return JWT object.
-            return (new Jwt(strval($token->getToken())));
+            return (new Jwt($serviceManager, strval($token->getToken())));
         }
     }
     

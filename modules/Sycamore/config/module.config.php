@@ -56,7 +56,7 @@
         ),
         "service_manager" => array (
             "factories" => array (
-                "Zend\Db\Adapter\Adapter" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                "DbAdapter" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
                     $config = $serviceManager->get("Config")["Sycamore"];
                     $adapter = new \Zend\Db\Adapter\Adapter($config["db"]["adapter"]);
                     
@@ -64,6 +64,9 @@
                     
                     return $adapter;
                 },
+                "Mailer" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                    return new \Sycamore\Mail\Mailer($serviceManager);
+                }
             ),
         ),
         "controllers" => array (

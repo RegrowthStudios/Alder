@@ -77,6 +77,7 @@
                 "attachmentDirectory" => APP_DIRECTORY . "/attachments/", // Location where temporary attachment files are stored.
             ),
             "security" => array ( /* Security Details */
+                "accessCookiesViaHttpOnly" => false, // If true, cookies are only accessible via the HTTP protocol.
                 "enableClickjackingProtection" => true, // If true, prevents clickjacking attacks by not allowing site to be rendered in frame of another site.
                 "password" => array ( /* Password Security Details */
                     "strictness" => "normal", // How secure must passwords be? Normal -> >8 characters long, include numbers and letters. High -> Normal + include capital letter. Strict -> High + include symbol. Retroactively checks passwords.
@@ -85,6 +86,7 @@
                     "maximumLength" => 48,
                 ),
                 "simpleHashAlgorithm" => "sha256", // The hashing algorithm to be used for simple hashes - no sensitive data is hashed using this.
+                "sessionsOverHttpsOnly" => false, // If true, cookies may only be sent to the user over a secure HTTPS connection.
                 "sessionLength" => 43200/*12 Hours*/, // How long should log in session last if not extended?
                 "sessionLengthExtended" => 2629740,/*~1 Month*/ // How long should an extended log-in session last?
                 "tokenPrivateKey" => DEFAULT_VAL, /* CHANGE THIS */ // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.

@@ -24,13 +24,13 @@
         $moduleDirs[$key] = end($explode);
     }
     
-    return  [
+    return [
         "modules" => $moduleDirs,
-        "module_listener_options" =>  [
-            "module_paths" =>  [
+        "module_listener_options" => [
+            "module_paths" => [
                 MODULES_DIRECTORY
             ],
-            "config_glob_paths" =>  [
+            "config_glob_paths" => [
                 sprintf(CONFIG_DIRECTORY . "/autoload/{,*.}{global,%s,local}.php", ENV),
             ],
             "config_cache_enabled" => (ENV == PRODUCTION),

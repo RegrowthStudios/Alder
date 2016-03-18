@@ -44,7 +44,7 @@
                 ],
                 "api_attachment" => [
                     "type" => "Zend\Mvc\Router\Http\Segment",
-                    "options" =>  [
+                    "options" => [
                         "route" => "/api/attachment[/:controller]",
                         "defaults" => [
                             "__NAMESPACE__" => "Sycamore\Controller\API\Attachment",

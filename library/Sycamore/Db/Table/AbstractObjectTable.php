@@ -225,10 +225,10 @@
         public function save(AbstractRow $row, $id = 0)
         {
             if ($id == 0) {
-                $this->tableGateway->insert($row->toArray());
+                $this->insert($row->toArray());
             } else {
                 if ($this->getById($id)) {
-                    $this->tableGateway->update($row->toArray(), array("id" => $id));
+                    $this->update($row->toArray(), array("id" => $id));
                 } else {
                     throw new BadKeyException("Record of ID $id does not exist.");
                 }

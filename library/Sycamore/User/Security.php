@@ -20,12 +20,31 @@
     namespace Sycamore\User;
     
     use Sycamore\Application;
+    
+    use Zend\ServiceManager\ServiceLocatorInterface;
 
     /**
      * Security holds functions for ensuring the security of the user experience.
      */
     class Security
-    {       
+    {
+        /**
+         * The service manager for this application instance.
+         *
+         * @var \Zend\ServiceManager\ServiceLocatorInterface
+         */
+        protected $serviceManager;
+        
+        /**
+         * Prepares the sercurity utility by injecting the service manager.
+         * 
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager
+         */
+        public function __construct(ServiceLocatorInterface& $serviceManager)
+        {
+            $this->serviceManager = $serviceManager;
+        }
+        
         /**
          * Return hashed password.
          *
@@ -33,9 +52,9 @@
          *
          * @return string
          */
-        public static function hashPassword($password)
+        public function hashPassword($password)
         {
-            return password_hash($password, PASSWORD_DEFAULT, ["cost" => Application::getConfig()->security->passwordHashingStrength ]);
+            return password_hash($password, PASSWORD_DEFAULT, ["cost" => $this->serviceManager->get("Config")["Sycamore"]["security"]["passwordHashingStrength"] ]);
         }
         
         /**
@@ -46,7 +65,7 @@
          *
          * @return boolean
          */
-        public static function verifyPassword($password, $hash)
+        public function verifyPassword($password, $hash)
         {
             return password_verify($password, $hash);
         }
@@ -58,8 +77,8 @@
          *
          * @return boolean
          */
-        public static function passwordNeedsRehash($password)
+        public function passwordNeedsRehash($password)
         {
-            return password_needs_rehash($password, PASSWORD_DEFAULT, [ 'cost' => Application::getConfig()->security->passwordHashingStrength ]);
+            return password_needs_rehash($password, PASSWORD_DEFAULT, [ 'cost' => $this->serviceManager->get("Config")["Sycamore"]["security"]["passwordHashingStrength"] ]);
         }
     }

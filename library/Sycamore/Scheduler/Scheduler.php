@@ -150,7 +150,7 @@
          */
         public function removeTask(TaskInterface&  $task)
         {
-            // Attempt to grab task ID.
+            // Ensure task has valid task ID.
             if (!$task->hasId()) {
                 throw new \InvalidTaskException("The task provided has no ID, therefore cannot be removed.");
             }

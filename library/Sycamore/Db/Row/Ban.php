@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-    namespace Sycamore\Row;
+    namespace Sycamore\Db\Row;
     
     use Sycamore\Db\Row\AbstractObjectRow;
     

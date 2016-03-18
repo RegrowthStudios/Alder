@@ -66,6 +66,9 @@
                 },
                 "Mailer" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
                     return new \Sycamore\Mail\Mailer($serviceManager);
+                },
+                "Scheduler" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                    return new \Sycamore\Scheduler\Scheduler();                    
                 }
             ),
         ),

@@ -40,14 +40,14 @@
         /**
          * Supported signing methods.
          */
-        const SIGNERS = array (
-            "HS256" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha256", "asymmetric" => false),
-            "HS384" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha384", "asymmetric" => false),
-            "HS512" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha512", "asymmetric" => false),
-            "RS256" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha256",  "asymmetric" =>  true),
-            "RS384" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha384",  "asymmetric" =>  true),
-            "RS512" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha512",  "asymmetric" =>  true),
-        );
+        const SIGNERS = [
+            "HS256" => [ "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha256", "asymmetric" => false],
+            "HS384" => [ "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha384", "asymmetric" => false],
+            "HS512" => [ "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha512", "asymmetric" => false],
+            "RS256" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha256",  "asymmetric" =>  true],
+            "RS384" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha384",  "asymmetric" =>  true],
+            "RS512" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha512",  "asymmetric" =>  true],
+        ];
         
         /**
          * The JWT token for the instance.

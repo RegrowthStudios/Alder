@@ -99,7 +99,7 @@
          */
         public function isUsernameUnique($username)
         {
-            return !$this->select(array("username" => (string) $username))->current();
+            return !$this->select(["username" => (string) $username])->current();
         }
         
         /**
@@ -111,6 +111,6 @@
          */
         public function isEmailUnique($email)
         {
-            return !$this->select(array("email" => (string) $email))->current();
+            return !$this->select(["email" => (string) $email])->current();
         }
     }

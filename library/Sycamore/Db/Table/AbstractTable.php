@@ -128,7 +128,7 @@
         protected function getByKey($key, $value, $forceDbFetch = false)
         {
             return $this->getBySelect(
-                array ($key => $value),
+                [$key => $value],
                 $value,
                 "get_by_$key",
                 $forceDbFetch

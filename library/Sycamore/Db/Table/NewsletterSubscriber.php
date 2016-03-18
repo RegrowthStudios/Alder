@@ -73,6 +73,6 @@
          */
         public function isEmailUnique($email)
         {
-            return !$this->select(array("email" => (string) $email))->current();
+            return !$this->select(["email" => (string) $email])->current();
         }
     }

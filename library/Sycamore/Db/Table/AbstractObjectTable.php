@@ -211,7 +211,7 @@
          */
         public function deleteById($id)
         {
-            $this->delete(array("id" => (int) $id));
+            $this->delete(["id" => (int) $id]);
         }
         
         /**
@@ -228,7 +228,7 @@
                 $this->tableGateway->insert($row->toArray());
             } else {
                 if ($this->getById($id)) {
-                    $this->tableGateway->update($row->toArray(), array("id" => $id));
+                    $this->tableGateway->update($row->toArray(), ["id" => $id]);
                 } else {
                     throw new BadKeyException("Record of ID $id does not exist.");
                 }

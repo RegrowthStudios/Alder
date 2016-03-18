@@ -102,7 +102,7 @@
                 throw new \DomainException("Token factory expects a token lifetime to be specified.");
             }
             
-            $registeredClaims = array();
+            $registeredClaims = [];
             if (isset($verifiedData["registeredClaims"])) {
                 $registeredClaims = $verifiedData["registeredClaims"];
             }

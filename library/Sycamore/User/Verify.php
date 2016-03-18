@@ -19,8 +19,7 @@
 
     namespace Sycamore\User;
 
-    use Sycamore\Application;
-    use Sycamore\Utils\AbstractTokenManager;
+    use Sycamore\Token\JwtFactory;
     
     /**
      * Verify has functions related to creation and checking of verification tokens.
@@ -37,10 +36,10 @@
          */
         public static function create($userId, $itemToVerify)
         {
-            return self::constructToken(array (
+            return self::constructToken([
                 "id" => $userId,
                 "itemToVerify" => $itemToVerify
-            ), Application::getConfig()->security->verifyTokenLifetime, "verify");
+            ], Application::getConfig()->security->verifyTokenLifetime, "verify");
         }
         
         /**

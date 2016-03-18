@@ -24,6 +24,12 @@
     use Zend\Mail\Transport\Factory as TransportFactory;
     use Zend\ServiceManager\ServiceLocatorInterface;
     
+    /**
+     * Handles the scheduling of emails to be sent by the server, as well as the construction and dispatch of those emails.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     class Mailer
     {
         /**
@@ -70,4 +76,3 @@
             $this->transport = TransportFactory::create($spec);
         }
     }
-    

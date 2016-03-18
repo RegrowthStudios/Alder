@@ -19,12 +19,13 @@
 
     namespace Sycamore\User;
     
-    use Sycamore\Application;
-    
     use Zend\ServiceManager\ServiceLocatorInterface;
 
     /**
      * Security holds functions for ensuring the security of the user experience.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      */
     class Security
     {

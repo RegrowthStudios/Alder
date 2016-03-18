@@ -124,6 +124,8 @@
                 if (!$sendTimeArray) {
                     throw new InvalidSendTime("Delay provided was invalid date.");
                 }
+                // Fill in missing data with current date and times.
+                $sendTimeArray = array_merge($sendTimeArray, getdate());
                 
                 // Get current timestamp.
                 $time = time();
@@ -131,7 +133,14 @@
                 // Prepare the new mail message.
                 $mailMessage = new MailMessage();
                 $mailMessage->serialisedMessage = Object::encode($validatedMessage);
-                $mailMessage->sendTime = API::encode($sendTimeArray);
+                $mailMessage->sendTime = mktime(
+                                            $sendTimeArray["hours"],
+                                            $sendTimeArray["minutes"],
+                                            $sendTimeArray["seconds"],
+                                            $sendTimeArray["month"],
+                                            $sendTimeArray["day"],
+                                            $sendTimeArray["year"]
+                                        );
                 $mailMessage->purpose = (string) $purpose;
                 $mailMessage->sent = 0;
                 $mailMessage->cancelled = 0;

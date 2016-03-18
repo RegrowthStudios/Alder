@@ -47,7 +47,7 @@
          * 
          * @return string
          * 
-         * @throws \Exception
+         * @throws \Sycamore\Scheduler\Exception\UnusedTaskException
          */
         public function getTaskRm();
         

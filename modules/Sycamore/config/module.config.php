@@ -72,6 +72,9 @@
                 },
                 "Sycamore\User\Validation" => function(\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
                     return new \Sycamore\User\Validation($serviceManager);
+                },
+                "Sycamore\User\Verify" => function(\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                    return new \Sycamore\User\Verify($serviceManager);
                 }
             ],
         ],

@@ -141,7 +141,7 @@
         {
             $cacheConfig = $serviceManager->get("Config")["Sycamore"]["cache"];
             
-            $cache = StorageFactory::factory( [
+            $cache = StorageFactory::factory([
                 "adapter" => $cacheConfig["adapter"],
                 "options" => [
                     "ttl" => $cacheConfig["timeToLive"],
@@ -150,29 +150,28 @@
             ]);
             
             $pluginsConfig = $cacheConfig["plugins"];
+            $pluginOptions = new Plugin\PluginOptions([
+                "ClearingFactor" => $pluginsConfig["clearExpired"]["clearingFactor"],
+                "ExitOnAbort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"],
+                "OptimizingFactor" => $pluginsConfig["optimise"]["optimisingFactor"],
+            ]);
             
             $clearExpired = new Plugin\ClearExpiredByFactor();
-            $clearExpired->setOptions([
-                "clearing_factor" => $pluginsConfig["clearExpired"]["clearingFactor"]
-            ]);
+            $clearExpired->setOptions($pluginOptions);
             $cache->addPlugin($clearExpired);
             
             $ignoreUserAbort = new Plugin\IgnoreUserAbort();
-            $ignoreUserAbort->setOptions([
-                "exit_on_abort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"]
-            ]);
+            $ignoreUserAbort->setOptions($pluginOptions);
             $cache->addPlugin($ignoreUserAbort);
             
             $optimise = new Plugin\OptimizeByFactor();
-            $optimise->setOptions([
-                "optimizing_factor" => $pluginsConfig["optimise"]["optimisingFactor"]
-            ]);
+            $optimise->setOptions($pluginOptions);
             $cache->addPlugin($optimise);
             
             $serialiser = new Plugin\Serializer();
             $cache->addPlugin($serialiser);
             
-            $serviceManager->setService("DbCache", $cache);
+            $serviceManager->setService("SycamoreDbCache", $cache);
         }
         
         /**
@@ -182,7 +181,7 @@
          */
         protected function createSycamoreTableCacheService(ServiceManager& $serviceManager)
         {
-            $tableCache = new TableCache($serviceManager, "Sycamore\\Table\\");
+            $tableCache = new TableCache($serviceManager, "Sycamore\\Db\\Table\\");
             
             $serviceManager->setService("SycamoreTableCache", $tableCache);
         }

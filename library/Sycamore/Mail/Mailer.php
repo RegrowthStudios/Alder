@@ -96,10 +96,10 @@
         /**
          * Schedules the sending of a message via the mailer's transport.
          * 
-         * @param array|\Traversable $message
-         * @param string $purpose
-         * @param array|\Traversable|string $sendTime
-         * @param int $creationTime
+         * @param array|\Traversable $message The message to be sent.
+         * @param string $purpose The purpose of the message, e.g. "newsletter".
+         * @param array|string $sendTime The time to send the message at.
+         * @param int $creationTime Optional variable to set a custom creation time of the message.
          */
         public function scheduleMessage($message, $purpose = "", $sendTime = self::NOW, $creationTime = NULL)
         {
@@ -130,9 +130,12 @@
                 // Get current timestamp.
                 $time = time();
                 
+                // Fetch visitor ID.
+                $visitorId = $this->serviceManager->get("Sycamore\Visitor")->get("id");
+                
                 // Prepare the new mail message.
                 $mailMessage = new MailMessage();
-                $mailMessage->serialisedMessage = Object::encode($validatedMessage);
+                $mailMessage->serialisedMessage = API::encode($validatedMessage);
                 $mailMessage->sendTime = mktime(
                                             $sendTimeArray["hours"],
                                             $sendTimeArray["minutes"],
@@ -145,9 +148,9 @@
                 $mailMessage->sent = 0;
                 $mailMessage->cancelled = 0;
                 $mailMessage->lastUpdateTime = ((int) $creationTime) ?: $time;
-                //$mailMessage->lastUpdatorId = Visitor::getInstance()->id;
+                $mailMessage->lastUpdatorId = $visitorId;
                 $mailMessage->creationTime = ((int) $creationTime) ?: $time;
-                //$mailMessage->creatorId = Visitor::getInstance()->id;
+                $mailMessage->creatorId = $visitorId;
                 
                 
                 // Grab the mail message table.
@@ -182,5 +185,147 @@
                 $scheduler = $this->serviceManager->get("Scheduler");
                 $scheduler->addTask($task);
             }
+        }
+        
+        /**
+         * Updates the send time of an existing mail message.
+         * 
+         * @param int|\Sycamore\Db\Row\MailMessage $mailMessage The mail message to update the send time of.
+         * @param array|string $sendTime The new time to send the message at.
+         * @param bool $force Whether to force the update if the message was previously cancelled.
+         * @param int $updatorId The ID of the updator, if NULL, visitor ID used.
+         * 
+         * @return bool True on successful update, false otherwise.
+         * 
+         * @throws \InvalidArgumentException if $mailMessage is not a valid ID or \Sycamore\Db\Row\MailMessage object.
+         */
+        public function updateMessageSendTime($mailMessage, $sendTime, $force = false, $updatorId = NULL)
+        {
+            // Grab mail message table.
+            $tableCache = $this->serviceManager->get("SycamoreTableCache");
+            $mailMessageTable = $tableCache->fetchTable("MailMessage");
+            
+            // Get mail message object if ID provided.
+            if (is_numeric($mailMessage)) {
+                $mailMessage = $mailMessageTable->getById((int) $mailMessage);
+            } else if (!$mailMessage instanceof MailMessage) {
+                throw new \InvalidArgumentException("Must provide either a mail message ID or object into mailMessage.");
+            }
+            
+            if ($mailMessage->cancelled && !$force) {
+                return false;
+            }
+            
+            if ($sendTime == self::NOW) {
+                // Send message.
+                $this->sendMessage(API::decode($mailMessage->serialisedMessage));
+                
+                // Remove redundant task.
+                $scheduler = $this->serviceManager->get("Scheduler");
+                $scheduler->removeTask(Object::decode($mailMessage->task));
+                
+                // Update mail message entry.
+                $mailMessage->sendTime = time();
+                $mailMessage->sent = true;
+            } else {
+                // Get send time timestamp, failing if the send time is invalid.
+                if (is_array($sendTime)) {
+                    $sendTimeArray = $sendTime;
+                } else if (is_string($sendTime)) {
+                    $sendTimeArray = getdate($sendTime);
+                } else {
+                    throw new InvalidSendTime("Delay is expected to be a time-formatted string.");
+                }
+                if (!$sendTimeArray) {
+                    throw new InvalidSendTime("Delay provided was invalid date.");
+                }
+                // Fill in missing data with current date and times.
+                $sendTimeArray = array_merge($sendTimeArray, getdate());
+                
+                // Update mail message send time.
+                $mailMessage->sendTime = mktime(
+                                            $sendTimeArray["hours"],
+                                            $sendTimeArray["minutes"],
+                                            $sendTimeArray["seconds"],
+                                            $sendTimeArray["month"],
+                                            $sendTimeArray["day"],
+                                            $sendTimeArray["year"]
+                                        );
+                
+                // Create a new task.
+                $taskDetails = array();
+                $taskDetails["job"] = "php " . APP_DIRECTORY . "/public/index.php email $mailMessage->id";
+                $taskDetails["executiveDate"] = [
+                    "year" => $sendTimeArray["year"],
+                    "month" => $sendTimeArray["month"],
+                    "day" => $sendTimeArray["day"],
+                ];
+                $taskDetails["executiveTime"] = [
+                    "hour" => $sendTimeArray["hours"],
+                    "minutes" => $sendTimeArray["minutes"],
+                    "seconds" => $sendTimeArray["seconds"],
+                ];
+                $taskDetails["scheduleType"] = TaskInterface::SCHEDULE_ONCE;
+                $task = TaskFactory::create($taskDetails);
+                
+                // Remove old task and add new one.
+                $scheduler = $this->serviceManager->get("Scheduler");
+                $scheduler->removeTask(Object::decode($mailMessage->task));
+                $scheduler->addTask($task);
+            }
+            
+            // Update mail message entry with common data.
+            $mailMessage->cancelled = false;
+            $mailMessage->lastUpdateTime = time();
+            $mailMessage->lastUpdatorId = $updatorId ?: $this->serviceManager->get("Sycamore\Visitor")->get("id");
+            
+            // Save changes to mail message.
+            $mailMessageTable->save($mailMessage, $mailMessage->id);
+        }
+        
+        // Todo(Matthew): Unlink attachments associated with the cancelled message if permanent.
+        /**
+         * Cancels the sending of a scheduled message.
+         * 
+         * @param int|\Sycamore\Db\Row\MailMessage $mailMessage The mail message to cancel the sending of.
+         * @param bool $permanent Whether the cancellation is permanent.
+         * @param int $updatorId The ID of the updator, if NULL, visitor ID used.
+         * 
+         * @return bool True on successful cancellation, false otherwise.
+         * 
+         * @throws \InvalidArgumentException if $mailMessage is not a valid ID or \Sycamore\Db\Row\MailMessage object.
+         */
+        public function stopMessageSend($mailMessage, $permanent = false, $updatorId = NULL)
+        {
+            // Grab mail message table.
+            $tableCache = $this->serviceManager->get("SycamoreTableCache");
+            $mailMessageTable = $tableCache->fetchTable("MailMessage");
+            
+            // Get mail message object if ID provided.
+            if (is_numeric($mailMessage)) {
+                $mailMessage = $mailMessageTable->getById((int) $mailMessage);
+            } else if (!$mailMessage instanceof MailMessage) {
+                throw new \InvalidArgumentException("Must provide either a mail message ID or object into mailMessage.");
+            }
+            
+            if ($mailMessage->cancelled && !$permanent) {
+                return false;
+            }
+            
+            // Grab scheduler and remove task.
+            $scheduler = $this->serviceManager->get("Scheduler");
+            $scheduler->removeTask(Object::decode($mailMessage->task));
+            
+            // Delete table entry if permanent, otherwise update row with data.
+            if ($permanent) {
+                $mailMessageTable->deleteById($mailMessage->id);
+            } else {
+                $mailMessage->cancelled = true;
+                $mailMessage->lastUpdateTime = time();
+                $mailMessage->lastUpdatorId = $updatorId ?: $this->serviceManager->get("Sycamore\Visitor")->get("id");
+                $mailMessageTable->save($mailMessage, $mailMessage->id);
+            }
+            
+            return true;
         }
     }

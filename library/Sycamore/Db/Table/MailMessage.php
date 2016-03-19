@@ -19,10 +19,12 @@
  * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
  */
 
-    namespace Sycamore\Table;
+    namespace Sycamore\Db\Table;
     
-    use Sycamore\Db\Row\MailMessage;
+    use Sycamore\Db\Row\MailMessage as MailMessageRow;
     use Sycamore\Db\Table\AbstractObjectTable;
+
+    use Zend\ServiceManager\ServiceLocatorInterface;
     
     /**
      * Table representation class for mail messages.
@@ -34,10 +36,12 @@
     {
         /**
          * Sets up the result set prototype and then created the table gateway.
+         * 
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager of this application instance.
          */
-        public function __construct(ServiceManager& $serviceManager)
+        public function __construct(ServiceLocatorInterface& $serviceManager)
         {
-            parent::__construct($serviceManager, "mail_messages", new MailMessage());
+            parent::__construct($serviceManager, "mail_messages", new MailMessageRow());
         }
         
         /**

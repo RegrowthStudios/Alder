@@ -15,12 +15,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
  */
 
-    namespace Sycamore\Table;
+    namespace Sycamore\Db\Table;
     
-    use Sycamore\Db\Row\NewsletterSubscriber;
+    use Sycamore\Db\Row\NewsletterSubscriber as NewsletterSubscriberRow;
     use Sycamore\Db\Table\AbstractObjectTable;
+
+    use Zend\ServiceManager\ServiceLocatorInterface;
     
     /**
      * Table representation class for newsletter subscribers.
@@ -32,10 +36,12 @@
     {
         /**
          * Sets up the result set prototype and then created the table gateway.
+         * 
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager of this application instance.
          */
-        public function __construct(ServiceManager& $serviceManager)
+        public function __construct(ServiceLocatorInterface& $serviceManager)
         {
-            parent::__construct($serviceManager, "newsletter_subscribers", new NewsletterSubscriber());
+            parent::__construct($serviceManager, "newsletter_subscribers", new NewsletterSubscriberRow());
         }
         
         /**

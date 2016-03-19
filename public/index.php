@@ -19,7 +19,7 @@
 
     namespace Sycamore;
 
-    use Sycamore\Utils\Timer;
+    use Sycamore\Stdlib\Timer;
     
     use Zend\Log\Logger;
     use Zend\Log\Writer\Stream as WriteStream;

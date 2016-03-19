@@ -21,6 +21,8 @@
 
     namespace Sycamore\Cache;
     
+    use Zend\ServiceManager\ServiceLocatorInterface;
+    
     class TableCache
     {
         protected $namespace;
@@ -29,7 +31,7 @@
         
         protected $serviceManager;
         
-        public function __construct(ServiceManager& $serviceManager, $namespace)
+        public function __construct(ServiceLocatorInterface& $serviceManager, $namespace)
         {
             if (!is_string($namespace)) {
                 throw new \InvalidArgumentException("The namespace provided must be a string!");
@@ -43,9 +45,9 @@
             if (!is_string($tableName)) {
                 throw new \InvalidArgumentException("The table name provided must be a string!");
             }
-            if (isset($this->tables[$tableName])) {
+            if (!isset($this->tables[$tableName])) {
                 $classPath = $this->namespace . $tableName;
-                $this->tables[] = new $classPath($this->serviceManager);
+                $this->tables[$tableName] = new $classPath($this->serviceManager);
             }
             
             return $this->tables[$tableName];

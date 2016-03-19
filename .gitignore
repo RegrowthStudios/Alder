@@ -5,3 +5,4 @@ logs/
 docs/
 licenses/
 vendor/
+composer.lock

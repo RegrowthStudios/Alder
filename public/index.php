@@ -73,7 +73,7 @@
         // Time the request to response time if not in production.
         if (ENV != PRODUCTION) {
             // Get and begin timer.
-            require (SYCAMORE_LIBRARY_DIRECTORY . "/Utils/Timer.php");
+            require (SYCAMORE_LIBRARY_DIRECTORY . "/Stdlib/Timer.php");
             $timer = new Timer();
             $timer->start();
         }

@@ -20,29 +20,29 @@
  */
 
     namespace Sycamore\Scheduler\Task;
-    
-    use Sycamore\Stdlib\AbstractFactory;
-    
-    class Factory extends AbstractFactory
+
+    use Sycamore\Stdlib\ArrayUtils;
+
+    class Factory
     {
         /**
          * Creates a task object from the given data based on the OS the server is running in.
-         * 
+         *
          * @param array|\Traversable $data
-         * 
+         *
          * @return \Sycamore\Scheduler\Task\TaskInterface
          */
         public static function create($data)
         {
             try {
-                $validatedData = static::validateData($data, true);
+                $validatedData = ArrayUtils::validateArrayLike($data, get_class($this), true);
             } catch (\InvalidArgumentException $ex) {
                 throw $ex;
             }
-            
+
             $taskClassName = OS . "Task";
             $task = new $taskClassName();
-            
+
             foreach ($validatedData as $key => $value) {
                 $func = "set" . ucfirst($key);
                 if (method_exists($task, $func)) {
@@ -51,7 +51,7 @@
                     throw new \InvalidArgumentException("No property, $key, exists in $taskClassName.");
                 }
             }
-            
+
             return $task;
         }
     }

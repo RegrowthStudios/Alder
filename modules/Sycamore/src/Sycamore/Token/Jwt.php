@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,16 +18,16 @@
  */
 
     namespace Sycamore\Token;
-    
+
     use Sycamore\Application;
     use Sycamore\Stdlib\ArrayUtils;
-    
+
     use Lcobucci\JWT\Signer\Key;
     use Lcobucci\JWT\Parser;
     use Lcobucci\JWT\ValidationData;
-    
+
     use Zend\ServiceManager\ServiceLocatorInterface;
-    
+
     class Jwt
     {
         /**
@@ -36,7 +36,7 @@
         const INVALID_SIGNATURE = -2;
         const INVALID_PUBLIC_CLAIMS = -1;
         const VALID = 1;
-        
+
         /**
          * Supported signing methods.
          */
@@ -48,31 +48,31 @@
             "RS384" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha384",  "asymmetric" =>  true],
             "RS512" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha512",  "asymmetric" =>  true],
         ];
-        
+
         /**
          * The JWT token for the instance.
          *
          * @var \Lcobucci\JWT\Token
          */
         protected $token = NULL;
-        
+
         /**
          * The state of validation for the current token.
          *
          * @var null|integer
          */
         protected $state = NULL;
-        
+
         /**
          * The service manager for this application instance.
-         * 
+         *
          * @var \Zend\ServiceManager\ServiceLocatorInterface
          */
         protected $serviceManager;
-        
+
         /**
          * Constructs a token object from the token string if given.
-         * 
+         *
          * @param string $token
          */
         public function __construct(ServiceLocatorInterface& $serviceManager, $token = NULL)
@@ -82,10 +82,10 @@
                 $this->token = (new Parser())->parse((string) $token);
             }
         }
-        
+
         /**
          * Sets this Jwt insance's token as constructed from the given token string.
-         * 
+         *
          * @param string $token
          */
         public function setToken($token)
@@ -93,25 +93,25 @@
             $this->state = NULL;
             $this->token = (new Parser())->parse((string) $token);
         }
-        
+
         /**
          * Returns the token's payload in string form.
-         * 
+         *
          * @return string
          */
         public function getPayload()
         {
             return $this->token->getPayload();
         }
-        
+
         /**
          * Gets the requested head item if it exists.
-         * 
+         *
          * @param string $name
          * @param mixed $default
-         * 
+         *
          * @return mixed
-         * 
+         *
          * @throws OutOfBoundsException
          */
         public function getHeader($name, $default = NULL)
@@ -122,23 +122,23 @@
                 throw $ex;
             }
         }
-        
+
         /**
          * Returns all head items in this token.
-         * 
+         *
          * @return array
          */
         public function getHeaders()
         {
             return $this->token->getHeaders();
         }
-        
+
         /**
          * Gets the requested claim item if it exists.
-         * 
+         *
          * @param string $name
          * @param mixed $default
-         * 
+         *
          * @return mixed
          *
          * @throws OutOfBoundsException
@@ -151,44 +151,44 @@
                 throw $ex;
             }
         }
-        
+
         /**
          * Returns all claim items in this token.
-         * 
+         *
          * @return array
          */
         public function getClaims()
         {
             return $this->token->getClaims();
         }
-        
+
         /**
          * Determines if the given claim exists in this token.
-         * 
+         *
          * @param string $name
-         * 
+         *
          * @return bool
          */
         public function hasClaim($name)
         {
             return $this->token->hasClaim($name);
         }
-        
+
         /**
          * Determines if the given head item exists in this token.
-         * 
+         *
          * @param string $name
-         * 
+         *
          * @return bool
          */
         public function hasHeader($name)
         {
             return $this->token->hasHeader($name);
         }
-        
+
         /**
          * Verifies the token's signature is valid, and then validates the public claims against the provided validators.
-         * 
+         *
          * Data form should be similar to:
          * array (
          *   "signMethod" => "HS512",
@@ -201,11 +201,11 @@
          *     "jti" => "12ae2qawd24"
          *   )
          * );
-         * 
+         *
          * @param array|\Traversable $data
-         * 
+         *
          * @return integer
-         * 
+         *
          * @throws \InvalidArgumentException
          */
         public function validate($data)
@@ -214,22 +214,22 @@
             if (!is_null($this->state)) {
                 return $this->state;
             }
-            
+
             // Validate provided data.
             $verifiedData = ArrayUtils::validateArrayLike($data, get_class($this));
-            
+
             // Grab application config.
             $config = $this->serviceManager->get("Config")["Sycamore"];
-            
+
             // Acquire signing method or fail.
             $signMethod = $config["security"]["tokenHashAlgorithm"];
             if (isset($verifiedData["signMethod"])) {
                 $signMethod = $verifiedData["signMethod"];
             }
-            if (self::SIGNERS[$signMethod] !== NULL) {
+            if (self::SIGNERS[$signMethod] == NULL) {
                 throw new \InvalidArgumentException("The sign method provided via data or application config is an invalid method.");
             }
-            
+
             // Acquire public key or fail.
             $key = $config["security"]["tokenPrivateKey"];
             if (self::SIGNERS[$signMethod]["asymmetric"]) {
@@ -244,14 +244,15 @@
             if (self::SIGNERS[$signMethod]["asymmetric"]) {
                 $key = new Key($key);
             }
-            
+
             // Verify token.
-            $signer = new self::SIGNERS[$signMethod]["class"]();
+            $signerClass = self::SIGNERS[$signMethod]["class"];
+            $signer = new $signerClass();
             if (!$this->token->verify($signer, $key)) {
                 $this->state = self::INVALID_SIGNATURE;
                 return $this->state;
             }
-            
+
             // Prepare validation object.
             $validationFilters = new ValidationData();
             if (isset($verifiedData["validators"])) {
@@ -268,21 +269,21 @@
                     $validationFilters->setId($validators["jti"]);
                 }
             }
-            
+
             // If token doesn't validate, fail.
             if (!$this->token->validate($validationFilters)) {
                 $this->state = self::INVALID_PUBLIC_CLAIMS;
                 return $this->state;
             }
-            
+
             // Token is valid!
             $this->state = self::VALID;
             return $this->state;
         }
-        
+
         /**
          * Returns the token as a string.
-         * 
+         *
          * @return string
          */
         public function __toString()
@@ -290,4 +291,3 @@
             return strval($this->token);
         }
     }
-    

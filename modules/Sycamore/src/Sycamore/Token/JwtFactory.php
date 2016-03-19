@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,28 +18,28 @@
  */
 
     namespace Sycamore\Token;
-    
+
     use Sycamore\Application;
-    use Sycamore\Stdlib\AbstractFactory;
+    use Sycamore\Stdlib\ArrayUtils;
     use Sycamore\Stdlib\Rand;
     use Sycamore\Token\Jwt;
-    
+
     use Lcobucci\JWT\Builder;
     use Lcobucci\JWT\Signer\Key;
-    
+
     use Zend\ServiceManager\ServiceLocatorInterface;
-    
+
     /**
      * Factory for constructing JWT tokens.
-     * 
+     *
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @since 0.1.0
      */
-    class JwtFactory extends AbstractFactory
+    class JwtFactory
     {
         /**
          * Creates a JWT token from an array, or array-like set of data.
-         * 
+         *
          * Data form should be similar to:
          * array (
          *   "signMethod" => "HS512",
@@ -48,7 +48,7 @@
          *   "tokenLifetime" => 36400,
          *   "registeredClaims" => array ( // OPTIONAL
          *     "iss" => "example.org",
-         *     "sub" => "user", 
+         *     "sub" => "user",
          *     "aud" => "example.com", // Alternatively: ["example.com", "example.org"].
          *     "iat" => time(),
          *     "nbf" => time(),
@@ -65,20 +65,24 @@
          *     )
          *   )
          * )
-         * 
+         *
          * @param array|\Traversable|\ArrayAccess $data
-         * 
+         *
          * @return \Sycamore\Token\Jwt
          * @throws \DomainException
          */
         public static function create(ServiceLocatorInterface& $serviceManager, $data)
         {
             // Verify provided data is array-like.
-            $verifiedData = static::validateData($data);
-            
+            try {
+                $verifiedData = ArrayUtils::validateArrayLike($data, "\Sycamore\Token\JwtFactory", false);
+            } catch (\InvalidArgumentException $ex) {
+                throw $ex;
+            }
+
             // Grab application config.
             $config = $serviceManager->get("Config")["Sycamore"];
-            
+
             // Acquire private key or fail.
             $privateKey = $config["security"]["tokenPrivateKey"];
             if (isset($verifiedData["key"])) {
@@ -87,29 +91,29 @@
             if (!$privateKey || $privateKey == DEFAULT_VAL) {
                 throw new \InvalidArgumentException("The key provided via data or application config is invalid.");
             }
-            
+
             // Acquire signing method or fail.
             $signMethod = $config["security"]["tokenHashAlgorithm"];
             if (isset($verifiedData["signMethod"])) {
                 $signMethod = $verifiedData["signMethod"];
             }
-            if (Jwt::SIGNERS[$signMethod] !== NULL) {
+            if (Jwt::SIGNERS[$signMethod] == NULL) {
                 throw new \InvalidArgumentException("The sign method provided via data or application config is an invalid method.");
             }
-            
+
             // Fail if no lifetime specified for token.
             if (!isset($verifiedData["tokenLifetime"])) {
                 throw new \DomainException("Token factory expects a token lifetime to be specified.");
             }
-            
+
             $registeredClaims = [];
             if (isset($verifiedData["registeredClaims"])) {
                 $registeredClaims = $verifiedData["registeredClaims"];
             }
-            
+
             // Construct token and registered claims.
             $time = time();
-            $domain = $config["domain"]
+            $domain = $config["domain"];
             $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : $domain)
                                     ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : $domain)
                                     ->setIssuedAt(   isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
@@ -120,12 +124,12 @@
             if (isset($registeredClaims["sub"])) {
                 $token->setSubject($registeredClaims["sub"]);
             }
-            
+
             // Add application payload if provided.
             if (isset($verifiedData["applicationPayload"])) {
                 $token->set($domain, $verifiedData["applicationPayload"]);
             }
-            
+
             // Add additional private claims if specified.
             if (isset($verifiedData["privateClaims"])) {
                 if (is_array($verifiedData["privateClaims"])) {
@@ -136,7 +140,7 @@
                     throw new \InvalidArgumentException("Token factory expects private claims to be in array (key, value) form.");
                 }
             }
-            
+
             // Create private key object if signing method is asymmetric, otherwise use private key string.
             $key = $privateKey;
             $passphrase = NULL;
@@ -150,13 +154,13 @@
                 }
                 $key = new Key($privateKey, $passphrase);
             }
-            
+
             // Sign token.
-            $signer = new Jwt::SIGNERS[$signMethod]["class"]();
+            $signerClassName = Jwt::SIGNERS[$signMethod]["class"];
+            $signer = new $signerClassName();
             $token->sign($signer, $key);
-            
+
             // Return JWT object.
             return (new Jwt($serviceManager, strval($token->getToken())));
         }
     }
-    

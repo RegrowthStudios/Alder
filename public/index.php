@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,33 +20,33 @@
     namespace Sycamore;
 
     use Sycamore\Stdlib\Timer;
-    
+
     use Zend\Log\Logger;
     use Zend\Log\Writer\Stream as WriteStream;
     use Zend\Mvc\Application;
-    
+
     // Define a bunch of directory constants.
     define("APP_DIRECTORY", dirname(__DIR__));
     define("MODULES_DIRECTORY", APP_DIRECTORY."/modules");
-    define("LIBRARY_DIRECTORY", APP_DIRECTORY."/library");
+    define("VENDOR_DIRECTORY", APP_DIRECTORY."/vendor");
     define("CONFIG_DIRECTORY", APP_DIRECTORY."/config");
     define("LOGS_DIRECTORY", APP_DIRECTORY."/logs");
     define("TEMP_DIRECTORY", APP_DIRECTORY."/temp");
     define("CACHE_DIRECTORY", APP_DIRECTORY."/cache");
-    define("SYCAMORE_LIBRARY_DIRECTORY", LIBRARY_DIRECTORY."/Sycamore");
-    
+    define("SYCAMORE_MODULE_DIRECTORY", MODULES_DIRECTORY."/Sycamore");
+
     // Define possible ENV states.
     define("PRODUCTION", "production");
     define("TESTING", "testing");
     define("DEVELOPMENT", "development");
-    
+
     // Define ENV - the environment state (development or production).
     // ENV state stored in a PHP file to get around Nginx not supporting setting environment variables a la Apache.
     define("ENV", require (CONFIG_DIRECTORY . "/env.state.php"));
 
     // Define value to set config values to that MUST be overridden by a given installation.
     define("DEFAULT_VAL", "CHANGE");
-    
+
     // Define appropriate OS constant.
     define("UNIX", "Unix");
     define("WINDOWS", "Windows");
@@ -61,7 +61,7 @@
             define("OS", WINDOWS);
             break;
     }
-    
+
     // If in a debug mode, show errors.
     if (ENV != PRODUCTION) {
         error_reporting(E_ALL);
@@ -73,14 +73,14 @@
         // Time the request to response time if not in production.
         if (ENV != PRODUCTION) {
             // Get and begin timer.
-            require (SYCAMORE_LIBRARY_DIRECTORY . "/Stdlib/Timer.php");
+            require (SYCAMORE_MODULE_DIRECTORY . "/src/Sycamore/Stdlib/Timer.php");
             $timer = new Timer();
             $timer->start();
         }
-        
+
         // Prepare autoloader.
-        require (APP_DIRECTORY . "/library_autoload_register.php");
-        
+        require (VENDOR_DIRECTORY . "/autoload.php");
+
         // Prepare error logger (use trigger_error to write via this logger).
         $errorStream = @fopen(LOGS_DIRECTORY."/errors.log", "a");
         if (!$errorStream) {
@@ -130,9 +130,9 @@
         }
     } catch (\Exception $ex) {
         // Log error if a critical exception occurred.
-        error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL 
-                . "Error Code: " . $ex->getCode() . PHP_EOL 
-                . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL 
+        error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL
+                . "Error Code: " . $ex->getCode() . PHP_EOL
+                . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL
                 . "Error Message: " . $ex->getMessage()) . PHP_EOL
                 . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString();
         exit();

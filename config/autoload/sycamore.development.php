@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,23 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-    namespace Sycamore\Stdlib;
-    
-    use Sycamore\Stdlib\ArrayUtils;
-    
-    abstract class AbstractFactory
-    {
-        abstract public static function create($data);
-        
-        /**
-         * {@inheritdoc}
-         */
-        protected static function validateData($data, $arrayOnly = false)
-        {
-            try {
-                return ArrayUtils::validateArrayLike($data, get_class($this), $arrayOnly);
-            } catch (\InvalidArgumentException $ex) {
-                throw $ex;
-            }
-        }
-    }
+    /**
+     * Global configuration file for the Sycamore application.
+     */
+    return [
+        "Sycamore" => [
+            "security" => [
+                "tokenPrivateKey" => DEFAULT_VAL . "..",
+                "tokenPublicKey" => DEFAULT_VAL . "..",
+            ],
+        ],
+    ];

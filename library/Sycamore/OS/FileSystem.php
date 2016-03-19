@@ -36,7 +36,7 @@
         public static function delete($path, $force = false)
         {
             if (is_dir($path)) {
-                $files = array_diff(scandir($path), array('.', '..'));
+                $files = array_diff(scandir($path), ['.', '..']);
                 if (!empty($files) && !$force) {
                     return false;
                 }

@@ -65,7 +65,7 @@
                     $string .= preg_replace("#[\\\/.]+#", "_", strval($data));
                     break;
             }
-            return str_replace(array("\\", "/"), "_", $string);
+            return str_replace(["\\", "/"], "_", $string);
         }
         
         /**

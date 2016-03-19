@@ -132,4 +132,20 @@
             
             return $data;
         }
+        
+        /**
+         * Performs an XOR operation on two arrays.
+         * 
+         * @param array $array1 The first array to act on.
+         * @param array $array2 The second array to act on.
+         * 
+         * @return array The resulting array of XOR operation.
+         */
+        public static function xorArrays($array1, $array2)
+        {
+            return array_merge(
+                array_diff($array1, $array2),
+                array_diff($array2, $array1)
+            );
+        }
     }

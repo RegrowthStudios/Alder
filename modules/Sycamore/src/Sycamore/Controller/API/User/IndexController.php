@@ -28,7 +28,7 @@
         public function get($id = NULL)
         {
             $config = $this->serviceLocator->get("config");
-            $this->response->setContent(json_encode(array("result" => $config["Sycamore"])));
+            $this->response->setContent(json_encode(["result" => $config["Sycamore"]]));
             return $this->response;
         }
     }

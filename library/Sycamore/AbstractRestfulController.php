@@ -31,21 +31,21 @@
          *
          * @var array
          */
-        protected $preOptions = array (
+        protected $preOptions = [
             "allow-header" => "OPTIONS",
-            "body" => array (
-                "OPTIONS" => array (
+            "body" => [
+                "OPTIONS" => [
                     "description" => "Provides a breakdown of the options for interacting with this particular URI.",
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
         
         /**
          * Should be populated with the data about the various allowed request methods for a given controller with basic documentation.
          *
          * @var array
          */
-        protected $options = array ();
+        protected $options = [];
         
         /**
          * Prepares and sends the OPTIONS header & body for the given controller instance.

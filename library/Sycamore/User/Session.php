@@ -18,27 +18,49 @@
  */
 
     namespace Sycamore\User;
-
-    use Sycamore\Application;
-    use Sycamore\Utils\AbstractTokenManager;
-    use Sycamore\Utils\TableCache;
+    
+    use Sycamore\Token\Jwt;
+    use Sycamore\Token\JwtFactory;
+    
+    use Zend\ServiceManager\ServiceLocatorInterface;
     
     /**
      * Session has functions related to creation and checking of user sessions.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      */
-    class Session extends AbstractTokenManager
+    class Session
     {
+        /**
+         * The service manager for this application instance.
+         *
+         * @var \Zend\ServiceManager\ServiceLocatorInterface
+         */
+        protected $serviceManager;
+        
+        /**
+         * Prepares the sercurity utility by injecting the service manager.
+         * 
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager
+         */
+        public function __construct(ServiceLocatorInterface& $serviceManager)
+        {
+            $this->serviceManager = $serviceManager;
+        }
+        
         /**
          * Creates a new user session.
          *
-         * @param string $usernameOrEmail
-         * @param bool $extendedSession
+         * @param string $usernameOrEmail The username or email of the user to create a session token for.
+         * @param bool $extendedSession Whether to make the session of an extended length or not.
          * 
-         * @return boolean
+         * @return boolean True if cookie was successfully set, false otherwise.
          */
-        public static function create($usernameOrEmail, $extendedSession = false)
+        public function create($usernameOrEmail, $extendedSession = false)
         {
-            $userTable = TableCache::getTableFromCache("User");
+            $tableCache = $this->serviceManager->get("SycamoreTableCache");
+            $userTable = $tableCache->fetchTable("User");
             if (filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL)) {
                 $user = $userTable->getByEmail($usernameOrEmail);
             } else {
@@ -49,38 +71,54 @@
                 return false;
             }
             
-            $sessionLength = Application::getConfig()->security->sessionLengthExtended;
+            $config = $this->serviceManager->get("Config")["Sycamore"];
             if (!$extendedSession) {
-                $sessionLength = Application::getConfig()->security->sessionLength;
+                $sessionLength = $config["security"]["sessionLength"];
+            } else {
+                $sessionLength = $config["security"]["sessionLengthExtended"];
             }
             
-            $token = self::constructToken(array (
-                "id" => $user->id,
-                "name" => $user->username,
-                "email" => $user->email,
-                "superUser" => $user->superUser
-            ), $sessionLength, "user");
+            $token = strval(JwtFactory::create([
+                "tokenLifetime" => $sessionLength,
+                "registeredClaims" => [
+                    "sub" => "user"
+                ],
+                "applicationPayload" => [
+                    "id" => $user->id,
+                    "username" => $user->username,
+                    "email" => $user->email,
+                    "superuser" => $user->superUser
+                ]
+            ]));
             
-            return setcookie("SLIS", "$token", time() + $sessionLength, "/", Application::getConfig()->domain, Application::isSecure()); // SLIS -> Sycamore Logged In Session
+            return setcookie("SLIS", "$token", time() + $sessionLength, "/", $config["domain"], $config["security"]["sessionsOverHttpsOnly"], $config["security"]["accessCookiesViaHttpOnly"]); // SLIS -> Sycamore Logged In Session
         }
         
         /**
          * Acquires a user session, if it exists.
          *
-         * @return int|array - The token private claim contents on success, else:
-         *                       0 for no SLIS set.
-         *                      -1 for invalid JWT.
-         *                      -2 for invalid JWT due to bad signature.
-         *                      -3 for JWT used before nbf or iat.
-         *                      -4 for JWT used after exp.
+         * @param mixed A variable into which the acquired token payload will be dumped.
+         * 
+         * @return int The result of validating the token.
          */
-        public static function acquire()
+        public function acquire(& $tokenPayloadDump)
         {
             $slis = filter_input(INPUT_COOKIE, "SLIS");
             if (!$slis) {
                 return 0;
             }
             
-            return self::verifyToken($slis);
+            // Create JWT object.
+            $token = new Jwt($this->serviceManager, $slis);
+            
+            // Dump payload.
+            $tokenPayloadDump = $token->getPayload();
+            
+            // Return validation of the JWT.
+            return $token->validate([
+                "validators" => [
+                    "sub" => "user"
+                ]
+            ]);
         }
     }

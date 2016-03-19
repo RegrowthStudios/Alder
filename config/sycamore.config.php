@@ -24,20 +24,20 @@
         $moduleDirs[$key] = end($explode);
     }
     
-    return array (
+    return [
         "modules" => $moduleDirs,
-        "module_listener_options" => array (
-            "module_paths" => array (
+        "module_listener_options" => [
+            "module_paths" => [
                 MODULES_DIRECTORY
-            ),
-            "config_glob_paths" => array (
+            ],
+            "config_glob_paths" => [
                 sprintf(CONFIG_DIRECTORY . "/autoload/{,*.}{global,%s,local}.php", ENV),
-            ),
+            ],
             "config_cache_enabled" => (ENV == PRODUCTION),
             "config_cache_key" => "sycamore_config",
             "module_map_cache_enabled" => (ENV == PRODUCTION),
             "module_map_cache_key" => "sycamore_module_map",
             "cache_dir" => CACHE_DIRECTORY . "/config",
             "check_dependencies" => (ENV != PRODUCTION),
-        ),
-    );
+        ],
+    ];

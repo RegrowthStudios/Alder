@@ -28,7 +28,7 @@
     use Zend\Db\TableGateway\Feature\FeatureSet;
     use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
     use Zend\Db\ResultSet\ResultSet;
-    use Zend\ServiceManager\ServiceManager;
+    use Zend\ServiceManager\ServiceLocatorInterface;
     
     /**
      * Sycamore-specific implementation of Zend's abstract table gateway.
@@ -42,18 +42,18 @@
         /**
          * The service manager for this application instance.
          *
-         * @var \Zend\ServiceManager\ServiceManager
+         * @var \Zend\ServiceManager\ServiceLocatorInterface
          */
         protected $serviceManager;
         
         /**
          * Prepares the table with the DB adapter and local settings.
          * 
-         * @param \Zend\ServiceManager\ServiceManager $serviceManager The service manager for this application instance.
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this application instance.
          * @param string $table The name of the table for this instance.
          * @param \Zend\Db\ResultSet\ResultSetInterface $row The row object to construct with results of queries.
          */
-        public function __construct(ServiceManager& $serviceManager, $table, AbstractRowInterface& $row = NULL)
+        public function __construct(ServiceLocatorInterface& $serviceManager, $table, AbstractRowInterface& $row = NULL)
         {
             // Set service manager for this table gateway instance.
             $this->serviceManager = $serviceManager;
@@ -62,9 +62,8 @@
             $config = $this->serviceManager->get("Config")["Sycamore"];
             $this->table = $config["db"]["tablePrefix"] . $table;
             
-            // Add global adapter feature.
-            $this->featureSet = new FeatureSet();
-            $this->featureSet->addFeature(new GlobalAdapterFeature());
+            // Set the adapter.
+            $this->adapter = $this->serviceManager->get("Zend\Db\Adapter\Adapter");
             
             // Set the result set prototype as provided as as generic if none provided.
             $this->resultSetPrototype = new ResultSet();
@@ -93,7 +92,7 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . $cacheExtra, $cacheWhere);
             
             // Grab the database cache.
-            $dbCache = $this->serviceManager->get("DbCache");            
+            $dbCache = $this->serviceManager->get("SycamoreDbCache");            
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
@@ -259,7 +258,7 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . "fetch_all", NULL);
             
             // Grab the database cache.
-            $dbCache = $this->serviceManager->get("DbCache");            
+            $dbCache = $this->serviceManager->get("SycamoreDbCache");            
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
@@ -288,8 +287,8 @@
          * 
          * @return int The number of rows affected by the update execution.
          */
-        public function update(AbstractRow $row, $identifiers = NULL) {
-            return parent::update($row->toArray(), $identifiers);
+        public function updateRow(AbstractRow $row, $identifiers = NULL) {
+            return $this->update($row->toArray(), $identifiers);
         }
         
         /**
@@ -299,8 +298,8 @@
          * 
          * @return int
          */
-        public function insert(AbstractRow $row)
+        public function insertRow(AbstractRow $row)
         {
-            return parent::insert($row->toArray());
+            return $this->insert($row->toArray());
         }
     }

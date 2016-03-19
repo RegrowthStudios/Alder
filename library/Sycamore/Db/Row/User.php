@@ -1,4 +1,4 @@
-  <?php
+<?php
 
 /* 
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>

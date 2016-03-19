@@ -66,6 +66,9 @@
                 },
                 "Sycamore\User\Security" => function(\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
                     return new \Sycamore\User\Security($serviceManager);
+                },
+                "Sycamore\User\Session" => function(\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {
+                    return new \Sycamore\User\Session($serviceManager);
                 }
             ],
         ],

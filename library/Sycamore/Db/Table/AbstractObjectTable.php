@@ -21,9 +21,11 @@
 
     namespace Sycamore\Db\Table;
     
-    use Sycamore\Db\Row\AbstractRow;
+    use Sycamore\Db\Row\AbstractRowInterface;
     use Sycamore\Db\Table\AbstractTable;
     use Sycamore\Db\Table\Exception\BadKeyException;
+    
+    use Zend\ServiceManager\ServiceLocatorInterface;
     
     /**
      * Object-specific abstract table gateway with extra functions specific to object elements.
@@ -37,11 +39,11 @@
         /**
          * Prepares the table with the DB adapter and local settings.
          * 
-         * @param \Zend\ServiceManager\ServiceManager $serviceManager The service manager for this application instance.
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this application instance.
          * @param string $table The name of the table for this instance.
          * @param \Zend\Db\ResultSet\ResultSetInterface $row The row object to construct with results of queries.
          */
-        public function __construct(ServiceManager& $serviceManager, $table, AbstractRowInterface& $row = NULL)
+        public function __construct(ServiceLocatorInterface& $serviceManager, $table, AbstractRowInterface& $row = NULL)
         {
             parent::__construct($serviceManager, $table, $row);
         }
@@ -218,11 +220,11 @@
          * Saves the given row object, as an update if an ID is provided, 
          * as an insertion otherwise.
          * 
-         * @param \Sycamore\Db\Row\AbstractRow $row The row to be saved.
+         * @param \Sycamore\Db\Row\AbstractRowInterface $row The row to be saved.
          * @param int $id The ID to save the row against.
          * @throws \Sycamore\Db\Table\Exception\BadKeyException If a given ID points to invalid row.
          */
-        public function save(AbstractRow $row, $id = 0)
+        public function save(AbstractRowInterface $row, $id = 0)
         {
             if ($id == 0) {
                 $this->insert($row->toArray());

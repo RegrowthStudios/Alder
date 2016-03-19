@@ -60,8 +60,6 @@
                     $config = $serviceManager->get("Config")["Sycamore"];
                     $adapter = new \Zend\Db\Adapter\Adapter($config["db"]["adapter"]);
                     
-                    \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter($adapter);
-                    
                     return $adapter;
                 },
                 "Sycamore\Mail\Mailer" => function (\Zend\ServiceManager\ServiceLocatorInterface $serviceManager) {

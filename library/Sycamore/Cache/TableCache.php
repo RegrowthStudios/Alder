@@ -25,7 +25,7 @@
     {
         protected $namespace;
         
-        protected $tables = array();
+        protected $tables = [];
         
         protected $serviceManager;
         

@@ -211,7 +211,7 @@
          */
         public function deleteById($id)
         {
-            $this->delete(array("id" => (int) $id));
+            $this->delete(["id" => (int) $id]);
         }
         
         /**

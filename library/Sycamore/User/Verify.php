@@ -19,47 +19,91 @@
 
     namespace Sycamore\User;
 
-    use Sycamore\Application;
-    use Sycamore\Utils\AbstractTokenManager;
+    use Sycamore\Stdlib\ArrayUtils;
+    use Sycamore\Token\JwtFactory;
+    use Sycamore\Token\Jwt;
     
     /**
      * Verify has functions related to creation and checking of verification tokens.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      */
-    class Verify extends AbstractTokenManager
+    class Verify
     {
+        /**
+         * The service manager for this application instance.
+         *
+         * @var \Zend\ServiceManager\ServiceLocatorInterface
+         */
+        protected $serviceManager;
+        
+        /**
+         * Prepares the sercurity utility by injecting the service manager.
+         * 
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager
+         */
+        public function __construct(ServiceLocatorInterface& $serviceManager)
+        {
+            $this->serviceManager = $serviceManager;
+        }
+        
         /**
          * Constructs a verification token.
          * 
-         * @param int $userId
-         * @param mixed $itemToVerify
+         * @param int $userId The ID of the user whom this token applies to.
+         * @param array|\Traversable $items The items pertaining to this verification. E.g. a delete key.
+         * @param int $tokenLifetime The lifetime of the constructed verification token.
+         * @param string $purpose The purpose of this verification token.
          * 
-         * @return string
+         * @return \Sycamore\Token\Jwt A JWT object containing the token string.
          */
-        public static function create($userId, $itemToVerify)
+        public function create($userId, $items, $tokenLifetime = 86400 /* 24 Hours */, $purpose = "verification")
         {
-            return self::constructToken(array (
-                "id" => $userId,
-                "itemToVerify" => $itemToVerify
-            ), Application::getConfig()->security->verifyTokenLifetime, "verify");
+            $vaildatedItemsToVerify = ArrayUtils::validateArrayLike($itemsToVerify, get_class($this), true);
+            
+            return JwtFactory::create($this->serviceManager, [
+                "tokenLifetime" => $tokenLifetime,
+                "registeredClaims" => [
+                    "sub" => (string) $purpose
+                ],
+                "applicationPayload" => array_merge($items, [
+                    "id" => $userId
+                ])
+            ]);
         }
         
         /**
          * Verifies the verification token.
          *
-         * @param string $token
+         * @param int $userId The ID of the user whom this token applies to.
+         * @param string $token The token to verify.
+         * @param array $itemsExpected The expected items if token is to be verfied. E.g. delete key.
+         * @param string $purpose The purpose of this verification token.
          * 
-         * @return int|array - The token private claim contents on success, else:
-         *                      -1 for invalid JWT.
-         *                      -2 for invalid JWT due to bad signature.
-         *                      -3 for JWT used before nbf or iat.
-         *                      -4 for JWT used after exp.
+         * @return bool|array The application payload if the token is valid, otherwise false.
          */
-        public static function verify($token, $expected)
+        public function verify($userId, $token, $itemsExpected, $purpose = "verification")
         {
-            $result = self::verifyToken($token);
-            if ($result) {
-                return $result["itemToVerify"] == $expected;
+            $token = new Jwt($token);
+            // Ensure token is generally valid as per public claims.
+            if (!$token->validate([
+                "sub" => $purpose
+            ])) {
+                return false;
             }
-            return $result;
+            
+            // Get application payload.
+            $payload = $token->getPayload();
+            $applicationPayload = $payload["applicationPayload"];
+            
+            // If application payload and expected items + user ID are equivalent, then token is truly verified.
+            if (empty( ArrayUtils::xorArrays( array_merge($itemsExpected, [
+                                    "id" => $userId
+                                ]), $applicationPayload))) {
+                return $applicationPayload;
+            }
+            
+            return false;
         }
     }

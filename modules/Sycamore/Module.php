@@ -55,7 +55,7 @@
             $moduleRouteListener = new ModuleRouteListener();
             $moduleRouteListener->attach($eventManager);
             
-            $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, array ($this, "onDispatchError"), 10);
+            $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR,  [$this, "onDispatchError"], 10);
             
             $serviceManager = $e->getApplication()->getServiceManager();
             $this->prepareServices($serviceManager);
@@ -112,13 +112,13 @@
          */
         public function getAutoloaderConfig()
         {
-            return array (
-                "Zend\Loader\StandardAutoloader" => array (
-                    "namespaces" => array (
+            return [
+                "Zend\Loader\StandardAutoloader" => [
+                    "namespaces" => [
                         "Sycamore" => SYCAMORE_MODULE_DIRECTORY."/src/Sycamore",
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
         }
         
         /**
@@ -141,32 +141,32 @@
         {
             $cacheConfig = $serviceManager->get("Config")["Sycamore"]["cache"];
             
-            $cache = StorageFactory::factory(array (
+            $cache = StorageFactory::factory( [
                 "adapter" => $cacheConfig["adapter"],
-                "options" => array (
+                "options" => [
                     "ttl" => $cacheConfig["timeToLive"],
-                ),
+                ],
                 "namespace" => $cacheConfig["namespace"]
-            ));
+            ]);
             
             $pluginsConfig = $cacheConfig["plugins"];
             
             $clearExpired = new Plugin\ClearExpiredByFactor();
-            $clearExpired->setOptions(array (
+            $clearExpired->setOptions([
                 "clearing_factor" => $pluginsConfig["clearExpired"]["clearingFactor"]
-            ));
+            ]);
             $cache->addPlugin($clearExpired);
             
             $ignoreUserAbort = new Plugin\IgnoreUserAbort();
-            $ignoreUserAbort->setOptions(array (
+            $ignoreUserAbort->setOptions([
                 "exit_on_abort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"]
-            ));
+            ]);
             $cache->addPlugin($ignoreUserAbort);
             
             $optimise = new Plugin\OptimizeByFactor();
-            $optimise->setOptions(array (
+            $optimise->setOptions([
                 "optimizing_factor" => $pluginsConfig["optimise"]["optimisingFactor"]
-            ));
+            ]);
             $cache->addPlugin($optimise);
             
             $serialiser = new Plugin\Serializer();

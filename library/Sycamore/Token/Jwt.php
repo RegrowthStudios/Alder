@@ -26,6 +26,8 @@
     use Lcobucci\JWT\Parser;
     use Lcobucci\JWT\ValidationData;
     
+    use Zend\ServiceManager\ServiceLocatorInterface;
+    
     class Jwt
     {
         /**
@@ -38,14 +40,14 @@
         /**
          * Supported signing methods.
          */
-        const SIGNERS = array (
-            "HS256" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha256", "asymmetric" => false),
-            "HS384" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha384", "asymmetric" => false),
-            "HS512" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha512", "asymmetric" => false),
-            "RS256" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha256",  "asymmetric" =>  true),
-            "RS384" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha384",  "asymmetric" =>  true),
-            "RS512" => array ( "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha512",  "asymmetric" =>  true),
-        );
+        const SIGNERS = [
+            "HS256" => [ "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha256", "asymmetric" => false],
+            "HS384" => [ "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha384", "asymmetric" => false],
+            "HS512" => [ "class" => "\\Lcobucci\\JWT\\Signer\\Hmac\\Sha512", "asymmetric" => false],
+            "RS256" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha256",  "asymmetric" =>  true],
+            "RS384" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha384",  "asymmetric" =>  true],
+            "RS512" => [ "class" => "\\Lcobucci\\JWT\\Signer\\RSA\\Sha512",  "asymmetric" =>  true],
+        ];
         
         /**
          * The JWT token for the instance.
@@ -62,12 +64,20 @@
         protected $state = NULL;
         
         /**
+         * The service manager for this application instance.
+         * 
+         * @var \Zend\ServiceManager\ServiceLocatorInterface
+         */
+        protected $serviceManager;
+        
+        /**
          * Constructs a token object from the token string if given.
          * 
          * @param string $token
          */
-        public function __construct($token = NULL)
+        public function __construct(ServiceLocatorInterface& $serviceManager, $token = NULL)
         {
+            $this->serviceManager = $serviceManager;
             if (!is_null($token)) {
                 $this->token = (new Parser())->parse((string) $token);
             }
@@ -200,10 +210,19 @@
          */
         public function validate($data)
         {
+            // If state of token is already known, just send previous result.
+            if (!is_null($this->state)) {
+                return $this->state;
+            }
+            
+            // Validate provided data.
             $verifiedData = ArrayUtils::validateArrayLike($data, get_class($this));
             
+            // Grab application config.
+            $config = $this->serviceManager->get("Config")["Sycamore"];
+            
             // Acquire signing method or fail.
-            $signMethod = Application::getConfig()->security->tokenHashAlgorithm;
+            $signMethod = $config["security"]["tokenHashAlgorithm"];
             if (isset($verifiedData["signMethod"])) {
                 $signMethod = $verifiedData["signMethod"];
             }
@@ -212,9 +231,9 @@
             }
             
             // Acquire public key or fail.
-            $key = Application::getConfig()->security->tokenPrivateKey;
+            $key = $config["security"]["tokenPrivateKey"];
             if (self::SIGNERS[$signMethod]["asymmetric"]) {
-                $key = Application::getConfig()->security->tokenPublicKey;
+                $key = $config["security"]["tokenPublicKey"];
             }
             if (isset($verifiedData["key"])) {
                 $key = $verifiedData["key"];
@@ -237,8 +256,8 @@
             $validationFilters = new ValidationData();
             if (isset($verifiedData["validators"])) {
                 $validators = $verifiedData["validators"];
-                $validationFilters->setIssuer(isset($validators["iss"]) ? $validators["iss"] : Application::getConfig()->domain);
-                $validationFilters->setAudience(isset($validators["aud"]) ? $validators["aud"] : Application::getConfig()->domain);
+                $validationFilters->setIssuer(isset($validators["iss"]) ? $validators["iss"] : $config["domain"]);
+                $validationFilters->setAudience(isset($validators["aud"]) ? $validators["aud"] : $config["domain"]);
                 if (isset($validators["currentTime"])) {
                     $validationFilters->setCurrentTime($validators["currentTime"]);
                 }
@@ -259,6 +278,16 @@
             // Token is valid!
             $this->state = self::VALID;
             return $this->state;
+        }
+        
+        /**
+         * Returns the token as a string.
+         * 
+         * @return string
+         */
+        public function __toString()
+        {
+            return strval($this->token);
         }
     }
     

@@ -1,22 +1,4 @@
 <?php
-
-/*
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
     namespace Sycamore\Token;
 
     use Sycamore\Application;
@@ -28,6 +10,13 @@
 
     use Zend\ServiceManager\ServiceLocatorInterface;
 
+    /**
+     * Wrapper object for Lcobucci's Token object.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     class Jwt
     {
         /**
@@ -73,7 +62,8 @@
         /**
          * Constructs a token object from the token string if given.
          *
-         * @param string $token
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this application instance.
+         * @param string $token The token to initialise this instance with.
          */
         public function __construct(ServiceLocatorInterface& $serviceManager, $token = NULL)
         {
@@ -86,7 +76,7 @@
         /**
          * Sets this Jwt insance's token as constructed from the given token string.
          *
-         * @param string $token
+         * @param string $token The token to set.
          */
         public function setToken($token)
         {
@@ -97,7 +87,7 @@
         /**
          * Returns the token's payload in string form.
          *
-         * @return string
+         * @return string The payload of the current token.
          */
         public function getPayload()
         {
@@ -107,12 +97,12 @@
         /**
          * Gets the requested head item if it exists.
          *
-         * @param string $name
-         * @param mixed $default
+         * @param string $name The name of the header to fetch.
+         * @param mixed $default A default value to return if no header exists.
          *
-         * @return mixed
+         * @return mixed The item at the specified header location, or the specified default.
          *
-         * @throws OutOfBoundsException
+         * @throws \OutOfBoundsException If no item exists at the specified header location and no default was specified.
          */
         public function getHeader($name, $default = NULL)
         {
@@ -126,7 +116,7 @@
         /**
          * Returns all head items in this token.
          *
-         * @return array
+         * @return array The headers of the current token.
          */
         public function getHeaders()
         {
@@ -136,12 +126,12 @@
         /**
          * Gets the requested claim item if it exists.
          *
-         * @param string $name
-         * @param mixed $default
+         * @param string $name The name of the claim to fetch.
+         * @param mixed $default The default value to return if no claim is found.
          *
-         * @return mixed
+         * @return mixed The value of the claim fetched or the default value if no claim value exists at the specified location.
          *
-         * @throws OutOfBoundsException
+         * @throws \OutOfBoundsException If no value exists at the specified claim location, and no default was specified.
          */
         public function getClaim($name, $default = NULL)
         {
@@ -155,7 +145,7 @@
         /**
          * Returns all claim items in this token.
          *
-         * @return array
+         * @return array The claims of the current token.
          */
         public function getClaims()
         {
@@ -165,9 +155,9 @@
         /**
          * Determines if the given claim exists in this token.
          *
-         * @param string $name
+         * @param string $name The claim item to determine the existence of.
          *
-         * @return bool
+         * @return bool True if the item exists, false otherwise.
          */
         public function hasClaim($name)
         {
@@ -177,9 +167,9 @@
         /**
          * Determines if the given head item exists in this token.
          *
-         * @param string $name
+         * @param string $name The header item to determine the existence of.
          *
-         * @return bool
+         * @return bool True if the item exists, false otherwise.
          */
         public function hasHeader($name)
         {
@@ -190,25 +180,25 @@
          * Verifies the token's signature is valid, and then validates the public claims against the provided validators.
          *
          * Data form should be similar to:
-         * array (
+         * [
          *   "signMethod" => "HS512",
          *   "key" => <KEY>,
-         *   "validators" => array ( // OPTIONAL
+         *   "validators" => [
          *     "iss" => "example.com", // Alternatively: ["example.com", "example.org"]
          *     "aud" => "example.org",
          *     "currentTime" => time() + 3600,
          *     "sub" => "user",
          *     "jti" => "12ae2qawd24"
-         *   )
-         * );
+         *   ]
+         * ];
          *
-         * @param array|\Traversable $data
+         * @param array|\Traversable $data The data to validate against.
          *
-         * @return integer
+         * @return int Jwt::VALID if the token is valid, otherwise Jwt::INVALID_SIGNATURE if signature are invalid or Jwt::INVALID_PUBLIC_CLAIMS if public claims are invalid.
          *
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If data related to signing of token is invalid.
          */
-        public function validate($data)
+        public function validate($data = [])
         {
             // If state of token is already known, just send previous result.
             if (!is_null($this->state)) {
@@ -284,7 +274,7 @@
         /**
          * Returns the token as a string.
          *
-         * @return string
+         * @return string The string form of the current token.
          */
         public function __toString()
         {

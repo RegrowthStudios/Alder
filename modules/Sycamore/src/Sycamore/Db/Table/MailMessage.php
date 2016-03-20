@@ -1,24 +1,4 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Db\Table;
     
     use Sycamore\Db\Row\MailMessage as MailMessageRow;
@@ -30,6 +10,7 @@
      * Table representation class for mail messages.
      * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @since 0.1.0
      */
     class MailMessage extends AbstractObjectTable
@@ -50,7 +31,7 @@
          * @param bool $sent The sent state to fetch against.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return \Zend\Db\ResultSet\ResultSet
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched mail messages.
          */
         public function getBySent($sent, $forceDbFetch = false)
         {
@@ -63,7 +44,7 @@
          * @param bool $cancelled The cancellation state to fetch against.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return \Zend\Db\ResultSet\ResultSet
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched mail messages.
          */
         public function getByCancelled($cancelled, $forceDbFetch = false)
         {
@@ -76,7 +57,7 @@
          * @param string $purpose The purpose of the mail messages to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return \Zend\Db\ResultSet\ResultSet
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched mail messages.
          */
         public function getByPurpose($purpose, $forceDbFetch = false)
         {
@@ -89,7 +70,7 @@
          * @param int $sendTimeMin The minimum time that a mail message should be sent at.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return Zend\Db\ResultSet\ResultSet
+         * @return Zend\Db\ResultSet\ResultSet The set of fetched mail messages.
          */
         public function getBySendTimeMin($sendTimeMin, $forceDbFetch = false)
         {
@@ -102,7 +83,7 @@
          * @param int $sendTimeMax The maximum time that a mail message should be sent at.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return Zend\Db\ResultSet\ResultSet
+         * @return Zend\Db\ResultSet\ResultSet The set of fetched mail messages.
          */
         public function getBySendTimeMax($sendTimeMax, $forceDbFetch = false)
         {
@@ -116,7 +97,7 @@
          * @param int $sendTimeMax The maximum time that a mail message should be sent at.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return Zend\Db\ResultSet\ResultSet
+         * @return Zend\Db\ResultSet\ResultSet The set of fetched mail messages.
          */
         public function getBySendTimeRange($sendTimeMin, $sendTimeMax, $forceDbFetch = false)
         {

@@ -1,29 +1,17 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Serialiser;
     
     use Zend\Serializer\Adapter\AdapterOptions;
     use Zend\Serializer\Serializer;
     
+    /**
+     * Facilitates serialisation of data via various serialisation methods.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     * @abstract
+     */
     abstract class AbstractSerialiser
     {
         /**
@@ -49,7 +37,7 @@
         /**
          * Constructs the instance's serialiser if not already constructed and returns it.
          * 
-         * @return \Zend\Serializer\Adapter\AbstractAdapter
+         * @return \Zend\Serializer\Adapter\AbstractAdapter The serialiser adapter.
          */
         protected static function getSerialiser()
         {
@@ -65,9 +53,9 @@
         /**
          * Encodes the given data appropriately, returning a string of the encoded form.
          * 
-         * @param mixed $data
+         * @param mixed $data The data to be serialised.
          * 
-         * @return string
+         * @return string The serialisation result.
          */
         public static function encode($data)
         {
@@ -77,9 +65,9 @@
         /**
          * Decodes the given data appropriately, returning the decode results. Objects are decoded as associative arrays.
          * 
-         * @param string $data
+         * @param string $data The serialised data to be unserialised.
          * 
-         * @return mixed
+         * @return mixed The unserialisation result.
          */
         public static function decode($data)
         {

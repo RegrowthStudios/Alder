@@ -1,22 +1,4 @@
 <?php
-
-/* 
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
     namespace Sycamore\User;
     
     use Zend\ServiceManager\ServiceLocatorInterface;
@@ -25,6 +7,7 @@
      * Security holds functions for ensuring the security of the user experience.
      * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @since 0.1.0
      */
     class Security
@@ -39,7 +22,7 @@
         /**
          * Prepares the sercurity utility by injecting the service manager.
          * 
-         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager
+         * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this instance of the application.
          */
         public function __construct(ServiceLocatorInterface& $serviceManager)
         {
@@ -49,9 +32,9 @@
         /**
          * Return hashed password.
          *
-         * @var string $password
+         * @var string $password The password to hash.
          *
-         * @return string
+         * @return string The hashed result.
          */
         public function hashPassword($password)
         {
@@ -61,10 +44,10 @@
         /**
          * Verifies given password is the same as given hash.
          *
-         * @var string $password
-         * @var string $hash
+         * @var string $password The password to verifiy.
+         * @var string $hash The hash to verify against.
          *
-         * @return boolean
+         * @return bool True if the password is valid, false otherwise.
          */
         public function verifyPassword($password, $hash)
         {
@@ -74,9 +57,9 @@
         /**
          * Verifies if the given password needs rehashing.
          *
-         * @var string $password
+         * @var string $password The password to determine the need for a rehash of.
          *
-         * @return boolean
+         * @return bool True if the password needs rehashing, false otherwise.
          */
         public function passwordNeedsRehash($password)
         {

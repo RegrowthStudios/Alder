@@ -1,22 +1,4 @@
 <?php
-
-/*
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
     namespace Sycamore\Token;
 
     use Sycamore\Application;
@@ -29,10 +11,12 @@
 
     use Zend\ServiceManager\ServiceLocatorInterface;
 
+    // TODO(Matthew): Make unique exceptions for this method.
     /**
      * Factory for constructing JWT tokens.
      *
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @since 0.1.0
      */
     class JwtFactory
@@ -41,35 +25,37 @@
          * Creates a JWT token from an array, or array-like set of data.
          *
          * Data form should be similar to:
-         * array (
+         * [
          *   "signMethod" => "HS512",
          *   "key" => <KEY>,
          *   "keyPassphrase" => <KEY_PASSPHRASE>
          *   "tokenLifetime" => 36400,
-         *   "registeredClaims" => array ( // OPTIONAL
+         *   "registeredClaims" => [ // OPTIONAL
          *     "iss" => "example.org",
          *     "sub" => "user",
          *     "aud" => "example.com", // Alternatively: ["example.com", "example.org"].
          *     "iat" => time(),
          *     "nbf" => time(),
          *     "jti" => "12ae2qawd24",
-         *   ),
-         *   "applicationPayload" => array ( // OPTIONAL
+         *   ],
+         *   "applicationPayload" => [ // OPTIONAL
          *     "id" => 1,
          *     "username" => "JohnSmith42",
          *     "email" => "john.smith42@example.com"
-         *   ),
-         *   "privateClaims" => array ( // OPTIONAL
-         *     <CUSTOM_MODULE_NAMESPACE> => array (
+         *   ],
+         *   "privateClaims" => [ // OPTIONAL
+         *     <CUSTOM_MODULE_NAMESPACE> => [
          *       <DATA_POINT_KEY> => <DATA_POINT_VALUE>
-         *     )
-         *   )
-         * )
+         *     ]
+         *   ]
+         * ]
          *
-         * @param array|\Traversable|\ArrayAccess $data
+         * @param array|\Traversable|\ArrayAccess $data The data to create the token from.
          *
-         * @return \Sycamore\Token\Jwt
-         * @throws \DomainException
+         * @return \Sycamore\Token\Jwt The resulting token.
+         * 
+         * @throws \InvalidArgumentException If $data is of invalid type, or if signing method is invalid, or if private claims are in invalid form.
+         * @throws \DomainException If the token's lifetime is not specified.
          */
         public static function create(ServiceLocatorInterface& $serviceManager, $data)
         {

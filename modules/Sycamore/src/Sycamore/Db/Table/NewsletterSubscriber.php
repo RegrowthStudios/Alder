@@ -1,24 +1,4 @@
 <?php
-
-/* 
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Db\Table;
     
     use Sycamore\Db\Row\NewsletterSubscriber as NewsletterSubscriberRow;
@@ -30,6 +10,7 @@
      * Table representation class for newsletter subscribers.
      * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @since 0.1.0
      */
     class NewsletterSubscriber extends AbstractObjectTable
@@ -50,7 +31,7 @@
          * @param string $email The email of the newsletter subscriber to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return \Sycamore\Db\Row\NewsletterSubscriber
+         * @return \Sycamore\Db\Row\NewsletterSubscriber The fetched newsletter subscriber.
          */
         public function getByEmail($email, $forceDbFetch = false)
         {
@@ -63,7 +44,7 @@
          * @param array $emails The emails of the newsletter subscribers to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return \Zend\Db\ResultSet\ResultSet
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched newsletter subscribers.
          */
         public function getByEmails($emails, $forceDbFetch = false)
         {

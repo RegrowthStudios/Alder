@@ -1,31 +1,16 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Scheduler\Task;
     
+    use Sycamore\Scheduler\Exception\MissingDataException;
+    use Sycamore\Scheduler\Exception\MissingExecuteTimeException;
     use Sycamore\Scheduler\Task\TaskInterface;
     
     /**
      * Abstract task class used as a base for all task objects.
      * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      * @abstract
      */
     abstract class AbstractTask implements TaskInterface
@@ -59,7 +44,9 @@
             if ($this->modified) {
                 try {
                     $this->buildTask();
-                } catch (\Exception $ex) {
+                } catch (MissingDataException $ex) {
+                    throw $ex;
+                } catch (MissingExecuteTimeException $ex) {
                     throw $ex;
                 }
             }
@@ -69,8 +56,8 @@
         /**
          * Builds the task and returns it.
          * 
-         * @throws \Sycamore\Scheduler\Exception\MissingDataException
-         * @throws \Sycamore\Scheduler\Exception\MissingExecuteTimeException
+         * @throws \Sycamore\Scheduler\Exception\MissingDataException If data is missing needed to build the task.
+         * @throws \Sycamore\Scheduler\Exception\MissingExecuteTimeException If the executive time is missing.
          * 
          * @abstract
          */
@@ -325,10 +312,10 @@
         /**
          * Sets the given value to the given key in data.
          * 
-         * @param string $key
-         * @param mixed $value
+         * @param string $key The key of the value to set.
+         * @param mixed $value The value to set.
          * 
-         * @return \Sycamore\Scheduler\AbstractTask
+         * @return \Sycamore\Scheduler\AbstractTask This instance of task for chaining sets.
          */
         protected function set($key, $value)
         {
@@ -340,16 +327,16 @@
         /**
          * Gets the value at the given key if it exists.
          * 
-         * @param string $key
+         * @param string $key The key of the value to get.
          * 
-         * @return mixed
+         * @return mixed The value fetched.
          * 
-         * @throws \Exception
+         * @throws \InvalidArgumentException If the key given is invalid or not yet set for this task.
          */
         protected function get($key)
         {
             if (!isset($this->data[$key])) {
-                throw new \Exception("$key has not been set or is invalid.");
+                throw new \InvalidArgumentExceptionException("$key has not been set or is invalid.");
             }
             return $this->data[$key];
         }
@@ -357,9 +344,9 @@
         /**
          * Determines if the given key has been set in this task.
          * 
-         * @param string $key
+         * @param string $key The key to ascertain if a value exists for it.
          * 
-         * @return bool
+         * @return bool True if a value exists at the given key, false otherwise.
          */
         protected function has($key)
         {

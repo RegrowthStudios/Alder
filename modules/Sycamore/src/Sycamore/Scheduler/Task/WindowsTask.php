@@ -1,24 +1,4 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Scheduler\Task;
     
     use Sycamore\Scheduler\Exception\MissingDataException;
@@ -27,6 +7,13 @@
     use Sycamore\Scheduler\Task\AbstractTask;
     use Sycamore\Stdlib\UniqueID;
     
+    /**
+     * The Windows-specific task implementation.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     class WindowsTask extends AbstractTask
     {
         const MODIFIER_LASTDAY = "LASTDAY";
@@ -114,11 +101,11 @@
         /**
          * Set the modifier for the task given the schedule type.
          * 
-         * @param string $modifier
+         * @param string $modifier The modifier for this task.
          * 
-         * @return \Sycamore\Scheduler\Task\WindowsTask
+         * @return \Sycamore\Scheduler\Task\WindowsTask The task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $modifier is not a string.
          */
         public function setModifier($modifier)
         {
@@ -131,9 +118,9 @@
         /**
          * Gets the modifier for this task.
          *
-         * @return string
+         * @return string The modifier for this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the modifier has not yet been set for this task.
          */
         public function getModifier()
         {
@@ -147,7 +134,7 @@
         /**
          * Determines if the modifier has been set for this task.
          * 
-         * @return bool
+         * @return bool True if the modifier has been set, false otherwise.
          */
         public function hasModifier()
         {
@@ -158,11 +145,11 @@
          * Set the duration for the task.
          * Duration should be in an [HHHH:MM] format.
          * 
-         * @param string $duration
+         * @param string $duration The duration to execute this task over.
          * 
-         * @return \Sycamore\Scheduler\Task\WindowsTask
+         * @return \Sycamore\Scheduler\Task\WindowsTask This task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $duration is not a string.
          */
         public function setDuration($duration)
         {
@@ -175,9 +162,9 @@
         /**
          * Gets the duration for this task.
          *
-         * @return string
+         * @return string The duration of this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the duration for this task is not yet set.
          */
         public function getDuration()
         {
@@ -191,7 +178,7 @@
         /**
          * Determines if the duration has been set for this task.
          * 
-         * @return bool
+         * @return bool True if the duration is set for this task, false otherwise.
          */
         public function hasDuration()
         {

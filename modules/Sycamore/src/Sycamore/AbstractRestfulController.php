@@ -1,30 +1,17 @@
 <?php
-
-/* 
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
     namespace Sycamore;
     
     use Zend\Mvc\Controller\AbstractRestfulController as ZendAbstractRestfulController;
     
     /**
      * Extension of the Zend RESTful controller.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @abstract
      */
-    class AbstractRestfulController extends ZendAbstractRestfulController
+    abstract class AbstractRestfulController extends ZendAbstractRestfulController
     {
         /**
          * Contains data about the OPTIONS request method, generalised for all controllers.
@@ -48,7 +35,9 @@
         protected $options = [];
         
         /**
-         * Prepares and sends the OPTIONS header & body for the given controller instance.
+         * Prepares documentation to be sent for an OPTION type request.
+         * 
+         * @return \Zend\Stdlib\ResponseInterface The response resulting from processing the request.
          */
         public function options()
         {
@@ -58,26 +47,29 @@
             $this->response->setStatusCode(200);
             $this->response->getHeaders()->addHeaderLine("Allow", $allowHeader);
             $this->response->setContent($body);
+            
+            return $this->response;
         }
         
         /**
-         * Handle the current request.
+         * Handles dispatching the current request to the correct action.
          *
-         * @param  \Zend\Mvc\MvcEvent $e
+         * @param \Zend\Mvc\MvcEvent $event The event object for the dispatch event trigger.
          * 
-         * @return mixed
-         * @throws \Zend\Mvc\Exception\DomainException if no route matches in event or invalid HTTP method
+         * @return mixed The result of processing the request.
+         * 
+         * @throws \Zend\Mvc\Exception\DomainException If no route matches in event or invalid HTTP method
          */
-        public function onDispatch(\Zend\Mvc\MvcEvent $e)
+        public function onDispatch(\Zend\Mvc\MvcEvent $event)
         {
             // Grab route match and ensure it is valid.
-            $routeMatch = $e->getRouteMatch();
+            $routeMatch = $event->getRouteMatch();
             if (!$routeMatch) {
                 throw new Exception\DomainException('Missing route matches; unsure how to retrieve action.');
             }
 
             // Grab request.
-            $request = $e->getRequest();
+            $request = $event->getRequest();
 
             // If an action is specified, perform that action.
             $action  = $routeMatch->getParam('action', false);
@@ -88,7 +80,7 @@
                     $method = 'notFoundAction';
                 }
                 $return = $this->$method();
-                $e->setResult($return);
+                $event->setResult($return);
                 return $return;
             }
 
@@ -99,7 +91,7 @@
                 case (isset($this->customHttpMethodsMap[$method])):
                     $callable = $this->customHttpMethodsMap[$method];
                     $action = $method;
-                    $return = call_user_func($callable, $e);
+                    $return = call_user_func($callable, $event);
                     break;
                 // DELETE
                 case 'delete':
@@ -124,7 +116,7 @@
                 case 'head':
                     $action = 'head';
                     $headResult = $this->head();
-                    $response = ($headResult instanceof Response) ? clone $headResult : $e->getResponse();
+                    $response = ($headResult instanceof Response) ? clone $headResult : $event->getResponse();
                     $response->setContent('');
                     $return = $response;
                     break;
@@ -132,7 +124,7 @@
                 case 'options':
                     $action = 'options';
                     $this->options();
-                    $return = $e->getResponse();
+                    $return = $event->getResponse();
                     break;
                 // PATCH
                 case 'patch':
@@ -169,13 +161,13 @@
                     break;
                 // All others...
                 default:
-                    $response = $e->getResponse();
+                    $response = $event->getResponse();
                     $response->setStatusCode(405);
                     return $response;
             }
 
             $routeMatch->setParam('action', $action);
-            $e->setResult($return);
+            $event->setResult($return);
             return $return;
         }
     }

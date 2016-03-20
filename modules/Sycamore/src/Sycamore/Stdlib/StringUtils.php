@@ -1,26 +1,13 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Stdlib;
     
+    /**
+     * Provides utility functions for operating on strings.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     class StringUtils
     {
         /**
@@ -73,7 +60,8 @@
          * 
          * @param string $haystack The string to evaluate the ending of.
          * @param string $needle The string to search for at the end of $haystack.
-         * @return boolean True if $haystack ends with $needle, false otherwise.
+         * 
+         * @return bool True if $haystack ends with $needle, false otherwise.
          */
         public static function endsWith($haystack, $needle)
         {

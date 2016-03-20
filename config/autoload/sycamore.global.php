@@ -30,7 +30,7 @@
             "cache" => [ /* Cache Details */
                 "namespace" => "sycamore_cache", // Namespace in which all application data is cached.
                 "timeToLive" => 1800/*30 Mins*/, // How long does the data live for in cache?
-                "adapter" => "memcache", // Name of the type of cache to use.
+                "adapter" => "filesystem", // Name of the type of cache to use.
                 "plugins" => [ /* Cache Plugin Details */
                     "clearExpired" => [ /* Cache Clearing Plugin */
                         "clearingFactor" => 100, // The probability that the clearing function will be called on a caching operation (1/n, where n is the value here).
@@ -53,7 +53,8 @@
                     "password" => "", // The password with which to connect to the database.
                     "charset" => "utf8", // The charset to use in communicating with database.
                 ],
-                "tablePrefix" => "",
+                "tablePrefix" => "", // The prefix to be added to all table names for the application.
+                "forceDbFetch" => false, // Whether to force DB fetches and skip the cache. This is NOT recommended outside of development.
             ],
             "domain" => "example.com", // Domain of the application.
             "email" => [ /* Email Details */

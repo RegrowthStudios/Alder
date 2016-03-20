@@ -1,9 +1,7 @@
 nbproject/
-library/Zend/
-library/Lcobucci/
-library/ProxyManager/
-library/Sycamore/OLD/
-modules/Sycamore/src/Sycamore/Controller/API/OLD/
+modules/Sycamore/src/Sycamore/OLD/
 logs/
 docs/
 licenses/
+vendor/
+composer.lock

@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,10 +18,10 @@
  */
 
     namespace Sycamore;
-    
+
     use Sycamore\Cache\TableCache;
     use Sycamore\Serialiser\API;
-    
+
     use Zend\Cache\Storage\Plugin;
     use Zend\Cache\StorageFactory;
     use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
@@ -30,23 +30,15 @@
     use Zend\Mvc\ModuleRouteListener;
     use Zend\Mvc\MvcEvent;
     use Zend\ServiceManager\ServiceManager;
-    
+
     /**
      * Module class for Sycamore.
      */
     class Module implements AutoloaderProviderInterface, ConfigProviderInterface
-    {
-        /**
-         * Define the module directory constant.
-         */
-        public function __construct()
-        {
-            define("SYCAMORE_MODULE_DIRECTORY", MODULES_DIRECTORY."/Sycamore");
-        }
-        
+    {        
         /**
          * Initialises listeners during the bootstrap process.
-         * 
+         *
          * @param MvcEvent $e
          */
         public function onBootstrap(\Zend\Mvc\MvcEvent $e)
@@ -54,19 +46,19 @@
             $eventManager = $e->getApplication()->getEventManager();
             $moduleRouteListener = new ModuleRouteListener();
             $moduleRouteListener->attach($eventManager);
-            
+
             $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR,  [$this, "onDispatchError"], 10);
-            
+
             $serviceManager = $e->getApplication()->getServiceManager();
             $this->prepareServices($serviceManager);
         }
-        
+
         // TODO(Matthew): Use a language object for strings presented to user.
         /**
          * Returns a JSON model of the dispatch error in the provided event. Returns void if no error exists.
-         * 
+         *
          * @param MvcEvent $e
-         * 
+         *
          * @return mixed
          */
         public function onDispatchError(\Zend\Mvc\MvcEvent $e)
@@ -77,7 +69,7 @@
             if ($e->getError() == Application::ERROR_ROUTER_NO_MATCH) {
                 $response->setStatusCode(404);
                 $response->setContent(API::encode(["error" => "No route match was found for the given URI."]));
-            } else if ($e->getError() == Application::ERROR_CONTROLLER_NOT_FOUND 
+            } else if ($e->getError() == Application::ERROR_CONTROLLER_NOT_FOUND
                     || $e->getError() == Application::ERROR_CONTROLLER_INVALID
                     || $e->getError() == Application::ERROR_CONTROLLER_CANNOT_DISPATCH
                     || $e->getError() == Application::ERROR_EXCEPTION
@@ -94,20 +86,20 @@
             }
             return $response;
         }
-                
+
         /**
          * Returns an array of configuration options for the module.
-         * 
+         *
          * @return array
          */
         public function getConfig()
         {
             return include SYCAMORE_MODULE_DIRECTORY."/config/module.config.php";
         }
-        
+
         /**
          * Returns an array of configuration options for the autoloader for this module.
-         * 
+         *
          * @return array
          */
         public function getAutoloaderConfig()
@@ -120,10 +112,10 @@
                 ]
             ];
         }
-        
+
         /**
          * Prepares all of the services required by the Sycamore module.
-         * 
+         *
          * @param ServiceManager $serviceManager The service manager to attach the created services to.
          */
         protected function prepareServices(ServiceManager& $serviceManager)
@@ -131,59 +123,58 @@
             $this->createDatabaseCacheService($serviceManager);
             $this->createSycamoreTableCacheService($serviceManager);
         }
-        
+
         /**
          * Creates the database caching service.
-         * 
+         *
          * @param ServiceManager $serviceManager The service manager to attach the database caching services to.
          */
         protected function createDatabaseCacheService(ServiceManager& $serviceManager)
         {
             $cacheConfig = $serviceManager->get("Config")["Sycamore"]["cache"];
-            
-            $cache = StorageFactory::factory( [
+
+            $cache = StorageFactory::factory([
                 "adapter" => $cacheConfig["adapter"],
                 "options" => [
                     "ttl" => $cacheConfig["timeToLive"],
                 ],
                 "namespace" => $cacheConfig["namespace"]
             ]);
-            
+
             $pluginsConfig = $cacheConfig["plugins"];
-            
+            $pluginOptions = new Plugin\PluginOptions([
+                "ClearingFactor" => $pluginsConfig["clearExpired"]["clearingFactor"],
+                "ExitOnAbort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"],
+                "OptimizingFactor" => $pluginsConfig["optimise"]["optimisingFactor"],
+            ]);
+
             $clearExpired = new Plugin\ClearExpiredByFactor();
-            $clearExpired->setOptions([
-                "clearing_factor" => $pluginsConfig["clearExpired"]["clearingFactor"]
-            ]);
+            $clearExpired->setOptions($pluginOptions);
             $cache->addPlugin($clearExpired);
-            
+
             $ignoreUserAbort = new Plugin\IgnoreUserAbort();
-            $ignoreUserAbort->setOptions([
-                "exit_on_abort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"]
-            ]);
+            $ignoreUserAbort->setOptions($pluginOptions);
             $cache->addPlugin($ignoreUserAbort);
-            
+
             $optimise = new Plugin\OptimizeByFactor();
-            $optimise->setOptions([
-                "optimizing_factor" => $pluginsConfig["optimise"]["optimisingFactor"]
-            ]);
+            $optimise->setOptions($pluginOptions);
             $cache->addPlugin($optimise);
-            
+
             $serialiser = new Plugin\Serializer();
             $cache->addPlugin($serialiser);
-            
-            $serviceManager->setService("DbCache", $cache);
+
+            $serviceManager->setService("SycamoreDbCache", $cache);
         }
-        
+
         /**
          * Creates the Sycamore table caching service.
-         * 
+         *
          * @param ServiceManager $serviceManager The service manager to attach the Sycamore table caching services to.
          */
         protected function createSycamoreTableCacheService(ServiceManager& $serviceManager)
         {
-            $tableCache = new TableCache($serviceManager, "Sycamore\\Table\\");
-            
+            $tableCache = new TableCache($serviceManager, "Sycamore\\Db\\Table\\");
+
             $serviceManager->setService("SycamoreTableCache", $tableCache);
         }
     }

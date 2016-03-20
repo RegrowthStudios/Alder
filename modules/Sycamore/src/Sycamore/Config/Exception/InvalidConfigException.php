@@ -22,8 +22,11 @@
     namespace Sycamore\Config\Exception;
     
     /**
+     * Custom exception for invalid config parameters.
+     * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016 Matthew Marshall
+     * @since 0.1.0
      */
     class InvalidConfigException extends \Exception
     {        

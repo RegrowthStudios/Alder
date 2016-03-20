@@ -1,24 +1,4 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Config;
     
     use Sycamore\Config\Exception\InvalidConfigException;
@@ -28,20 +8,27 @@
     use Zend\Config\Writer\PhpArray;
     
     /**
+     * Provides utility functions for editing config files.
+     * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
-     * @copyright 2016 Matthew Marshall
+     * @since 0.1.0
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      */
     class ConfigUtils
     {
         /**
          * Saves the given config object to the given filename.
          * 
+         * @static
+         * 
          * @param string $filename The filename at which to save the config to.
          * @param array|\Traversable|\Zend\Config\Config $config The configuration object to be saved.
          * 
-         * @throws \Sycamore\Config\Exception\InvalidConfigException if the config object wasn't in an expected form.
-         * @throws \InvalidArgumentException if the filename is blank.
-         * @throws \RuntimeException if there was an error writing to the file.
+         * @return bool True on successful save.
+         * 
+         * @throws \Sycamore\Config\Exception\InvalidConfigException If the config object wasn't in an expected form.
+         * @throws \InvalidArgumentException If the filename is blank.
+         * @throws \RuntimeException If there was an error writing to the file.
          */
         public static function save($filename, $config)
         {
@@ -65,5 +52,7 @@
             } catch (\RuntimeException $runtimeEx) {
                 throw $runtimeEx;
             }
+            
+            return true;
         }
     }

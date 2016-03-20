@@ -1,26 +1,13 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Scheduler\Task;
     
+    /**
+     * Interface for all tasks.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     interface TaskInterface
     {
         const SCHEDULE_ONCE = "ONCE";
@@ -34,9 +21,10 @@
          * Returns the task resulting from this task instance.
          * Throws an exception if not enough data has been specified to construct the task string.
          * 
-         * @return string
+         * @return string The string form of the task.
          * 
-         * @throws \Exception
+         * @throws \Sycamore\Scheduler\Exception\MissingDataException If data is missing needed to create the task string.
+         * @throws \Sycamore\Scheduler\Exception\MissingExecuteTimeException If the executive time is missing.
          */
         public function getTask();
         
@@ -45,47 +33,47 @@
          * the task removal reqires more work than just the execution
          * of a command (e.g. crontab).
          * 
-         * @return string
+         * @return string The resulting task removal string.
          * 
-         * @throws \Sycamore\Scheduler\Exception\UnusedTaskException
+         * @throws \Sycamore\Scheduler\Exception\UnusedTaskException If the task is yet to be used.
          */
         public function getTaskRm();
         
         /**
          * Sets the task string to be exactly the given string.
          * 
-         * @param string $task
+         * @param string $task The string form of the task.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $task is not a string.
          */
         public function setTask($task);
         
         /**
          * Sets the program or command to be ran by the task.
          * 
-         * @param string $job
+         * @param string $job The job for this task.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $job is not a string.
          */
         public function setJob($job);
         
         /**
          * Gets the program or command to be ran by the task.
          * 
-         * @return string
+         * @return string The job for this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the job has not yet been set.
          */
         public function getJob();
         
         /**
          * Determines if a job has been set for this task.
          * 
-         * @return bool
+         * @return bool True if this task has a job, false otherwise.
          */
         public function hasJob();
         
@@ -95,27 +83,27 @@
          * time need not be specified if it is a time-insensitive 
          * clean up task.
          * 
-         * @param array $date
+         * @param array $date The date to execute the task at.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $data is not an array.
          */
         public function setExecutiveDate($date);
         
         /**
          * Gets the date the task is scheduled for occurring on.
          * 
-         * @return int
+         * @return array The executive date for this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the executive date is not yet set for this task.
          */
         public function getExecutiveDate();
         
         /**
          * Determines if a date has been set for this task.
          * 
-         * @return bool
+         * @return bool True if the executive date is set, false otherwise.
          */
         public function hasExecutiveDate();
         
@@ -125,108 +113,108 @@
          * time need not be specified if it is a time-insensitive 
          * clean up task.
          * 
-         * @param array $time
+         * @param array $time The time to execute this task at.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $time is not an array.
          */
         public function setExecutiveTime($time);
         
         /**
          * Gets the time the task is scheduled for occurring on.
          * 
-         * @return int
+         * @return array The time to execute this task at.
          * 
-         * @throws \Exception
+         * @throws \Exception If the executive time has not yet been set for this task.
          */
         public function getExecutiveTime();
         
         /**
          * Determines if a time has been set for this task.
          * 
-         * @return bool
+         * @return bool True if the executive time is set, false otherwise.
          */
         public function hasExecutiveTime();
         
         /**
          * Set the months in which to execute this task.
          * 
-         * @param string $months
+         * @param string $months The months to execute this task on, comma-separated.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $months is not a string.
          */
         public function setExecutiveMonths($months);
         
         /**
          * Gets the executive months for this task.
          *
-         * @return string
+         * @return string The executive months for this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the executive months have not yet been set for this task.
          */
         public function getExecutiveMonths();
         
         /**
          * Determines if the executive months have been set for this task.
          * 
-         * @return bool
+         * @return bool True if the executive months are set, false otherwise.
          */
         public function hasExecutiveMonths();
         
         /**
          * Set the days on which to execute this task.
          * 
-         * @param string $days
+         * @param string $days The days to execute this task on, comma-separated.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $days is not a string.
          */
         public function setExecutiveDays($days);
         
         /**
          * Determines if the executive days have been set for this task.
          * 
-         * @return bool
+         * @return bool True if the executive days are set, false otherwise.
          */
         public function hasExecutiveDays();
         
         /**
          * Gets the executive days for this task.
          *
-         * @return string
+         * @return string The executive days for this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the executive days have not yet been set for this task.
          */
         public function getExecutiveDays();
         
         /**
          * Sets the schedule type for this task.
          * 
-         * @param string $scheduleType
+         * @param string $scheduleType The schedule type to set this task to.
          * 
-         * @return self
+         * @return \Sycamore\Scheduler\TaskInterface Own task instance for chaining sets.
          * 
-         * @throws \InvalidArgumentException
+         * @throws \InvalidArgumentException If $scheduleType is not one of the SCHEDULE_* consts defined in this interace.
          */
         public function setScheduleType($scheduleType);
         
         /**
          * Gets the schedule type of the task.
          * 
-         * @return string
+         * @return string The schedule type of this task.
          * 
-         * @throws \Exception
+         * @throws \Exception If the schedule type is not yet set for this task.
          */
         public function getScheduleType();
         
         /**
          * Determines if a schedule type has been set for this task.
          * 
-         * @return bool
+         * @return bool True if the schedule type is set, false otherwise.
          */
         public function hasScheduleType();
         
@@ -244,7 +232,7 @@
         /**
          * Determines if the ID has been set.
          * 
-         * @returns bool
+         * @returns bool True if the ID is set, false otherwise.
          */
         public function hasId();
         
@@ -252,7 +240,7 @@
          * Converts the task to an array and returns it. This array is 
          * compatible with the task factory.
          * 
-         * @return array
+         * @return array The array form of this task.
          */
         public function toArray();
     }

@@ -1,35 +1,23 @@
 <?php
-
-/**
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @license http://www.gnu.org/licenses/gpl.txt GNU General Public License 3.0
- */
-
     namespace Sycamore\Scheduler\Adapter;
     
     use Sycamore\OS\Shell;
     use Sycamore\Scheduler\Adapter\AdapterInterface;
+    use Sycamore\Scheduler\Task\TaskInterface;
     
+    /**
+     * Scheduling adapter for Windows systems.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
+     */
     class WindowsAdapter implements AdapterInterface
     {
         /**
          * {@inheritdoc}
          */
-        public function addTask(\Sycamore\Scheduler\Task\TaskInterface $task)
+        public function addTask(TaskInterface& $task)
         {
             // Ensure GB-styled dates and times work as expected.
             setlocale(LC_TIME, "en_GB");
@@ -47,7 +35,7 @@
         /**
          * {@inheritdoc}
          */
-        public function removeTask(\Sycamore\Scheduler\Task\TaskInterface $task)
+        public function removeTask(TaskInterface& $task)
         {
             // Remove task via shell.
             $result = Shell::execute($task->getTaskRm());

@@ -1,39 +1,25 @@
 <?php
-
-/* 
- * Copyright (C) 2016 Matthew Marshall <matthew.marshall96@yahoo.co.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
     namespace Sycamore\Stdlib;
 
     use Zend\Stdlib\ArrayUtils as ZendArrayUtils;
     
     /**
      * Holds functions for checking the existence of keys and values in arrays.
+     * 
+     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      */
     class ArrayUtils extends ZendArrayUtils
     {
         /**
          * Recursively checks if a value exists in an array.
          *
-         * @var string - The value to check for.
-         * @var array - The array to search through.
-         * @var boolean - Should value type match?
+         * @var string The value to check for.
+         * @var array The array to search through.
+         * @var bool Should value type match?
          *
-         * @return boolean
+         * @return bool If the item to search for exists in the given array.
          */
         public static function inArrayRecursive($needle, $haystack, $strict = false) 
         {
@@ -48,10 +34,10 @@
         /**
          * Recursively checks if a key exists in an array.
          *
-         * @var string - The key to check for.
-         * @var array - The array to search through.
+         * @var string The key to check for.
+         * @var array The array to search through.
          *
-         * @return boolean
+         * @return bool True if the array key to search for exists.
          */
         public static function arrayKeyExistsRecursive($key, $array)
         {
@@ -66,11 +52,9 @@
         /**
          * Recursively asorts the given array.
          * 
-         * @uses asort
-         * 
          * @param array $array The array to be sorted.
          * 
-         * @return bool True on success, False on failure.
+         * @return bool True on success, false on failure.
          */
         public static function recursiveAsort(& $array)
         {
@@ -85,11 +69,9 @@
         /**
          * Recursively ksorts the given array.
          * 
-         * @uses ksort
-         * 
          * @param array $array The array to be sorted.
          * 
-         * @return bool True on success, False on failure.
+         * @return bool True on success, false on failure.
          */
         public static function recursiveKsort(& $array)
         {
@@ -104,12 +86,13 @@
         /**
          * Checks data is array-like, and returns as an array-accessible type.
          * 
-         * @param mixed $data
-         * @param string $class
-         * @param bool $arrayOnly
+         * @param mixed $data The data to be validated.
+         * @param string $class The class of the caller for constructing exception message.
+         * @param bool $arrayOnly Whether the data should be able to be transformed into an array.
          * 
-         * @return array|\ArrayAccess
-         * @throws \InvalidArgumentException
+         * @return array|\ArrayAccess The resulting data cast into an array accessible form.
+         * 
+         * @throws \InvalidArgumentException If the data was in a form not castable into an array accessible form.
          */
         public static function validateArrayLike($data, $class, $arrayOnly = false)
         {

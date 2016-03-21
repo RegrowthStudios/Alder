@@ -7,8 +7,8 @@
      * Extension of the Zend RESTful controller.
      * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
-     * @since 0.1.0
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      * @abstract
      */
     abstract class AbstractRestfulController extends ZendAbstractRestfulController
@@ -23,6 +23,7 @@
             "body" => [
                 "OPTIONS" => [
                     "description" => "Provides a breakdown of the options for interacting with this particular URI.",
+                    "parameters" => [],
                 ],
             ],
         ];

@@ -5,10 +5,8 @@
     
     use Zend\Mvc\MvcEvent;
     use Zend\Mvc\Router\RouteMatch;
-    use Zend\Http\Headers;
     use Zend\Http\Request;
     use Zend\Http\Response;
-    use Zend\Stdlib\ParametersInterface;
     use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
     
     /**

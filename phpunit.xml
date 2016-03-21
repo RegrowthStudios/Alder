@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit
+    backupGlobals="false" 
+    backupStaticAttributes="false" 
+    colors="true"
+    bootstrap="tests/index.php"
+    verbose="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestSize="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    beStrictAboutTodoAnnotatedTests="true"
+    forceCoversAnnotation="true">
+    <testsuites>
+        <testsuite name="Sycamore Unit Tests">
+            <directory>tests/Sycamore/unit</directory>
+        </testsuite>
+        <testsuite name="Sycamore Integration Tests">
+            <directory>tests/Sycamore/functional</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

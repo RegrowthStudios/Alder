@@ -33,65 +33,160 @@
         }
         
         /**
+         * Prepares the controller and mvc event for testing the onDispatch function of \Sycamore\AbstractRestfulController. 
+         */
+        public function correctRoutingTestProvider()
+        {
+            $methodDefaults = [
+                "httpMethod" => "fake",
+                "expectedAction" => NULL,
+                "id" => false,
+                "bodyContent" => "",
+                "routeMatchGetParam" => false,
+                "queryGetParam" => false,
+                "expectedResponseCode" => NULL
+            ];
+            $methods = [
+                [
+                    "key" => "deleteSingular",
+                    "httpMethod" => "delete",
+                    "expectedAction" => "delete",
+                    "id" => 1,
+                ],
+                [
+                    "key" => "deleteMultiple",
+                    "httpMethod" => "delete",
+                    "expectedAction" => "deleteList",
+                ],
+                [
+                    "key" => "getSingular",
+                    "httpMethod" => "get",
+                    "expectedAction" => "get",
+                    "id" => 1,
+                ],
+                [
+                    "key" => "getMultiple",
+                    "httpMethod" => "get",
+                    "expectedAction" => "getList",
+                ],
+                [
+                    "key" => "getHead",
+                    "httpMethod" => "head",
+                    "expectedAction" => "head",
+                ],
+                [
+                    "key" => "getOptions",
+                    "httpMethod" => "options",
+                    "expectedAction" => "options",
+                ],
+                [
+                    "key" => "patchSingular",
+                    "httpMethod" => "patch",
+                    "expectedAction" => "patch",
+                    "id" => 1,
+                ],
+                [
+                    "key" => "patchMultiple",
+                    "httpMethod" => "patch",
+                    "expectedAction" => "patchList",
+                ],
+                [
+                    "key" => "createResource",
+                    "httpMethod" => "post",
+                    "expectedAction" => "processPostData",
+                ],
+                [
+                    "key" => "replaceResourceSingular",
+                    "httpMethod" => "put",
+                    "expectedAction" => "replace",
+                    "id" => 1,
+                ],
+                [
+                    "key" => "replaceResourceMultiple",
+                    "httpMethod" => "put",
+                    "expectedAction" => "replaceList",
+                ],
+                [
+                    "key" => "noMethodSpecified",
+                    "expectedResponseCode" => 405,
+                ],
+                [
+                    "key" => "testCustomAction",
+                    "expectedAction" => "testAction",
+                    "routeMatchGetParam" => "test",
+                ],
+            ];
+            
+            // Iterate over the different methods and yield the constructed mock abstract controller.
+            foreach ($methods as $method) {
+                // Merge in defaults.
+                $method = array_merge($methodDefaults, $method);
+                
+                $abstractRestfulController = $this->getMockBuilder(AbstractRestfulController::class)
+                        ->setMethods(($method["expectedAction"] !== NULL) ? ["getIdentifier", "processBodyContent", $method["expectedAction"]] : ["getIdentifier", "processBodyContent"])
+                        ->getMockForAbstractClass();
+                $abstractRestfulController->method("getIdentifier")
+                        ->willReturn($method["id"]);
+                $abstractRestfulController->method("processBodyContent")
+                        ->willReturn($method["bodyContent"]);
+                if ($method["expectedAction"] !== NULL) {
+                    if ($method["id"]) {
+                        $abstractRestfulController->expects($this->once())
+                                ->method($method["expectedAction"])
+                                ->with($method["id"]);
+                    } else {
+                        $abstractRestfulController->expects($this->once())
+                                ->method($method["expectedAction"]);
+                    }
+                }
+                
+                $routeMatch = $this->getMockBuilder(RouteMatch::class)
+                        ->setMethods(["getParam"])
+                        ->setConstructorArgs([[]])
+                        ->getMock();
+                $routeMatch->method("getParam")
+                        ->willReturn($method["routeMatchGetParam"]);
+
+                // Don't override any functions - we want Response to act normally.
+                $response = $this->getMock(Response::class, NULL);
+                
+                $mvcEvent = $this->getMockBuilder(MvcEvent::class)
+                        ->setMethods(["getRouteMatch", "getRequest", "getResponse"])
+                        ->getMock();
+                $mvcEvent->method("getRouteMatch")
+                        ->willReturn($routeMatch);
+                $mvcEvent->method("getResponse")
+                        ->willReturn($response);
+                
+                $request = $this->getMockBuilder(Request::class)
+                        ->setMethods(["getMethod"])
+                        ->getMock();
+
+                if ($method["httpMethod"] !== NULL) {
+                    $request->method("getMethod")
+                            ->willReturn($method["httpMethod"]);
+                }
+                
+                $mvcEvent->method("getRequest")
+                        ->willReturn($request);
+
+                yield $method["key"] => [$abstractRestfulController, $mvcEvent, $method["expectedResponseCode"]];
+            }
+        }
+        
+        /**
          * @test
+         * 
+         * @dataProvider correctRoutingTestProvider
          * 
          * @covers \Sycamore\AbstractRestfulController::onDispatch
          */
-        public function testDeleteActionCalledWithIdentifier()
+        public function testRequestCorrectlyRouted($abstractRestfulController, $mvcEvent, $expectedStatusCode)
         {
-            $abstractRestfulController = $this->getMockForAbstractClass(AbstractRestfulController::class);
-            $abstractRestfulController->method("getIdentifier")
-                    ->willReturn(1);
-            $abstractRestfulController->method("processBodyContent")
-                    ->willReturn("");
-            $abstractRestfulController->expects($this->once())
-                    ->method("delete")
-                    ->with(1);
-            
-            $response = $this->getMock(Response::class);
-            $response->expects($this->once())
-                    ->method("setStatusCode")
-                    ->with(405);
-            
-            $reflection = new \ReflectionClass($abstractRestfulController);
-            $reflectionProp = $reflection->getProperty("response");
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($abstractRestfulController, $response);
-            
-            $routeMatch = $this->getMock(RouteMatch::class, [], [[]]);
-            $routeMatch->method("getParam")
-                    ->will($this->returnCallback(function() {
-                        $args = func_get_args();
-                        var_dump($args);
-                        if ($args[0] == "id") {
-                            return 1;
-                        }
-                        return false;
-                    }));
-            
-            $query = $this->getMock(ParametersInterface::class);
-            $query->method("get")
-                    ->willReturn(false);
-            
-            $headers = $this->getMock(Headers::class);
-            $headers->method("get")
-                    ->willReturn(false);
-            
-            $request = $this->getMock(Request::class);
-            $request->method("getMethod")
-                    ->willReturn("DELETE");
-            $request->method("getQuery")
-                    ->willReturn($query);
-            $request->method("getHeaders")
-                    ->willReturn($headers);
-            
-            $mvcEvent = $this->getMock(MvcEvent::class);
-            $mvcEvent->method("getRouteMatch")
-                    ->willReturn($routeMatch);
-            $mvcEvent->method("getRequest")
-                    ->willReturn($request);
-            
-            $abstractRestfulController->onDispatch($mvcEvent);
+            $result = $abstractRestfulController->onDispatch($mvcEvent);
+            if ($expectedStatusCode !== NULL) {
+                $this->assertEquals($expectedStatusCode, $result->getStatusCode());
+            }
         }
         
         /**

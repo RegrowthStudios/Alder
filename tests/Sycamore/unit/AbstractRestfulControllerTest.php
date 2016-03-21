@@ -23,7 +23,6 @@
          */
         protected function setUp()
         {
-            
             $this->setApplicationConfig(
                 include CONFIG_DIRECTORY . "/sycamore.config.php"
             );

@@ -10,7 +10,7 @@
     use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
     
     /**
-     * Verify has functions related to creation and checking of verification tokens.
+     * Test functionality of the Sycamore AbstractRestfulController class.
      *
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>

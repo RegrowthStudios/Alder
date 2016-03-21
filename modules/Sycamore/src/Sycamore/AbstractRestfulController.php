@@ -110,8 +110,17 @@
                     break;
                 // GET
                 case 'get':
-                    $action = 'get';
-                    $return = $this->get();
+                    $id = $this->getIdentifier($routeMatch, $request);
+                    $data = $this->processBodyContent($request);
+
+                    if ($id !== false) {
+                        $action = 'get';
+                        $return = $this->get($id);
+                        break;
+                    }
+
+                    $action = 'getList';
+                    $return = $this->getList($data);
                     break;
                 // HEAD
                 case 'head':

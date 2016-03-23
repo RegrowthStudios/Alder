@@ -95,7 +95,7 @@
             $token = new Jwt($this->serviceManager, $slis);
 
             // Dump claims.
-            $tokenClaimsDump = $token->getClaims();
+            $tokenClaimsDump = $token->getClaims()[$this->serviceManager->get("Config")["Sycamore"]["domain"]];
 
             // Return validation of the JWT.
             return $token->validate([

@@ -55,7 +55,7 @@
             }
             
             // Visitor is logged in, add data here.
-            $this->data = array_merge($tokenPayload["applicationPayload"], [
+            $this->data = array_merge($tokenPayload, [
                 "isLoggedIn" => true
             ]);
         }

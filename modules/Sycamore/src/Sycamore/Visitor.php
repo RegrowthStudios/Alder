@@ -20,14 +20,32 @@
         protected $data;
         
         /**
+         * The service manager for this application instance.
+         *
+         * @var \Zend\ServiceManager\ServiceLocatorInterface
+         */
+        protected $serviceManager;
+        
+        /**
          * Grabs any existing session data if visitor is logged in and stores it.
          * 
          * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager The service manager for this application instance.
          */
         public function __construct(ServiceLocatorInterface& $serviceManager)
         {
+            $this->serviceManager = $serviceManager;
+            $this->prepareVisitor();
+        }
+        
+        /**
+         * Prepares the visitor object with information from any valid session data obtained.
+         * 
+         * @return void
+         */
+        protected function prepareVisitor()
+        {
             // Grab the user session helper.
-            $userSession = $serviceManager->get("Sycamore\User\Session");
+            $userSession = $this->serviceManager->get("Sycamore\User\Session");
             
             // Grab token payload if SLIS exists.
             $tokenPayload = [];

@@ -39,8 +39,6 @@
         
         /**
          * Prepares the visitor object with information from any valid session data obtained.
-         * 
-         * @return void
          */
         protected function prepareVisitor()
         {

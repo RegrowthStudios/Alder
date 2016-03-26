@@ -31,11 +31,6 @@
                 $explode = explode("/", $moduleDir);
                 $moduleDirs[$key] = end($explode);
             }
-            
-            $zf2ModulePaths = [
-                VENDOR_DIRECTORY,
-                MODULES_DIRECTORY
-            ];
 
             static::initAutoloader();
 

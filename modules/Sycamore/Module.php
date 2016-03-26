@@ -79,7 +79,7 @@
                 }
                 $response->setStatusCode(500);
                 if (ENV != PRODUCTION) {
-                    $response->setContent(API::encode(["error" => "A critical error: \n    " . $e->getError() . "\nhas occurred in processing this request. Please contact the service provider."]));
+                    $response->setContent(API::encode(["error" => "A critical error: \n    " . $e->getError() . "\nhas occurred in processing this request."]));
                 } else {
                     $response->setContent(API::encode(["error" => "A critical error has occurred in processing this request. Please contact the service provider."]));
                 }

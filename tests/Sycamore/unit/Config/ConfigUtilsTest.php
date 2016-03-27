@@ -3,6 +3,8 @@
     
     use Sycamore\Config\ConfigUtils;
     
+    use SycamoreTest\TestHelpers;
+    
     /**
      * Test functionality of Sycamore's TableCache class.
      *
@@ -17,12 +19,7 @@
          */
         protected function tearDown()
         {
-            $files = glob(TEMP_DIRECTORY . "/*");
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
+            TestHelpers::nukeDirectory(TEMP_DIRECTORY);
         }
         
         /**

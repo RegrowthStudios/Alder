@@ -13,13 +13,13 @@
 
     // Define a bunch of directory constants.
     define("APP_DIRECTORY", dirname(__DIR__));
-    define("MODULES_DIRECTORY", APP_DIRECTORY."/modules");
-    define("VENDOR_DIRECTORY", APP_DIRECTORY."/vendor");
-    define("CONFIG_DIRECTORY", APP_DIRECTORY."/config");
-    define("LOGS_DIRECTORY", APP_DIRECTORY."/logs");
-    define("TEMP_DIRECTORY", APP_DIRECTORY."/temp");
-    define("CACHE_DIRECTORY", APP_DIRECTORY."/cache");
-    define("SYCAMORE_MODULE_DIRECTORY", MODULES_DIRECTORY."/Sycamore");
+    define("MODULES_DIRECTORY", APP_DIRECTORY.DIRECTORY_SEPARATOR."modules");
+    define("VENDOR_DIRECTORY", APP_DIRECTORY.DIRECTORY_SEPARATOR."vendor");
+    define("CONFIG_DIRECTORY", APP_DIRECTORY.DIRECTORY_SEPARATOR."config");
+    define("LOGS_DIRECTORY", APP_DIRECTORY.DIRECTORY_SEPARATOR."logs");
+    define("TEMP_DIRECTORY", APP_DIRECTORY.DIRECTORY_SEPARATOR."temp");
+    define("CACHE_DIRECTORY", APP_DIRECTORY.DIRECTORY_SEPARATOR."cache");
+    define("SYCAMORE_MODULE_DIRECTORY", MODULES_DIRECTORY.DIRECTORY_SEPARATOR."Sycamore");
 
     // Define possible ENV states.
     define("PRODUCTION", "production");
@@ -28,7 +28,7 @@
 
     // Define ENV - the environment state (development or production).
     // ENV state stored in a PHP file to get around Nginx not supporting setting environment variables a la Apache.
-    define("ENV", require (CONFIG_DIRECTORY . "/env.state.php"));
+    define("ENV", require CONFIG_DIRECTORY."/env.state.php");
 
     // Define value to set config values to that MUST be overridden by a given installation.
     define("DEFAULT_VAL", "CHANGE");

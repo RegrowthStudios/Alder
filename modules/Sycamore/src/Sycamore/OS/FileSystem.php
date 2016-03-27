@@ -52,13 +52,19 @@
         {
             if ($force) {
                 $filepathParts = explode(DIRECTORY_SEPARATOR, $filename);
-                $file = array_pop($filepathParts);
+                
+                array_pop($filepathParts);
                 if (empty($filepathParts[0])) {
                     array_shift($filepathParts);
                 }
                 $filepath = "";
                 foreach ($filepathParts as $part) {
-                    if (!is_dir($filepath .= DIRECTORY_SEPARATOR . $part)) {
+                    if ($part != end($filepathParts)) {
+                        $filepath .= $part . DIRECTORY_SEPARATOR;
+                    } else {
+                        $filepath .= $part;
+                    }
+                    if (!is_dir($filepath)) {
                         mkdir($filepath);
                     }
                 }

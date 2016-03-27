@@ -73,7 +73,7 @@
          * 
          * @return \Zend\ServiceManager\ServiceLocatorInterface
          */
-        public static function getServiceManager()
+        public static function &getServiceManager()
         {
             return static::$serviceManager;
         }

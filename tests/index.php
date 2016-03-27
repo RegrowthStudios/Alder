@@ -49,6 +49,7 @@
     }
     
     require "./Bootstrap.php";
+    require "./TestHelpers.php";
     
     Bootstrap::init();
     Bootstrap::chroot();

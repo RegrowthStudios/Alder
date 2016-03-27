@@ -27,10 +27,13 @@
             $errorMessage = $serviceManager->get("Language")->fetchPhrase($key);
             
             // Grab parameter paths embedded in message.
-            $params = preg_split("/{((?:[a-zA-Z]+[\\\/])+[a-zA-Z]+)}/g", $errorMessage);            
+            $params = [];
+            preg_match("~{((?:[a-zA-Z]+[\\\/])*[a-zA-Z]+)}~", $errorMessage, $params);
+            array_shift($params);
+            
             foreach ($params as $param) {
                 // Split parameter path up into parts.
-                $path = preg_split("/([a-zA-Z]+)/g", $param);
+                $path = preg_split("~([\\\/]+)~", $param, NULL, PREG_SPLIT_NO_EMPTY);
                 
                 // Set starting value from path and then iterate into final value.
                 $value = $serviceManager->get("Config")["Sycamore"];

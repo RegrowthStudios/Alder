@@ -43,7 +43,7 @@
          */
         public function canDeleteIndividualFileTest()
         {
-            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . "/individualFile.txt"));
+            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "individualFile.txt"));
         }
         
         /**
@@ -53,7 +53,7 @@
          */
         public function canDeleteEmptyDirectoryTest()
         {
-            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . "/emptyDirTest"));
+            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "emptyDirTest"));
         }
         
         /**
@@ -63,6 +63,45 @@
          */
         public function canDeleteDirectoryWithFileContentsTest()
         {
-            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . "/filledDirTest", true));
+            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "filledDirTest", true));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\OS\FileSystem::filePutContents
+         */
+        public function canCreateFileInExistingDirectoryTest()
+        {
+            $this->assertTrue((bool) FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "existingDirWriteTest.txt", "test"));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\OS\FileSystem::filePutContents
+         */
+        public function canCreateFileInNonExistentDirectoryTest()
+        {
+            $this->assertTrue((bool) FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "nonExistingDir" . DIRECTORY_SEPARATOR . "writeTest.txt", "test"));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\OS\FileSystem::filePutContents
+         */
+        public function createsFilesWithCorrectDataTest()
+        {
+            $data = "<?php return [ \"test\" ];";
+            $dataPhp = [
+                "test"
+            ];
+            
+            FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testContents.php", $data);
+            
+            $returnedData = require TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testContents.php";
+            
+            $this->assertEquals($dataPhp, $returnedData);
         }
     }

@@ -1,5 +1,4 @@
 <?php
-
     namespace SycamoreTest\Sycamore\Cache;
     
     use Sycamore\Cache\CacheUtils;

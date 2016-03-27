@@ -104,4 +104,25 @@
             
             $this->assertEquals($dataPhp, $returnedData);
         }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\OS\FileSystem::filePutContents
+         */
+        public function appendToExistingFilesYieldsCorrectFileContentsTest()
+        {
+            $data1 = "<?php return ";
+            $data2 = "[ \"test\" ];";
+            $dataPhp = [
+                "test"
+            ];
+            
+            FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testAppendingContents.php", $data1);
+            FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testAppendingContents.php", $data2, FILE_APPEND);
+            
+            $returnedData = require TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testAppendingContents.php";
+            
+            $this->assertEquals($dataPhp, $returnedData);
+        }
     }

@@ -17,5 +17,7 @@
          * {@inheritdoc}
          */
         protected static $serialiserType = "Json";
+        
+        // TODO(Matthew): Define callback to serialise objects with object serialiser?
     }
     

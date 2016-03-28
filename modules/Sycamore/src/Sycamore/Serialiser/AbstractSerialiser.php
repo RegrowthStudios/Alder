@@ -27,6 +27,7 @@
          * @var string
          */
         protected static $serialiserType = "";
+        
         /**
          * Options for a given instance's serialiser adapter.
          *

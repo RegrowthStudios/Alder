@@ -37,7 +37,7 @@
     define("UNIX", "Unix");
     define("WINDOWS", "Windows");
     switch (php_uname("s")) {
-        // Treat FreeBSD and Linux as basically UNIX because they"ll be treated the same as UNIX OS"s anyway.
+        // Treat FreeBSD and Linux as basically UNIX because they'll be treated the same as UNIX OS's anyway.
         case "FreeBSD":
         case "Linux":
         case "Solaris":

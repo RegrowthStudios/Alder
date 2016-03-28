@@ -6,7 +6,7 @@
     use SycamoreTest\TestHelpers;
     
     /**
-     * Test functionality of Sycamore's FileSystem class.
+     * Test functionality of Sycamore's Shell class.
      *
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>

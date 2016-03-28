@@ -10,10 +10,20 @@
      */
     class TestHelpers
     {
+        /**
+         * Destroys all contents of a directory. Intended for use with temporary directories in tests.
+         * 
+         * @param string $directory The directory to destroy the contents of.
+         */
         public static function nukeDirectory($directory)
         {
-            foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST) as $path) {
-                $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+            $pathIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
+            foreach($pathIterator as $path) {
+                if ($path->isDir() && !$path->isLink()) {
+                    rmdir($path->getPathname());
+                } else {
+                    unlink($path->getPathname());
+                }
             }
         }
     }

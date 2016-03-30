@@ -33,7 +33,7 @@
                     $string .= ($data ? "true" : "false");
                     break;
                 case "array":
-                    asort($data);
+                    ksort($data);
                     foreach ($data as $key => $val) 
                     {
                         if (is_string($key)) {

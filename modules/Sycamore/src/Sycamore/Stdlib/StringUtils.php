@@ -43,7 +43,7 @@
                     }
                     break;
                 case "object":
-                    $string = serialize($data);
+                    $string = method_exists($data, "__toString") ? strval($data) : serialize($data);
                     break;
                 case "NULL":
                     $string = "";

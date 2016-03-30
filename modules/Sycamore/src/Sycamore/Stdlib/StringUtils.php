@@ -39,7 +39,7 @@
                         if (is_string($key)) {
                             $string .= $key . "_";
                         }
-                        $string .= static::convertToString($val) . "_";;;
+                        $string .= static::convertToString($val) . "_";
                     }
                     break;
                 case "object":

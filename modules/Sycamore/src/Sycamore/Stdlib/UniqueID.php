@@ -22,7 +22,7 @@
          * 
          * @param string $prefix The prefix to attach to the unique ID.
          * @param bool $strong Determines if a cryptographically secure random generator should be used for part of the ID.
-         * @param bool $moreEntropy Determines if the ID should be longer and hence less likely to collide with another ID.
+         * @param bool $length Determines what length the ID should be.
          * 
          * @return string The resulting unique ID.
          */

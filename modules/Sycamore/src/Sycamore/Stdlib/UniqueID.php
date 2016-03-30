@@ -14,7 +14,7 @@
     {
         const LONG = 1;
         const MEDIUM = 2;
-        const SHORT = 4;
+        const SHORT = 3;
         
         /**
          * Generates a partially random, unique ID. If strong is true, then a cryptographically secure random generator is used for a part of the ID.
@@ -26,16 +26,16 @@
          * 
          * @return string The resulting unique ID.
          */
-        public static function generate($prefix = "", $strong = false, $flags = self::MEDIUM)
+        public static function generate($prefix = "", $strong = false, $length = self::MEDIUM)
         {
             $randLength = 6;
             $moreEntropy = false;
-            if (self::LONG & $flags) {
+            if ($length === self::LONG) {
                 $randLength = 9;
                 $moreEntropy = true;
-            } else if (self::SHORT & $flags) {
+            } else if ($length === self::SHORT) {
                 $randLength = 3;
-            } else if (!(self::MEDIUM & $flags)) {
+            } else if (!($length === self::MEDIUM)) {
                 throw new \InvalidArgumentException("The flags provided were invalid!");
             }
             return uniqid($prefix . Rand::getString($randLength, Rand::ALPHANUMERIC, $strong), $moreEntropy);

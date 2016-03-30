@@ -1,5 +1,5 @@
 <?php
-    namespace SycamoreTest\Sycamore\Serialiser;
+    namespace SycamoreTest\Sycamore\Stdlib;
     
     use Sycamore\Stdlib\ArrayUtils;
     

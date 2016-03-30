@@ -49,6 +49,11 @@
         {
             return $this->array;
         }
+        
+        public function __toString()
+        {
+            return implode($this->array);
+        }
     }
     
     /**
@@ -327,5 +332,23 @@
             $arrayXorResult = ArrayUtils::xorArrays($array1, $array2);
             
             $this->assertEmpty(array_diff($arrayXorExpected, $arrayXorResult));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Stdlib\ArrayUtils::xorArrays
+         */
+        public function xorArraysHandlesMultipleValueTypesTest()
+        {
+            $array1 = [ 1, "hello", false, new SimpleTraversableObject()];
+            
+            $traversableObject = new SimpleTraversableObject();
+            $traversableObjectContents = $traversableObject->toArray();
+            $traversableObjectContents[] = "newitem";
+            $array2 = [ 1, "world", 2, true, false, $traversableObject, new SimpleTraversableObject()];
+            
+            $expectedResultOfXor = [ "hello", "world", 2 ];
+            $this->assertEquals($expectedResultOfXor, ArrayUtils::xorArrays($array1, $array2));
         }
     }

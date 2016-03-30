@@ -127,6 +127,7 @@
             return $data;
         }
         
+        // TODO(Matthew): Create and use custom array_diff that handles objects better.
         /**
          * Performs an XOR operation on two arrays.
          * 

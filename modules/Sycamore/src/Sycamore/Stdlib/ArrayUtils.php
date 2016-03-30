@@ -79,7 +79,9 @@
         {
             foreach ($array as & $value) {
                 if (is_array($value)) {
-                    static::recursiveKsort($value);
+                    if (!static::recursiveKsort($value)) {
+                        return false;
+                    }
                 }
             }
             return ksort($array);

@@ -46,7 +46,7 @@
                     $string = method_exists($data, "__toString") ? strval($data) : serialize($data);
                     break;
                 case "NULL":
-                    $string = "";
+                    $string = "__";
                     break;
                 default:
                     $string .= preg_replace("#[\\\/.]+#", "_", strval($data));

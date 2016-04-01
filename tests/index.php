@@ -11,6 +11,7 @@
     error_reporting(E_ALL | E_STRICT);
     chdir(__DIR__);
     
+    require dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
     require dirname(__DIR__) . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "sycamore.constants.php";
     
     require "./Bootstrap.php";

@@ -14,6 +14,7 @@
     use Zend\Log\Writer\Stream as WriteStream;
     use Zend\Mvc\Application;
 
+    require dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
     require dirname(__DIR__) . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "sycamore.constants.php";
     
     // If in a debug mode, show errors.
@@ -27,16 +28,16 @@
         // Time the request to response time if not in production.
         if (ENV != PRODUCTION) {
             // Get and begin timer.
-            require (SYCAMORE_MODULE_DIRECTORY . "/src/Sycamore/Stdlib/Timer.php");
+            require file_build_path(SYCAMORE_MODULE_DIRECTORY, "src", "Sycamore", "Stdlib", "Timer.php");
             $timer = new Timer();
             $timer->start();
         }
 
         // Prepare autoloader.
-        require (VENDOR_DIRECTORY . "/autoload.php");
+        require file_build_path(VENDOR_DIRECTORY, "autoload.php");
 
         // Prepare error logger (use trigger_error to write via this logger).
-        $errorStream = @fopen(LOGS_DIRECTORY."/errors.log", "a");
+        $errorStream = @fopen(file_build_path(LOGS_DIRECTORY, "errors.log"), "a");
         if (!$errorStream) {
             throw new \Exception("Failed to open error log file.");
         }
@@ -47,7 +48,7 @@
         Logger::registerExceptionHandler($errorLogger);
 
         // Initialise application.
-        $application = Application::init(require (CONFIG_DIRECTORY . "/sycamore.config.php"));
+        $application = Application::init(require file_build_path(CONFIG_DIRECTORY, "sycamore.config.php"));
         $application->getServiceManager()->setService("ErrorLogger", $errorLogger);
         $request = $application->getRequest();
         $application->run();
@@ -58,7 +59,7 @@
             $timer->stop();
 
             // Create timings file if it doesn't exist, then write contents of request and time to respond to request.
-            $timingFile = LOGS_DIRECTORY."/timings.json";
+            $timingFile = file_build_path(LOGS_DIRECTORY, "timings.json");
             $data = NULL;
             if (is_file($timingFile)) {
                 $data = json_decode(file_get_contents($timingFile), true);

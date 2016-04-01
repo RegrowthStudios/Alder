@@ -83,26 +83,26 @@
                 $errors[] = Error::create("error_password_too_short");
             } else if (strlen($password) > $passwordConfig["maximumLength"]) {
                 $result = false;
-                $errors[] = Error::create("error_password_too_long");
+                $errors[] = Error::create($this->serviceManager, "error_password_too_long");
             }
             
             // Check password has a number.
             if (!preg_match("#[0-9]+#", $password)) {
                 $result = false;
-                $errors[] = Error::create("error_password_missing_number");
+                $errors[] = Error::create($this->serviceManager, "error_password_missing_number");
             }
             
             // Check password has a letter, capital or otherwise.
             if (!preg_match("#[a-zA-Z]+#", $password)) {
                 $result = false;
-                $errors[] = Error::create("error_password_missing_letter");
+                $errors[] = Error::create($this->serviceManager, "error_password_missing_letter");
             }
             
             // Check password has a capital letter.
             if ($passwordConfig["strictness"] == "high" || $passwordConfig["strictness"] == "strict") {
                 if (!preg_match("#[A-Z]+#", $password)) {
                     $result = false;
-                    $errors[] = Error::create("error_password_missing_capital_letter");
+                    $errors[] = Error::create($this->serviceManager, "error_password_missing_capital_letter");
                 }
             }
             
@@ -110,7 +110,7 @@
             if ($passwordConfig["strictness"] == "strict") {
                 if (!preg_match("#\W+#", $password)) {
                     $result = false;
-                    $errors[] = Error::create("error_password_missing_symbol");
+                    $errors[] = Error::create($this->serviceManager, "error_password_missing_symbol");
                 }
             }
             
@@ -128,7 +128,7 @@
         public function isEmail($email, & $errors)
         {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = Error::create("invalid_email_format");
+                $errors[] = Error::create($this->serviceManager, "invalid_email_format");
                 return false;
             }
             return true;
@@ -147,7 +147,7 @@
             $tableCache = $this->serviceManager->get("SycamoreTableCache");
             $userTable = $tableCache->fetchTable("User");
             if (!$userTable->isEmailUnique($email)) {
-                $errors[] = Error::create("none_unique_email");
+                $errors[] = Error::create($this->serviceManager, "none_unique_email");
                 return false;
             }
             return true;
@@ -170,16 +170,16 @@
             // Check length of username.
             if (strlen($username) > $usernameConfig["maximumLength"]) {
                 $result = false;
-                $errors[] = Error::create("error_username_too_long");
+                $errors[] = Error::create($this->serviceManager, "error_username_too_long");
             } else if (strlen($username) < $usernameConfig["minimumLength"]) {
                 $result = false;
-                $errors[] = Error::create("error_username_too_short");
+                $errors[] = Error::create($this->serviceManager, "error_username_too_short");
             }
             
             // Check characters in username.
             if (preg_match("#[^a-zA-Z0-9\_]+#", $username)) {
                 $result = false;
-                $errors[] = Error::create("error_username_invalid_character");
+                $errors[] = Error::create($this->serviceManager, "error_username_invalid_character");
             }
             
             return $result;
@@ -198,7 +198,7 @@
             $tableCache = $this->serviceManager->get("SycamoreTableCache");
             $userTable = $tableCache->fetchTable("User");
             if (!$userTable->isUsernameUnique($username)) {
-                $errors[] = Error::create("none_unique_username");
+                $errors[] = Error::create($this->serviceManager, "none_unique_username");
                 return false;
             }
             return true;

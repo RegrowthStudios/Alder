@@ -77,11 +77,15 @@
             
             $result = true;
             
+            if ($passwordConfig["maximumLength"] > 0 && $passwordConfig["minimumLength"] < $passwordConfig["maximumLength"]) {
+                trigger_error("Password configuration malformed: minimum password length less than maximum length. Maximum length assumed to be infinite.", E_WARNING);
+            }
+            
             // Check password length.
             if (strlen($password) < $passwordConfig["minimumLength"]) {
                 $result = false;
                 $errors[] = Error::create("error_password_too_short");
-            } else if (strlen($password) > $passwordConfig["maximumLength"]) {
+            } else if ($passwordConfig["maximumLength"] > 0 && strlen($password) > $passwordConfig["maximumLength"]) {
                 $result = false;
                 $errors[] = Error::create($this->serviceManager, "error_password_too_long");
             }

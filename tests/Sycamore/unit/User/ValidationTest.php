@@ -32,8 +32,8 @@
                         ]
                     ],
                     "username" => [
-                        "minimumLength" => 1,
-                        "maximumLength" => 32
+                        "minimumLength" => 2,
+                        "maximumLength" => 16
                     ]
                 ]
             ];
@@ -134,9 +134,9 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User::validateUsername
-         * @covers \Sycamore\User::isUsername
-         * @covers \Sycamore\User::isUniqueUsername
+         * @covers \Sycamore\User\Validation::validateUsername
+         * @covers \Sycamore\User\Validation::isUsername
+         * @covers \Sycamore\User\Validation::isUniqueUsername
          */
         public function validateUsernameReturnsTrueForValidAndUniqueUsername()
         {
@@ -147,9 +147,9 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User::validateUsername
-         * @covers \Sycamore\User::isUsername
-         * @covers \Sycamore\User::isUniqueUsername
+         * @covers \Sycamore\User\Validation::validateUsername
+         * @covers \Sycamore\User\Validation::isUsername
+         * @covers \Sycamore\User\Validation::isUniqueUsername
          */
         public function validateUsernameReturnsFalseForInvalidFormattedUsername()
         {
@@ -160,9 +160,9 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User::validateUsername
-         * @covers \Sycamore\User::isUsername
-         * @covers \Sycamore\User::isUniqueUsername
+         * @covers \Sycamore\User\Validation::validateUsername
+         * @covers \Sycamore\User\Validation::isUsername
+         * @covers \Sycamore\User\Validation::isUniqueUsername
          */
         public function validateUsernameReturnsFalseForNonUniqueUsername()
         {
@@ -173,9 +173,9 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User::validateEmail
-         * @covers \Sycamore\User::isEmail
-         * @covers \Sycamore\User::isUniqueEmail
+         * @covers \Sycamore\User\Validation::validateEmail
+         * @covers \Sycamore\User\Validation::isEmail
+         * @covers \Sycamore\User\Validation::isUniqueEmail
          */
         public function validateEmailReturnsTrueForValidAndUniqueEmail()
         {
@@ -186,9 +186,9 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User::validateEmail
-         * @covers \Sycamore\User::isEmail
-         * @covers \Sycamore\User::isUniqueEmail
+         * @covers \Sycamore\User\Validation::validateEmail
+         * @covers \Sycamore\User\Validation::isEmail
+         * @covers \Sycamore\User\Validation::isUniqueEmail
          */
         public function validateEmailReturnsFalseForInvalidFormattedEmail()
         {
@@ -199,9 +199,9 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User::validateEmail
-         * @covers \Sycamore\User::isEmail
-         * @covers \Sycamore\User::isUniqueEmail
+         * @covers \Sycamore\User\Validation::validateEmail
+         * @covers \Sycamore\User\Validation::isEmail
+         * @covers \Sycamore\User\Validation::isUniqueEmail
          */
         public function validateEmailReturnsFalseForNonUniqueEmail()
         {
@@ -209,5 +209,380 @@
             $this->assertFalse($this->validationManagerNotUnique->validateEmail("test@example.com", $errors));
         }
         
-        // TODO(Matthew): Add functions to test individual isEmail/isUsername etc. funcs + passwordStrengthCheck.
+        public function passwordStrengthCheckReturnsFalseForTooShortPassword()
+        {
+            $config = [
+                "Sycamore" => [
+                    "security" => [
+                        "password" => [
+                            "minimumLength" => 3,
+                            "maximumLength" => 32,
+                            "strictness" => PASSWORD_STRICTNESS_NORMAL
+                        ]
+                    ]
+                ]
+            ];
+            
+            $language = $this->getMockBuilder("SycamoreLanguage")
+                    ->setMockClassName("SycamoreLanguage")
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchPhrase"])
+                    ->getMock();
+            $language->method("fetchPhrase")
+                    ->willReturn("An error occurred.");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["get"])
+                    ->getMock();
+            $serviceManager->method("get")
+                    ->will($this->returnCallback(function($key) use ($config, $language) {
+                        if ($key == "Config") {
+                            return $config;
+                        } else if ($key == "Language") {
+                            return $language;
+                        } else {
+                            return NULL;
+                        }
+                    }));
+                    
+            $validationManager = $this->getMockBuilder(Validation::class)
+                    ->setConstructorArgs([&$serviceManager])
+                    ->setMethods(NULL)
+                    ->getMock();
+            
+            $passwordRightLength = "password1";
+            $passwordWrongLength = "p";
+            
+            $errors = [];
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordRightLength, $errors));
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordWrongLength, $errors));
+        }
+        
+        public function passwordStrengthCheckReturnsFalseForTooLongPassword()
+        {
+            $config = [
+                "Sycamore" => [
+                    "security" => [
+                        "password" => [
+                            "minimumLength" => 3,
+                            "maximumLength" => 10,
+                            "strictness" => PASSWORD_STRICTNESS_NORMAL
+                        ]
+                    ]
+                ]
+            ];
+            
+            $language = $this->getMockBuilder("SycamoreLanguage")
+                    ->setMockClassName("SycamoreLanguage")
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchPhrase"])
+                    ->getMock();
+            $language->method("fetchPhrase")
+                    ->willReturn("An error occurred.");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["get"])
+                    ->getMock();
+            $serviceManager->method("get")
+                    ->will($this->returnCallback(function($key) use ($config, $language) {
+                        if ($key == "Config") {
+                            return $config;
+                        } else if ($key == "Language") {
+                            return $language;
+                        } else {
+                            return NULL;
+                        }
+                    }));
+                    
+            $validationManager = $this->getMockBuilder(Validation::class)
+                    ->setConstructorArgs([&$serviceManager])
+                    ->setMethods(NULL)
+                    ->getMock();
+            
+            $passwordRightLength = "password1";
+            $passwordWrongLength = "password12345";
+            
+            $errors = [];
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordRightLength, $errors));
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordWrongLength, $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::passwordStrengthCheck
+         */
+        public function passwordStrengthCheckRequiresLetterAndNumberForNormalStrictness()
+        {
+            $config = [
+                "Sycamore" => [
+                    "security" => [
+                        "password" => [
+                            "minimumLength" => 3,
+                            "maximumLength" => 32,
+                            "strictness" => PASSWORD_STRICTNESS_NORMAL
+                        ]
+                    ]
+                ]
+            ];
+            
+            $language = $this->getMockBuilder("SycamoreLanguage")
+                    ->setMockClassName("SycamoreLanguage")
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchPhrase"])
+                    ->getMock();
+            $language->method("fetchPhrase")
+                    ->willReturn("An error occurred.");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["get"])
+                    ->getMock();
+            $serviceManager->method("get")
+                    ->will($this->returnCallback(function($key) use ($config, $language) {
+                        if ($key == "Config") {
+                            return $config;
+                        } else if ($key == "Language") {
+                            return $language;
+                        } else {
+                            return NULL;
+                        }
+                    }));
+                    
+            $validationManager = $this->getMockBuilder(Validation::class)
+                    ->setConstructorArgs([&$serviceManager])
+                    ->setMethods(NULL)
+                    ->getMock();
+            
+            $passwordWeak = "password1";
+            $passwordNormal = "Taasdw2";
+            $passwordStrong = "Tas7AS*h$";
+            
+            $errors = [];
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordWeak, $errors));
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordNormal, $errors));
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordStrong, $errors));
+        }
+        
+        public function passwordStrengthCheckRequiresLetterNumberAndCapitalLetterForHighStrictness()
+        {
+            $config = [
+                "Sycamore" => [
+                    "security" => [
+                        "password" => [
+                            "minimumLength" => 3,
+                            "maximumLength" => 32,
+                            "strictness" => PASSWORD_STRICTNESS_HIGH
+                        ]
+                    ]
+                ]
+            ];
+            
+            $language = $this->getMockBuilder("SycamoreLanguage")
+                    ->setMockClassName("SycamoreLanguage")
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchPhrase"])
+                    ->getMock();
+            $language->method("fetchPhrase")
+                    ->willReturn("An error occurred.");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["get"])
+                    ->getMock();
+            $serviceManager->method("get")
+                    ->will($this->returnCallback(function($key) use ($config, $language) {
+                        if ($key == "Config") {
+                            return $config;
+                        } else if ($key == "Language") {
+                            return $language;
+                        } else {
+                            return NULL;
+                        }
+                    }));
+                    
+            $validationManager = $this->getMockBuilder(Validation::class)
+                    ->setConstructorArgs([&$serviceManager])
+                    ->setMethods(NULL)
+                    ->getMock();
+            
+            $passwordWeak = "password1";
+            $passwordNormal = "Taasdw2";
+            $passwordStrong = "Tas7AS*h$";
+            
+            $errors = [];
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordWeak, $errors));
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordNormal, $errors));
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordStrong, $errors));
+        }
+        
+        public function passwordStrengthCheckRequiresLetterNumberCapitalLetterAndSymbolForStrictStrictness()
+        {
+            $config = [
+                "Sycamore" => [
+                    "security" => [
+                        "password" => [
+                            "minimumLength" => 3,
+                            "maximumLength" => 32,
+                            "strictness" => PASSWORD_STRICTNESS_STRICT
+                        ]
+                    ]
+                ]
+            ];
+            
+            $language = $this->getMockBuilder("SycamoreLanguage")
+                    ->setMockClassName("SycamoreLanguage")
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchPhrase"])
+                    ->getMock();
+            $language->method("fetchPhrase")
+                    ->willReturn("An error occurred.");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["get"])
+                    ->getMock();
+            $serviceManager->method("get")
+                    ->will($this->returnCallback(function($key) use ($config, $language) {
+                        if ($key == "Config") {
+                            return $config;
+                        } else if ($key == "Language") {
+                            return $language;
+                        } else {
+                            return NULL;
+                        }
+                    }));
+                    
+            $validationManager = $this->getMockBuilder(Validation::class)
+                    ->setConstructorArgs([&$serviceManager])
+                    ->setMethods(NULL)
+                    ->getMock();
+            
+            $passwordWeak = "password1";
+            $passwordNormal = "Taasdw2";
+            $passwordStrong = "Tas7AS*h$";
+            
+            $errors = [];
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordWeak, $errors));
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordNormal, $errors));
+            $this->assertTrue($validationManager->passwordStrengthCheck($passwordStrong, $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isEmail
+         */
+        public function isEmailIdentifiesValidEmails()
+        {
+            $errors = [];
+            $this->assertTrue($this->validationManagerUnique->isEmail("test@example.com", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isEmail
+         */
+        public function isEmailIdentifiesInvalidEmails()
+        {
+            $invalidEmail1 = "test";
+            $invalidEmail2 = "test@";
+            $invalidEmail3 = "test@example";
+            
+            $errors = [];
+            $this->assertFalse($this->validationManagerUnique->isEmail($invalidEmail1, $errors));
+            $this->assertFalse($this->validationManagerUnique->isEmail($invalidEmail2, $errors));
+            $this->assertFalse($this->validationManagerUnique->isEmail($invalidEmail3, $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUniqueEmail
+         */
+        public function isUniqueEmailReturnsTrueForUniqueEmail()
+        {
+            $errors = [];
+            $this->assertTrue($this->validationManagerUnique->isUniqueEmail("test@example.com", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUniqueEmail
+         */
+        public function isUniqueEmailReturnsFalseForNonUniqueEmail()
+        {
+            $errors = [];
+            $this->assertFalse($this->validationManagerNotUnique->isUniqueEmail("test@example.com", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUsername
+         */
+        public function isUsernameIdentifiesValidUsernames()
+        {
+            $errors = [];
+            $this->assertTrue($this->validationManagerUnique->isUsername("testusername", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUsername
+         */
+        public function isUsernameIdentifiesTooLongUsernames()
+        {
+            $errors = [];
+            $this->assertFalse($this->validationManagerUnique->isUsername("testtesttesttesttesttestttesesttest", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUsername
+         */
+        public function isUsernameIdentifiesTooShortUsernames()
+        {
+            $errors = [];
+            $this->assertFalse($this->validationManagerUnique->isUsername("t", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUsername
+         */
+        public function isUsernameIdentifiesInvalidCharacterUsernames()
+        {
+            $errors = [];
+            $this->assertFalse($this->validationManagerUnique->isUsername("test@example.com", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUniqueUsername
+         */
+        public function isUniqueUsernameReturnsTrueForUniqueUsername()
+        {
+            $errors = [];
+            $this->assertTrue($this->validationManagerUnique->isUniqueUsername("testusername", $errors));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::isUniqueUsername
+         */
+        public function isUniqueUsernameReturnsFalseForNonUniqueUsername()
+        {
+            $errors = [];
+            $this->assertFalse($this->validationManagerNotUnique->isUniqueUsername("testusername", $errors));
+        }
     }

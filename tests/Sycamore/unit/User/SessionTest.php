@@ -38,8 +38,6 @@ namespace SycamoreTest\Sycamore\User {
     use Sycamore\Token\Jwt;
     use Sycamore\User\Session;
     
-    use SycamoreTest\Bootstrap;
-    
     use Zend\ServiceManager\ServiceManager;
     
     /**

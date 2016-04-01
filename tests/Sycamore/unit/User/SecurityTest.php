@@ -8,7 +8,7 @@
     use Zend\ServiceManager\ServiceManager;
     
     /**
-     * Test functionality of Sycamore's JWT class and its respective factory class.
+     * Test functionality of Sycamore's user security class.
      *
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>

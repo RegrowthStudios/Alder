@@ -62,15 +62,15 @@
          * Verifies the verification token.
          *
          * @param int $userId The ID of the user whom this token applies to.
-         * @param string $token The token to verify.
+         * @param string $tokenStr The token to verify.
          * @param array $itemsExpected The expected items if token is to be verfied. E.g. delete key.
          * @param string $purpose The purpose of this verification token.
          *
          * @return bool|array The application payload if the token is valid, otherwise false.
          */
-        public function verify($userId, $token, $itemsExpected, $purpose = "verification")
+        public function verify($userId, $tokenStr, $itemsExpected, $purpose = "verification")
         {
-            $token = new Jwt($this->serviceManager, $token);
+            $token = new Jwt($this->serviceManager, $tokenStr);
             // Ensure token is generally valid as per public claims.
             if (!$token->validate([
                 "sub" => $purpose

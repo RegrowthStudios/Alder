@@ -73,7 +73,7 @@
          */
         public function passwordStrengthCheck($password, & $errors)
         {
-            $passwordConfig = $this->serviceManager->get("Config")["Sycamre"]["security"]["password"];
+            $passwordConfig = $this->serviceManager->get("Config")["Sycamore"]["security"]["password"];
             
             $result = true;
             

@@ -83,13 +83,15 @@
 
             // Get item claims.
             $payload = $token->getClaims();
-            $itemClaims = $payload[$domain];
+            if (isset($payload[$domain])) {
+                $itemClaims = $payload[$domain]->getValue();
 
-            // If application payload and expected items + user ID are equivalent, then token is truly verified.
-            if (empty( ArrayUtils::xorArrays( array_merge((array) $itemsExpected, [
-                                    "id" => $userId
-                                ]), (array) $itemClaims))) {
-                return $itemClaims;
+                // If application payload and expected items + user ID are equivalent, then token is truly verified.
+                if (empty( ArrayUtils::xorArrays( array_merge((array) $itemsExpected, [
+                                        "id" => $userId
+                                    ]), (array) $itemClaims))) {
+                    return $itemClaims;
+                }
             }
 
             return false;

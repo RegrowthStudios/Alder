@@ -19,4 +19,14 @@
             <directory>tests/Sycamore/functional</directory>
         </testsuite>
     </testsuites>
+    <filter>
+      <whitelist
+          addUncoveredFilesFromWhitelist="true"
+          processUncoveredFilesFromWhitelist="true">
+          <directory suffix=".php">modules/</directory>
+          <exclude>
+              <directory suffix=".php">modules/Sycamore/src/Sycamore/OLD/</directory>
+          </exclude>
+        </whitelist>
+    </filter>
 </phpunit>

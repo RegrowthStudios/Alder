@@ -72,9 +72,9 @@
         {
             $token = new Jwt($this->serviceManager, $tokenStr);
             // Ensure token is generally valid as per public claims.
-            if (!$token->validate([
+            if ($token->validate([
                 "sub" => $purpose
-            ])) {
+            ]) !== Jwt::VALID) {
                 return false;
             }
 

@@ -3,5 +3,5 @@ modules/Sycamore/src/Sycamore/OLD/
 logs/
 docs/
 licenses/
-vendor/
+/vendor/
 composer.lock

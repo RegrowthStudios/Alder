@@ -31,7 +31,6 @@ IF %ERRORLEVEL% GEQ 1 (
     PAUSE
     EXIT 3
 )
-ECHO HERE
 
 IF NOT EXIST build_template.zip (
     ECHO No build template exists, make sure to run refreshVendors at least once!

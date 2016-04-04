@@ -84,7 +84,7 @@
             // Check password length.
             if (strlen($password) < $passwordConfig["minimumLength"]) {
                 $result = false;
-                $errors[] = Error::create("error_password_too_short");
+                $errors[] = Error::create($this->serviceManager, "error_password_too_short");
             } else if ($passwordConfig["maximumLength"] > 0 && strlen($password) > $passwordConfig["maximumLength"]) {
                 $result = false;
                 $errors[] = Error::create($this->serviceManager, "error_password_too_long");
@@ -103,7 +103,7 @@
             }
             
             // Check password has a capital letter.
-            if ($passwordConfig["strictness"] == "high" || $passwordConfig["strictness"] == "strict") {
+            if ($passwordConfig["strictness"] == PASSWORD_STRICTNESS_HIGH || $passwordConfig["strictness"] == PASSWORD_STRICTNESS_STRICT) {
                 if (!preg_match("#[A-Z]+#", $password)) {
                     $result = false;
                     $errors[] = Error::create($this->serviceManager, "error_password_missing_capital_letter");
@@ -111,7 +111,7 @@
             }
             
             // Check password has a symbol.
-            if ($passwordConfig["strictness"] == "strict") {
+            if ($passwordConfig["strictness"] == PASSWORD_STRICTNESS_STRICT) {
                 if (!preg_match("#\W+#", $password)) {
                     $result = false;
                     $errors[] = Error::create($this->serviceManager, "error_password_missing_symbol");

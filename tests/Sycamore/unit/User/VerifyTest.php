@@ -46,7 +46,7 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\User\Verify::verfiy
+         * @covers \Sycamore\User\Verify::verify
          */
         public function validTokenCorrectlyVerifiedTest()
         {
@@ -72,7 +72,7 @@
             $token = $verifyManager->create(1, ["test" => "hello"]);
             
             $parts = explode(".",strval($token));
-            $parts[1] = "t" . $parts[1]; 
+            $parts[2] = "t" . substr($parts[2],1);
             
             $this->assertFalse($verifyManager->verify(1, join(".", $parts), ["test" => "hello"]));
         }

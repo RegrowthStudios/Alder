@@ -25,7 +25,7 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\Cache\TableCacheTest::save
+         * @covers \Sycamore\Config\ConfigUtils::save
          */
         public function configFileGeneratesCorrectlyTest()
         {

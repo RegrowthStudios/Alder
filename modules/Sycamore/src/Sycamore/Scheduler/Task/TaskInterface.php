@@ -37,7 +37,7 @@
          * 
          * @throws \Sycamore\Scheduler\Exception\UnusedTaskException If the task is yet to be used.
          */
-        public function getTaskRm();
+        public function getRemoveTaskCommand();
         
         /**
          * Sets the task string to be exactly the given string.

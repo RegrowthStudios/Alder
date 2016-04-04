@@ -72,7 +72,7 @@
         {
             if ($task->getScheduleType() == TaskInterface::SCHEDULE_ONCE) {
                 // Remove task via shell.
-                $result = Shell::execute($task->getTaskRm());
+                $result = Shell::execute($task->getRemoveTaskCommand());
             } else {
                 // Remove cron task.
                 $result = $this->removeCronTask($task);

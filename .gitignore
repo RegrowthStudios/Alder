@@ -1,7 +1,8 @@
-nbproject/
-modules/Sycamore/src/Sycamore/OLD/
-logs/
-docs/
-licenses/
+/nbproject/
+/modules/Sycamore/src/Sycamore/OLD/
+/logs/
+/docs/
+/licenses/
 /vendor/
-composer.lock
+/composer.lock
+/coverage/

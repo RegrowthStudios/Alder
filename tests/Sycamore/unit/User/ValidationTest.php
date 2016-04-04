@@ -209,6 +209,66 @@
             $this->assertFalse($this->validationManagerNotUnique->validateEmail("test@example.com", $errors));
         }
         
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::passwordStrengthCheck
+         */
+        public function passwordStrengthCheckTriggersWarningIfMinimumPasswordLengthGreaterThanMaximum()
+        {
+            $config = [
+                "Sycamore" => [
+                    "security" => [
+                        "password" => [
+                            "minimumLength" => 32,
+                            "maximumLength" => 3,
+                            "strictness" => PASSWORD_STRICTNESS_NORMAL
+                        ]
+                    ]
+                ]
+            ];
+            
+            $language = $this->getMockBuilder("SycamoreLanguage")
+                    ->setMockClassName("SycamoreLanguage")
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchPhrase"])
+                    ->getMock();
+            $language->method("fetchPhrase")
+                    ->willReturn("An error occurred.");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["get"])
+                    ->getMock();
+            $serviceManager->method("get")
+                    ->will($this->returnCallback(function($key) use ($config, $language) {
+                        if ($key == "Config") {
+                            return $config;
+                        } else if ($key == "Language") {
+                            return $language;
+                        } else {
+                            return NULL;
+                        }
+                    }));
+                    
+            $validationManager = $this->getMockBuilder(Validation::class)
+                    ->setConstructorArgs([&$serviceManager])
+                    ->setMethods(NULL)
+                    ->getMock();
+            
+            $passwordRightLength = "password1";
+            
+            $this->setExpectedException("PHPUnit_Framework_Error_Warning");
+            
+            $errors = [];
+            $validationManager->passwordStrengthCheck($passwordRightLength, $errors);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::passwordStrengthCheck
+         */
         public function passwordStrengthCheckReturnsFalseForTooShortPassword()
         {
             $config = [
@@ -259,6 +319,11 @@
             $this->assertFalse($validationManager->passwordStrengthCheck($passwordWrongLength, $errors));
         }
         
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::passwordStrengthCheck
+         */
         public function passwordStrengthCheckReturnsFalseForTooLongPassword()
         {
             $config = [
@@ -356,16 +421,25 @@
                     ->setMethods(NULL)
                     ->getMock();
             
+            $passwordStupid1 = "abcde";
+            $passwordStupid2 = "12345";
             $passwordWeak = "password1";
             $passwordNormal = "Taasdw2";
             $passwordStrong = "Tas7AS*h$";
             
             $errors = [];
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordStupid1, $errors));
+            $this->assertFalse($validationManager->passwordStrengthCheck($passwordStupid2, $errors));
             $this->assertTrue($validationManager->passwordStrengthCheck($passwordWeak, $errors));
             $this->assertTrue($validationManager->passwordStrengthCheck($passwordNormal, $errors));
             $this->assertTrue($validationManager->passwordStrengthCheck($passwordStrong, $errors));
         }
         
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::passwordStrengthCheck
+         */
         public function passwordStrengthCheckRequiresLetterNumberAndCapitalLetterForHighStrictness()
         {
             $config = [
@@ -418,6 +492,11 @@
             $this->assertTrue($validationManager->passwordStrengthCheck($passwordStrong, $errors));
         }
         
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Validation::passwordStrengthCheck
+         */
         public function passwordStrengthCheckRequiresLetterNumberCapitalLetterAndSymbolForStrictStrictness()
         {
             $config = [

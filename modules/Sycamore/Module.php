@@ -35,7 +35,7 @@
      * Module class for Sycamore.
      */
     class Module implements AutoloaderProviderInterface, ConfigProviderInterface
-    {        
+    {
         /**
          * Initialises listeners during the bootstrap process.
          *
@@ -94,7 +94,7 @@
          */
         public function getConfig()
         {
-            return include SYCAMORE_MODULE_DIRECTORY."/config/module.config.php";
+            return include file_build_path(SYCAMORE_MODULE_DIRECTORY, "config", "module.config.php");
         }
 
         /**
@@ -107,7 +107,7 @@
             return [
                 "Zend\Loader\StandardAutoloader" => [
                     "namespaces" => [
-                        "Sycamore" => SYCAMORE_MODULE_DIRECTORY."/src/Sycamore",
+                        "Sycamore" => file_build_path(SYCAMORE_MODULE_DIRECTORY, "src", "Sycamore"),
                     ]
                 ]
             ];

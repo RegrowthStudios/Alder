@@ -26,6 +26,7 @@
           <directory suffix=".php">modules/</directory>
           <exclude>
               <directory suffix=".php">modules/Sycamore/src/Sycamore/OLD/</directory>
+              <directory suffix=".php">modules/Sycamore/config/</directory>
           </exclude>
         </whitelist>
     </filter>

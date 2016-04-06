@@ -66,7 +66,7 @@
             // Grab route match and ensure it is valid.
             $routeMatch = $event->getRouteMatch();
             if (!$routeMatch) {
-                throw new Exception\DomainException('Missing route matches; unsure how to retrieve action.');
+                throw new \DomainException('Missing route matches; unsure how to retrieve action.');
             }
 
             // Grab request.

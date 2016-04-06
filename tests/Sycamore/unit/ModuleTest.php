@@ -2,12 +2,12 @@
     namespace SycamoreTest\Sycamore;
 
     use Sycamore\Module;
-    use Sycamore\Stdlib\ArrayUtils;
-    use Sycamore\Visitor;
 
     use SycamoreTest\Bootstrap;
 
     use Zend\EventManager\EventManager;
+    use Zend\Http\Response;
+    use Zend\Log\Logger;
     use Zend\Mvc\Application;
     use Zend\Mvc\MvcEvent;
     use Zend\ServiceManager\ServiceManager;
@@ -110,5 +110,166 @@
                     ->setMethods(NULL)
                     ->getMock();
             $module->onBootstrap($event);
+        }
+        
+        protected function constructMvcEvent($errorType, $expectedStatusCode, $exception = NULL)
+        {
+            $response = $this->getMockBuilder(Response::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["setStatusCode", "setContent"])
+                    ->getMock();
+            $response->expects($this->once())
+                    ->method("setStatusCode")
+                    ->with($expectedStatusCode);
+            
+            $mvcEvent = $this->getMockBuilder(MvcEvent::class)
+                    ->disableOriginalConstructor()
+                    ->getMock();
+            $mvcEvent->method("getResponse")
+                    ->willReturn($response);
+            $mvcEvent->method("getParam")
+                    ->willReturn($exception);
+            $mvcEvent->method("getError")
+                    ->willReturn($errorType);
+            
+            if ($exception !== NULL) {
+                $logger = $this->getMockBuilder(Logger::class)
+                        ->setMethods(["crit"])
+                        ->getMock();
+                $logger->expects($this->once())
+                        ->method("crit")
+                        ->with($exception);
+
+                $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                        ->disableOriginalConstructor()
+                        ->setMethods(["get"])
+                        ->getMock();
+                $serviceManager->method("get")
+                        ->willReturn($logger);
+
+                $application = $this->getMockBuilder(Application::class)
+                        ->disableOriginalConstructor()
+                        ->setMethods(["getServiceManager"])
+                        ->getMock();
+                $application->method("getServiceManager")
+                        ->willReturn($serviceManager);
+                
+                $mvcEvent->method("getApplication")
+                        ->willReturn($application);
+            }
+            
+            return $mvcEvent;
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorSets404StatusCodeForNoRouteMatch()
+        {
+            $mvcEvent = $this->constructMvcEvent(Application::ERROR_ROUTER_NO_MATCH, 404);
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorSets500StatusCodeForNoControllFound()
+        {
+            $mvcEvent = $this->constructMvcEvent(Application::ERROR_CONTROLLER_NOT_FOUND, 500);
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorSets500StatusCodeForInvalidController()
+        {
+            $mvcEvent = $this->constructMvcEvent(Application::ERROR_CONTROLLER_INVALID, 500);
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorSets500StatusCodeForControllerCannotDispatch()
+        {
+            $mvcEvent = $this->constructMvcEvent(Application::ERROR_CONTROLLER_CANNOT_DISPATCH, 500);
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorSets500StatusCodeForGeneralException()
+        {
+            $mvcEvent = $this->constructMvcEvent(Application::ERROR_EXCEPTION, 500);
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorSets500StatusCodeForUnknownError()
+        {
+            $mvcEvent = $this->constructMvcEvent("TEST-ERROR", 500);
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Module::onDispatchError
+         */
+        public function onDispatchErrorLogsExceptionIfProvided()
+        {
+            $mvcEvent = $this->constructMvcEvent(Application::ERROR_EXCEPTION, 500, "Test");
+            
+            $module = $this->getMockBuilder(Module::class)
+                    ->disableArgumentCloning()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $module->onDispatchError($mvcEvent);
         }
     }

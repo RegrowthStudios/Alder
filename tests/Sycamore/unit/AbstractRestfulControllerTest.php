@@ -41,7 +41,8 @@
                 "bodyContent" => "",
                 "routeMatchGetParam" => false,
                 "queryGetParam" => false,
-                "expectedResponseCode" => NULL
+                "expectedResponseCode" => NULL,
+                "customHttpMethod" => NULL
             ];
             $methods = [
                 [
@@ -108,10 +109,21 @@
                     "expectedResponseCode" => 405,
                 ],
                 [
-                    "key" => "testCustomAction",
+                    "key" => "testExistingCustomAction",
                     "expectedAction" => "testAction",
                     "routeMatchGetParam" => "test",
                 ],
+                [
+                    "key" => "testNonExistingCustomAction",
+                    "expectedAction" => "notFoundAction",
+                    "routeMatchGetParam" => "testset",
+                ],
+                [
+                    "key" => "testCustomHttpMethodAction",
+                    "expectedAction" => "aTestAction",
+                    "httpMethod" => "atest",
+                    "customHttpMethod" => "aTestAction"
+                ]
             ];
             
             // Iterate over the different methods and yield the constructed mock abstract controller.
@@ -135,6 +147,9 @@
                         $abstractRestfulController->expects($this->once())
                                 ->method($method["expectedAction"]);
                     }
+                }
+                if ($method["customHttpMethod"] !== NULL) {
+                    $abstractRestfulController->addHttpMethodHandler("atest", array(&$abstractRestfulController, "aTestAction"));
                 }
                 
                 $routeMatch = $this->getMockBuilder(RouteMatch::class)
@@ -201,6 +216,29 @@
             $this->assertControllerName("Sycamore\Controller\API\User\Index");
             $this->assertControllerClass("IndexController");
             $this->assertActionName("options");
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\AbstractRestfulController::onDispatch
+         */
+        public function onDispatchThrowsDomainExceptionIfNoRouteMatch()
+        {
+            $mvcEvent = $this->getMockBuilder(MvcEvent::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["getRouteMatch"])
+                    ->getMock();
+            $mvcEvent->method("getRouteMatch")
+                    ->willReturn(false);
+            
+            $this->expectException(\DomainException::class);
+            
+            $abstractRestfulController = $this->getMockBuilder(AbstractRestfulController::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(NULL)
+                    ->getMock();
+            $abstractRestfulController->onDispatch($mvcEvent);
         }
     }
     

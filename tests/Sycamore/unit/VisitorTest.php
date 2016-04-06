@@ -4,6 +4,8 @@
     use Sycamore\Visitor;
     use Sycamore\User\Session;
     
+    use SycamoreTest\Bootstrap;
+    
     use Zend\ServiceManager\ServiceManager;
     
     /**
@@ -15,6 +17,69 @@
      */
     class VisitorTest extends \PHPUnit_Framework_TestCase
     {
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Visitor::__construct
+         */
+        public function visitorObjectCreationShouldPrepareVisitor()
+        {
+            $visitor = $this->getMockBuilder(Visitor::class)
+                    ->disableOriginalConstructor()
+                    ->disableArgumentCloning()
+                    ->setMethods(["prepareVisitor"])
+                    ->getMock();
+            $visitor->expects($this->once())
+                    ->method("prepareVisitor");
+            
+            $serviceManager = $this->getMockBuilder(ServiceManager::class)
+                    ->disableOriginalConstructor()
+                    ->getMock();
+            $serviceManagerRfr = &$serviceManager;
+            
+            $reflectedVisitor = new \ReflectionClass(Visitor::class);
+            $constructor = $reflectedVisitor->getConstructor();
+            $constructor->invoke($visitor, $serviceManagerRfr);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Visitor::get
+         */
+        public function fetchRequestsForNonFetchedItemsResultsInFetchCallTest()
+        {
+            $visitor = $this->getMockBuilder(Visitor::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchTest"])
+                    ->getMock();
+            $visitor->expects($this->once())
+                    ->method("fetchTest")
+                    ->willReturn("test");
+            
+            $this->assertEquals("test", $visitor->get("test"));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Visitor::get
+         */
+        public function fetchRequestsForNonExistentItemsResultsInExceptionTest()
+        {
+            $visitor = $this->getMockBuilder(Visitor::class)
+                    ->disableOriginalConstructor()
+                    ->setMethods(["fetchTest"])
+                    ->getMock();
+            $visitor->expects($this->once())
+                    ->method("fetchTest")
+                    ->willReturn(NULL);
+            
+            $this->expectException(\InvalidArgumentException::class);
+            
+            $visitor->get("test");
+        }
+        
         /**
          * @test
          * 

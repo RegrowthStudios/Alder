@@ -6,6 +6,8 @@
     
     use SycamoreTest\Bootstrap;
     
+    use Zend\ServiceManager\ServiceManager;
+    
     /**
      * Test functionality of Sycamore's TableCache class.
      *
@@ -20,13 +22,35 @@
          * 
          * @covers \Sycamore\Cache\TableCache::__construct
          */
-        public function tableCacheRequiresStringNamespaceTest()
+        public function tableCacheThrowsExceptionIfNamespaceNotStringTest()
         {
             $this->expectException(\InvalidArgumentException::class);
             
             $this->getMockBuilder(TableCache::class)
                     ->setConstructorArgs([Bootstrap::getServiceManager(), 2])
                     ->getMock();
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Cache\TableCache::__construct
+         */
+        public function tableCacheConstructsIfNamespaceIsStringTest()
+        {
+            $tableCache = $this->getMockBuilder(TableCache::class)
+                    ->setConstructorArgs([Bootstrap::getServiceManager(), "Sycamore"])
+                    ->getMock();
+            
+            $tableCacheReflection = new \ReflectionClass(TableCache::class);
+            
+            $serviceManager = $tableCacheReflection->getProperty("serviceManager");
+            $serviceManager->setAccessible(true);
+            $this->assertTrue($serviceManager->getValue($tableCache) instanceof ServiceManager);
+            
+            $namespace = $tableCacheReflection->getProperty("namespace");
+            $namespace->setAccessible(true);
+            $this->assertTrue(is_string($namespace->getValue($tableCache)));
         }
         
         /**

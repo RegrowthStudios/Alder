@@ -54,11 +54,11 @@
                 $filepathParts = explode(DIRECTORY_SEPARATOR, $filename);
                 
                 array_pop($filepathParts);
-                if (empty($filepathParts[0])) {
-                    array_shift($filepathParts);
-                }
+                
                 $filepath = "";
                 foreach ($filepathParts as $part) {
+                    if (empty($part)) continue;
+                    
                     if ($part != end($filepathParts)) {
                         $filepath .= $part . DIRECTORY_SEPARATOR;
                     } else {

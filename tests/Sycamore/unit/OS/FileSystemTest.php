@@ -41,9 +41,19 @@
          * 
          * @covers \Sycamore\OS\FileSystem::delete
          */
+        public function nonExistentFileOrDirectoryDeletionReturnsFalse()
+        {
+            $this->assertFalse(FileSystem::delete(file_build_path(TEMP_DIRECTORY, "123g324hb", "asd34t54A")));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\OS\FileSystem::delete
+         */
         public function canDeleteIndividualFileTest()
         {
-            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "individualFile.txt"));
+            $this->assertTrue(FileSystem::delete(file_build_path(TEMP_DIRECTORY, "individualFile.txt")));
         }
         
         /**
@@ -53,7 +63,7 @@
          */
         public function canDeleteEmptyDirectoryTest()
         {
-            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "emptyDirTest"));
+            $this->assertTrue(FileSystem::delete(file_build_path(TEMP_DIRECTORY, "emptyDirTest")));
         }
         
         /**
@@ -61,9 +71,19 @@
          * 
          * @covers \Sycamore\OS\FileSystem::delete
          */
-        public function canDeleteDirectoryWithFileContentsTest()
+        public function canNotDeleteDirectoryWithFileContentsWithForceFalseTest()
         {
-            $this->assertTrue(FileSystem::delete(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "filledDirTest", true));
+            $this->assertFalse(FileSystem::delete(file_build_path(TEMP_DIRECTORY, "filledDirTest"), false));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\OS\FileSystem::delete
+         */
+        public function canDeleteDirectoryWithFileContentsWithForceTrueTest()
+        {
+            $this->assertTrue(FileSystem::delete(file_build_path(TEMP_DIRECTORY, "filledDirTest"), true));
         }
         
         /**
@@ -73,7 +93,7 @@
          */
         public function canCreateFileInExistingDirectoryTest()
         {
-            $this->assertTrue((bool) FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "existingDirWriteTest.txt", "test"));
+            $this->assertTrue((bool) FileSystem::filePutContents(file_build_path(TEMP_DIRECTORY, "existingDirWriteTest.txt"), "test"));
         }
         
         /**
@@ -83,7 +103,7 @@
          */
         public function canCreateFileInNonExistentDirectoryTest()
         {
-            $this->assertTrue((bool) FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "nonExistingDir" . DIRECTORY_SEPARATOR . "writeTest.txt", "test"));
+            $this->assertTrue((bool) FileSystem::filePutContents(file_build_path(TEMP_DIRECTORY, "nonExistingDir", "writeTest.txt"), "test"));
         }
         
         /**
@@ -98,9 +118,9 @@
                 "test"
             ];
             
-            FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testContents.php", $data);
+            FileSystem::filePutContents(file_build_path(TEMP_DIRECTORY, "testContents.php"), $data);
             
-            $returnedData = require TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testContents.php";
+            $returnedData = require file_build_path(TEMP_DIRECTORY, "testContents.php");
             
             $this->assertEquals($dataPhp, $returnedData);
         }
@@ -118,10 +138,10 @@
                 "test"
             ];
             
-            FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testAppendingContents.php", $data1);
-            FileSystem::filePutContents(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testAppendingContents.php", $data2, FILE_APPEND);
+            FileSystem::filePutContents(file_build_path(TEMP_DIRECTORY, "testAppendingContents.php"), $data1);
+            FileSystem::filePutContents(file_build_path(TEMP_DIRECTORY, "testAppendingContents.php"), $data2, FILE_APPEND);
             
-            $returnedData = require TEMP_DIRECTORY . DIRECTORY_SEPARATOR . "testAppendingContents.php";
+            $returnedData = require file_build_path(TEMP_DIRECTORY, "testAppendingContents.php");
             
             $this->assertEquals($dataPhp, $returnedData);
         }

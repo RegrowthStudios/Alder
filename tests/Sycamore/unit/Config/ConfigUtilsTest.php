@@ -2,8 +2,12 @@
     namespace SycamoreTest\Sycamore\Config;
     
     use Sycamore\Config\ConfigUtils;
+    use Sycamore\Config\Exception\InvalidConfigException;
     
+    use SycamoreTest\SimpleTraversableObject;
     use SycamoreTest\TestHelpers;
+    
+    use Zend\Config\Config;
     
     /**
      * Test functionality of Sycamore's TableCache class.
@@ -64,6 +68,79 @@
             $result = require $filepath;
             
             $this->assertEquals($config2, $result);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Config\ConfigUtils::save
+         */
+        public function configAsZendConfigCanBeSavedTest()
+        {
+            $configArr = [
+                "test"
+            ];
+            
+            $config = new Config($configArr);
+            
+            $filepath = TEMP_DIRECTORY . "/conf.php";
+            
+            ConfigUtils::save($filepath, $config);
+            
+            $result = require $filepath;
+            
+            $this->assertEquals($configArr, $result);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Config\ConfigUtils::save
+         */
+        public function configAsTraversableObjectCanBeSavedTest()
+        {            
+            $config = new SimpleTraversableObject();
+            
+            $filepath = TEMP_DIRECTORY . "/conf.php";
+            
+            ConfigUtils::save($filepath, $config);
+            
+            $result = require $filepath;
+            
+            $this->assertEquals($config->toArray(), $result);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Config\ConfigUtils::save
+         */
+        public function configSavingThrowsExceptionIfInvalidObjectTest()
+        {
+            $this->expectException(InvalidConfigException::class);
+            
+            $config = new \stdClass();
+            $config->test = "hello";
+            
+            $filepath = TEMP_DIRECTORY . "/conf.php";
+            
+            ConfigUtils::save($filepath, $config);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Config\ConfigUtils::save
+         */
+        public function configSavingThrowsExceptionIfInvalidFilepathTest()
+        {
+            $this->expectException(\InvalidArgumentException::class);
+            
+            $config = [
+                "test"
+            ];
+            
+            ConfigUtils::save("", $config);
         }
     }
     

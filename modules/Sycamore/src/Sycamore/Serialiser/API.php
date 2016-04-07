@@ -21,13 +21,6 @@
         protected static $serialiser;
         
         /**
-         * Options for a given instance's serialiser adapter.
-         *
-         * @var array
-         */
-        protected static $options = [];
-        
-        /**
          * {@inheritdoc}
          */
         protected static $serialiserType = "Json";

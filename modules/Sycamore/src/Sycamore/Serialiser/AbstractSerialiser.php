@@ -16,6 +16,13 @@
     abstract class AbstractSerialiser
     {
         /**
+         * Options for a given instance's serialiser adapter.
+         *
+         * @var array
+         */
+//        protected static $options = [];
+        
+        /**
          * Constructs the instance's serialiser if not already constructed and returns it.
          * 
          * @return \Zend\Serializer\Adapter\AbstractAdapter The serialiser adapter.
@@ -24,9 +31,9 @@
         {
             if (!isset(static::$serialiser)) {
                 static::$serialiser = Serializer::factory(static::$serialiserType);
-                if (!empty(static::$options)) {
-                    static::$serialiser->setOptions(new AdapterOptions(static::$options));
-                }
+//                if (!empty(static::$options)) {
+//                    static::$serialiser->setOptions(new AdapterOptions(static::$options));
+//                }
             }
             return static::$serialiser;
         }

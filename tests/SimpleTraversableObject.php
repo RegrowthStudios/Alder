@@ -7,11 +7,11 @@
     class SimpleTraversableObject implements \Iterator
     {
         protected $position = 0;
-        protected $array = array(
+        protected $array = [
             "test",
             "hello",
             "world",
-        );
+        ];
         
         public function __construct()
         {

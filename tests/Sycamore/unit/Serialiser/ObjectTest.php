@@ -30,6 +30,7 @@
          * 
          * @covers \Sycamore\Serialiser\Object::encode
          * @covers \Sycamore\Serialiser\Object::decode
+         * @covers \Sycamore\Serialiser\Object::getSerialiser
          */
         public function serialiserReturnsInitialDataAfterEncodeDecodeCycleTest()
         {            

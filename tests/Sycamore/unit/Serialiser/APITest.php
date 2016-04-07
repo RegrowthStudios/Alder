@@ -17,6 +17,7 @@
          * 
          * @covers \Sycamore\Serialiser\API::encode
          * @covers \Sycamore\Serialiser\API::decode
+         * @covers \Sycamore\Serialiser\API::getSerialiser
          */
         public function serialiserReturnsInitialDataAfterEncodeDecodeCycleTest()
         {

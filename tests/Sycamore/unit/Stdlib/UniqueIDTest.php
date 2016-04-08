@@ -39,4 +39,16 @@
             $this->assertSame(19, strlen($uniqueidMedium));
             $this->assertSame(32, strlen($uniqueidLong));
         }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Stdlib\UniqueID::generate
+         */
+        public function uniqueIdThrowsExceptionForInvalidLength()
+        {
+            $this->expectException(\InvalidArgumentException::class);
+            
+            UniqueID::generate("", false, "INVALID_LENGTH");
+        }
     }

@@ -13,6 +13,23 @@
     class StringUtilsTest extends \PHPUnit_Framework_TestCase
     {
         /**
+         * Stores a resource stream to temp/test.txt
+         *
+         * @var resource
+         */
+        protected $testFile;
+        
+        /**
+         * Sets up a temporary file and stream for testing purposes.
+         */
+        public function setUp()
+        {
+            file_put_contents(file_build_path(TEMP_DIRECTORY, "test.txt"), "test");
+            
+            $this->testFile = fopen(file_build_path(TEMP_DIRECTORY, "test.txt"), "r");
+        }
+        
+        /**
          * @test
          * 
          * @covers \Sycamore\Stdlib\StringUtils::convertToString
@@ -28,7 +45,8 @@
                 2.3,
                 true,
                 NULL,
-                $object
+                $object,
+                "test" => 5
             ];
             
             $this->assertTrue(is_string(StringUtils::convertToString($data)));
@@ -39,7 +57,7 @@
          * 
          * @covers \Sycamore\Stdlib\StringUtils::convertToString
          */
-        public function convertToStringIsDeterministic()
+        public function convertToStringIsDeterministicTest()
         {
             $object = new \stdClass();
             $object->foo = "bar";
@@ -50,7 +68,8 @@
                 2.3,
                 true,
                 NULL,
-                $object
+                $object,
+                "test" => 5
             ];
             
             $this->assertEquals(StringUtils::convertToString($data), StringUtils::convertToString($data));
@@ -59,9 +78,34 @@
         /**
          * @test
          * 
+         * @covers \Sycamore\Stdlib\StringUtils::convertToString
+         */
+        public function convertToStringThrowsExceptionForResourceTypeTest()
+        {
+            $this->expectException(\InvalidArgumentException::class);
+            
+            StringUtils::convertToString($this->testFile);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Stdlib\StringUtils::convertToString
+         */
+        public function convertToStringThrowsExceptionForUnknownTypeTest()
+        {
+            $this->expectException(\InvalidArgumentException::class);
+            
+            fclose($this->testFile);
+            StringUtils::convertToString($this->testFile);
+        }
+        
+        /**
+         * @test
+         * 
          * @covers \Sycamore\Stdlib\StringUtils::endsWith
          */
-        public function endsWithReturnsTrueIfStringEndsWithProvidedNeedle()
+        public function endsWithReturnsTrueIfStringEndsWithProvidedNeedleTest()
         {
             $substring = "test";
             $string = "this is a test";
@@ -74,10 +118,23 @@
          * 
          * @covers \Sycamore\Stdlib\StringUtils::endsWith
          */
-        public function endsWithReturnsFalseIfStringDoesNotEndWithProvidedNeedle()
+        public function endsWithReturnsFalseIfStringDoesNotEndWithProvidedNeedleTest()
         {
             $substring = "test";
             $string = "this is a test.";
+            
+            $this->assertFalse(StringUtils::endsWith($string, $substring));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Stdlib\StringUtils::endsWith
+         */
+        public function endsWithReturnsFalseForStringShorterThanNeedleTest()
+        {
+            $substring = "extra long test";
+            $string = "test";
             
             $this->assertFalse(StringUtils::endsWith($string, $substring));
         }

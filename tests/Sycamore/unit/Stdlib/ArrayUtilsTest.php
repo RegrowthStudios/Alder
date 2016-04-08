@@ -20,7 +20,7 @@
          * 
          * @covers \Sycamore\Stdlib\ArrayUtils::inArrayRecursive
          */
-        public function inArrayRecursiveWorksForArbitraryArrayDepthTest()
+        public function inArrayRecursiveReturnsTrueForExpectedItemInArbitraryArrayDepthTest()
         {
             $array1 = [ "test" ];
             $array2 = [ $array1 ];
@@ -36,9 +36,27 @@
         /**
          * @test
          * 
+         * @covers \Sycamore\Stdlib\ArrayUtils::inArrayRecursive
+         */
+        public function inArrayRecursiveReturnsFalseForNoExpectedItemInArbitraryArrayDepthTest()
+        {
+            $array1 = [ "test" ];
+            $array2 = [ $array1 ];
+            $array3 = [ $array2 ];
+            $array4 = [ $array3 ];
+            
+            $this->assertFalse(ArrayUtils::inArrayRecursive("test1", $array1));
+            $this->assertFalse(ArrayUtils::inArrayRecursive("test1", $array2));
+            $this->assertFalse(ArrayUtils::inArrayRecursive("test1", $array3));
+            $this->assertFalse(ArrayUtils::inArrayRecursive("test1", $array4));
+        }
+        
+        /**
+         * @test
+         * 
          * @covers \Sycamore\Stdlib\ArrayUtils::arrayKeyExistsRecursive
          */
-        public function arrayKeyExistsRecursiveWorksForArbitraryArrayDepthTest()
+        public function arrayKeyExistsRecursiveReturnsTrueForExpectedKeyInArbitraryArrayDepthTest()
         {
             $array1 = [ "test" => 1 ];
             $array2 = [ $array1 ];
@@ -49,6 +67,24 @@
             $this->assertTrue(ArrayUtils::arrayKeyExistsRecursive("test", $array2));
             $this->assertTrue(ArrayUtils::arrayKeyExistsRecursive("test", $array3));
             $this->assertTrue(ArrayUtils::arrayKeyExistsRecursive("test", $array4));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Stdlib\ArrayUtils::arrayKeyExistsRecursive
+         */
+        public function arrayKeyExistsRecursiveReturnsFalseForNoExpectedKeyInArbitraryArrayDepthTest()
+        {
+            $array1 = [ "test" => 1 ];
+            $array2 = [ $array1 ];
+            $array3 = [ $array2 ];
+            $array4 = [ $array3 ];
+            
+            $this->assertFalse(ArrayUtils::arrayKeyExistsRecursive("test1", $array1));
+            $this->assertFalse(ArrayUtils::arrayKeyExistsRecursive("test1", $array2));
+            $this->assertFalse(ArrayUtils::arrayKeyExistsRecursive("test1", $array3));
+            $this->assertFalse(ArrayUtils::arrayKeyExistsRecursive("test1", $array4));
         }
         
         /**
@@ -126,7 +162,7 @@
         /**
          * @test
          * 
-         * @covers \Sycamore\Stdlib\ArrayUtils::recursiveAsort
+         * @covers \Sycamore\Stdlib\ArrayUtils::recursiveKsort
          */
         public function recursiveKsortWorksForArbitraryArrayDepthTest()
         {
@@ -204,6 +240,18 @@
             $objectReturned = ArrayUtils::validateArrayLike($arrayAccessObject);
             
             $this->assertSame($arrayAccessObject, $objectReturned);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Stdlib\ArrayUtils::validateArrayLike
+         */
+        public function validateArrayLikeDoesNotValidateInvalidObjectsTest()
+        {
+            $this->expectException(\InvalidArgumentException::class);
+            
+            ArrayUtils::validateArrayLike(new \stdClass());
         }
         
         /**

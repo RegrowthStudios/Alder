@@ -48,8 +48,9 @@
                 case "NULL":
                     $string = "__";
                     break;
-                default:
-                    $string .= preg_replace("#[\\\/.]+#", "_", strval($data));
+                case "resource":
+                case "unknown type":
+                    throw new \InvalidArgumentException("Resource or unknown type cannot be uniquely and deterministically converted to a string.");
                     break;
             }
             return str_replace(["\\", "/"], "_", $string);

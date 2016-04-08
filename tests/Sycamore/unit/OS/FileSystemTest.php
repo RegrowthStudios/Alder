@@ -20,12 +20,12 @@
         protected function setUp()
         {
             // Create directories for tests.
-            mkdir(TEMP_DIRECTORY . "/emptyDirTest");
-            mkdir(TEMP_DIRECTORY . "/filledDirTest");
+            mkdir(file_build_path(TEMP_DIRECTORY, "emptyDirTest"));
+            mkdir(file_build_path(TEMP_DIRECTORY, "filledDirTest"));
             
             // Create files for test.
-            file_put_contents(TEMP_DIRECTORY . "/individualFile.txt", "test");
-            file_put_contents(TEMP_DIRECTORY . "/filledDirTest/someFile.txt", "test");
+            file_put_contents(file_build_path(TEMP_DIRECTORY, "individualFile.txt"), "test");
+            file_put_contents(file_build_path(TEMP_DIRECTORY, "filledDirTest", "someFile.txt"), "test");
         }
         
         /**

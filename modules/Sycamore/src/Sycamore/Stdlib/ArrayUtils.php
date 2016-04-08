@@ -42,7 +42,7 @@
         public static function arrayKeyExistsRecursive($key, $array)
         {
             foreach ($array as $k => $v) {
-                if (($k == $key) || (is_array($v) && static::arrayKeyExistsRecursive($key, $v))) {
+                if (($k === $key) || (is_array($v) && static::arrayKeyExistsRecursive($key, $v))) {
                     return true;
                 }
             }
@@ -60,9 +60,7 @@
         {
             foreach ($array as & $value) {
                 if (is_array($value)) {
-                    if (!static::recursiveAsort($value)) {
-                        return false;
-                    }
+                    static::recursiveAsort($value);
                 }
             }
             return asort($array);
@@ -79,9 +77,7 @@
         {
             foreach ($array as & $value) {
                 if (is_array($value)) {
-                    if (!static::recursiveKsort($value)) {
-                        return false;
-                    }
+                    static::recursiveKsort($value);
                 }
             }
             return ksort($array);

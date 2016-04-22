@@ -3,6 +3,8 @@
     namespace SycamoreTest\Sycamore\User;
     
     use Sycamore\Token\Jwt;
+    use Sycamore\Token\JwtFactory;
+    use Sycamore\User\Verify;
     
     use SycamoreTest\Bootstrap;
     
@@ -15,6 +17,17 @@
      */
     class VerifyTest extends \PHPUnit_Framework_TestCase
     {
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Verify::__construct
+         */
+        public function validationClassCorrectlyConstructsTest()
+        {
+            $verifyManager = new Verify(Bootstrap::getServiceManager());
+            $this->assertTrue($verifyManager instanceof Verify);
+        }
+        
         /**
          * @test
          * 
@@ -75,5 +88,46 @@
             $parts[2] = "t" . substr($parts[2],1);
             
             $this->assertFalse($verifyManager->verify(1, join(".", $parts), ["test" => "hello"]));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Verify::verify
+         */
+        public function invalidPayloadFailsVerificationTest()
+        {
+            $verifyManager = Bootstrap::getServiceManager()->get("Sycamore\User\Verify");
+            
+            $token = JwtFactory::create(Bootstrap::getServiceManager(), [
+                "tokenLifetime" => 1000,
+                "registeredClaims" => [
+                    "sub" => "verification"
+                ],
+                "applicationPayload" => [
+                    "id" => 1
+                ]
+            ]);
+            
+            $this->assertFalse($verifyManager->verify(1, strval($token), ["test" => "hello"]));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\User\Verify::verify
+         */
+        public function nonExistentPayloadFailsVerificationTest()
+        {
+            $verifyManager = Bootstrap::getServiceManager()->get("Sycamore\User\Verify");
+            
+            $token = JwtFactory::create(Bootstrap::getServiceManager(), [
+                "tokenLifetime" => 1000,
+                "registeredClaims" => [
+                    "sub" => "verification"
+                ]
+            ]);
+            
+            $this->assertFalse($verifyManager->verify(1, strval($token), []));
         }
     }

@@ -19,6 +19,17 @@
         /**
          * @test
          * 
+         * @covers \Sycamore\User\Security::__construct
+         */
+        public function securityClassCorrectlyConstructsTest()
+        {
+            $securityManager = new Security(Bootstrap::getServiceManager());
+            $this->assertTrue($securityManager instanceof Security);
+        }
+        
+        /**
+         * @test
+         * 
          * @covers \Sycamore\User\Security::hashPassword
          */
         public function hashPasswordReturnsHashedPasswordTest()

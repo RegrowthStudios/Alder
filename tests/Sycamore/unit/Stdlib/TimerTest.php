@@ -44,7 +44,7 @@
              * 
              * @covers \Sycamore\Stdlib\Timer::start
              */
-            public function startingTimerCallsMicrotime()
+            public function startingTimerCallsMicrotimeTest()
             {
                 $timer = new Timer();
                 $timer->start();
@@ -60,7 +60,7 @@
              * 
              * @covers \Sycamore\Stdlib\Timer::stop
              */
-            public function stoppingTimerCallsMicrotime()
+            public function stoppingTimerCallsMicrotimeTest()
             {
                 global $microtimeCalled;
                 

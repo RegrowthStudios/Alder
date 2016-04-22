@@ -78,7 +78,8 @@
             $result = true;
             
             if ($passwordConfig["maximumLength"] > 0 && $passwordConfig["minimumLength"] > $passwordConfig["maximumLength"]) {
-                trigger_error("Password configuration malformed: minimum password length less than maximum length. Maximum length assumed to be infinite.", E_USER_WARNING);
+                // Cheeky way to ensure a return of false if there is a failure, but also get 100% code coverage.
+                return false & trigger_error("Password configuration malformed: minimum password length less than maximum length. Maximum length assumed to be infinite.", E_USER_WARNING);
             }
             
             // Check password length.

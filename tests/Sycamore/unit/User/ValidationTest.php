@@ -4,6 +4,8 @@
     
     use Sycamore\User\Validation;
     
+    use SycamoreTest\Bootstrap;
+    
     use Zend\ServiceManager\ServiceManager;
     
     /**
@@ -134,6 +136,17 @@
         /**
          * @test
          * 
+         * @covers \Sycamore\User\Validation::__construct
+         */
+        public function validationClassCorrectlyConstructsTest()
+        {
+            $validationManager = new Validation(Bootstrap::getServiceManager());
+            $this->assertTrue($validationManager instanceof Validation);
+        }
+        
+        /**
+         * @test
+         * 
          * @covers \Sycamore\User\Validation::validateUsername
          * @covers \Sycamore\User\Validation::isUsername
          * @covers \Sycamore\User\Validation::isUniqueUsername
@@ -258,7 +271,7 @@
             
             $passwordRightLength = "password1";
             
-            $this->setExpectedException("PHPUnit_Framework_Error_Warning");
+            $this->setExpectedException("PHPUnit_Framework_Error");
             
             $errors = [];
             $validationManager->passwordStrengthCheck($passwordRightLength, $errors);

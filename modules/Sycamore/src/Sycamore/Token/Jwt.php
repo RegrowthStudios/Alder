@@ -215,7 +215,7 @@
             if (isset($verifiedData["signMethod"])) {
                 $signMethod = $verifiedData["signMethod"];
             }
-            if (!isset(self::SIGNERS[$signMethod])) {
+            if (!array_key_exists($signMethod, self::SIGNERS)) {
                 throw new \InvalidArgumentException("The sign method provided via data or application config is an invalid method.");
             }
 

@@ -16,44 +16,7 @@
      * @since 0.1.0
      */
     class JwtTest extends \PHPUnit_Framework_TestCase
-    {
-        /**
-         * @test
-         * 
-         * @covers \Sycamore\Token\Jwt::validate
-         */
-        public function jwtFactoryReturnsPreviouslyCalculatedValidityUnlessTokenChangedTest()
-        {
-            $data = [
-                "tokenLifetime" => 36400,
-                "registeredClaims" => [
-                    "sub" => "test"
-                ],
-                "applicationPayload" => [
-                    "id" => 1,
-                    "username" => "test"
-                ]
-            ];
-            
-            $validateData = [
-                "validators" => [
-                    "sub" => "test"
-                ]
-            ];
-            
-            $token = JwtFactory::create(Bootstrap::getServiceManager(), $data);
-            
-            $reflectionClass = new \ReflectionClass(Jwt::class);
-            $stateField = $reflectionClass->getProperty("state");
-            $stateField->setAccessible(true);
-            
-            $this->assertTrue($token->validate($validateData) === Jwt::VALID);
-            
-            $stateField->setValue($token, 123);
-            
-            $this->assertSame(123, $token->validate($validateData));
-        }
-        
+    {        
         /**
          * @test
          * 
@@ -462,5 +425,136 @@
             $token = JwtFactory::create(Bootstrap::getServiceManager(), $data);
             
             $this->assertFalse($token->hasHeader("test"));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Token\Jwt::validate
+         */
+        public function jwtReturnsPreviouslyCalculatedValidityUnlessTokenChangedTest()
+        {
+            $data = [
+                "tokenLifetime" => 36400,
+                "registeredClaims" => [
+                    "sub" => "test"
+                ],
+                "applicationPayload" => [
+                    "id" => 1,
+                    "username" => "test"
+                ]
+            ];
+            
+            $validateData = [
+                "validators" => [
+                    "sub" => "test"
+                ]
+            ];
+            
+            $token = JwtFactory::create(Bootstrap::getServiceManager(), $data);
+            
+            $reflectionClass = new \ReflectionClass(Jwt::class);
+            $stateField = $reflectionClass->getProperty("state");
+            $stateField->setAccessible(true);
+            
+            $this->assertTrue($token->validate($validateData) === Jwt::VALID);
+            
+            $stateField->setValue($token, 123);
+            
+            $this->assertSame(123, $token->validate($validateData));
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Token\Jwt::validate
+         */
+        public function jwtThrowsExceptionIfInvalidSignMethodSpecifiedTest()
+        {
+            $data = [
+                "tokenLifetime" => 36400,
+                "registeredClaims" => [
+                    "sub" => "test"
+                ],
+                "applicationPayload" => [
+                    "id" => 1,
+                    "username" => "test"
+                ]
+            ];
+            
+            $validateData = [
+                "signMethod" => "test",
+                "validators" => [
+                    "sub" => "test"
+                ]
+            ];
+            
+            $token = JwtFactory::create(Bootstrap::getServiceManager(), $data);
+            
+            $this->expectException(\InvalidArgumentException::class);
+            $token->validate($validateData);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Token\Jwt::validate
+         */
+        public function jwtThrowsExceptionIfInvalidKeyForAssymetricSignMethodTest()
+        {
+            $data = [
+                "tokenLifetime" => 36400,
+                "registeredClaims" => [
+                    "sub" => "test"
+                ],
+                "applicationPayload" => [
+                    "id" => 1,
+                    "username" => "test"
+                ]
+            ];
+            
+            $validateData = [
+                "signMethod" => "RS256",
+                "validators" => [
+                    "sub" => "test"
+                ]
+            ];
+            
+            $token = JwtFactory::create(Bootstrap::getServiceManager(), $data);
+            
+            $this->expectException(\InvalidArgumentException::class);
+            $token->validate($validateData);
+        }
+        
+        /**
+         * @test
+         * 
+         * @covers \Sycamore\Token\Jwt::validate
+         */
+        public function jwtThrowsExceptionIfInvalidKeyForAssymetricSignMethodTest()
+        {
+            $data = [
+                "tokenLifetime" => 36400,
+                "registeredClaims" => [
+                    "sub" => "test"
+                ],
+                "applicationPayload" => [
+                    "id" => 1,
+                    "username" => "test"
+                ]
+            ];
+            
+            $validateData = [
+                "signMethod" => "RS256",
+                "key" => "test12345",
+                "validators" => [
+                    "sub" => "test"
+                ]
+            ];
+            
+            $token = JwtFactory::create(Bootstrap::getServiceManager(), $data);
+            
+            $this->expectException(\InvalidArgumentException::class);
+            $token->validate($validateData);
         }
     }

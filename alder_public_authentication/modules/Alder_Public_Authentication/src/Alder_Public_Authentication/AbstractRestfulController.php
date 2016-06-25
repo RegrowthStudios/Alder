@@ -3,8 +3,6 @@
     
     use Zend\Mvc\Controller\AbstractRestfulController as ZendAbstractRestfulController;
     use Zend\Mvc\MvcEvent;
-    use Zend\Router\RouteMatch;
-    use Zend\Stdlib\RequestInterface;    
     
     /**
      * Extension of the Zend RESTful controller.

@@ -1,7 +1,6 @@
 nbproject/
-modules/Sycamore/src/Sycamore/OLD/
 logs/
 docs/
-licenses/
 vendor/
+test_results/
 composer.lock

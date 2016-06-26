@@ -23,7 +23,10 @@
       <whitelist
           addUncoveredFilesFromWhitelist="true"
           processUncoveredFilesFromWhitelist="true">
-          <directory suffix=".php">src/</directory>
+          <directory suffix=".php">modules/</directory>
+          <exclude>
+              <directory suffix=".php">modules/Alder_Public_Authentication/config/</directory>
+          </exclude>
         </whitelist>
     </filter>
 </phpunit>

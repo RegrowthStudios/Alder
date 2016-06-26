@@ -1,0 +1,28 @@
+{
+    "name": "regrowthstudios/alder_public_authentication",
+    "description": "The public user authentication service for Alder, a service package for game developers from Regrowth Studios.",
+    "type": "project",
+    "require": {
+        "zendframework/zend-mvc": "^3.0",
+        "lcobucci/jwt": "^3.1",
+        "zendframework/zend-db": "^2.8",
+        "zendframework/zend-mvc-i18n": "^1.0",
+        "zendframework/zend-cache": "^2.7",
+        "zendframework/zend-filter": "^2.7",
+        "zendframework/zend-math": "^3.0",
+        "zendframework/zend-log": "^2.9",
+        "zendframework/zend-mail": "^2.7",
+        "zendframework/zend-test": "^3.0",
+        "ocramius/proxy-manager": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Matthew Marshall",
+            "email": "matthew.marshall96@yahoo.co.uk"
+        }
+    ]
+}

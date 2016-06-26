@@ -54,7 +54,7 @@
                 "modules" => $moduleDirs
             ];
 
-            $serviceManager = new ServiceManager(new ServiceManagerConfig());
+            $serviceManager = new ServiceManager((new ServiceManagerConfig())->toArray());
             $serviceManager->setService("ApplicationConfig", $config);
             $serviceManager->get("ModuleManager")->loadModules();
             static::$serviceManager = $serviceManager;

@@ -1,7 +1,9 @@
 <?php
 
-    namespace Alder;
+    namespace Alder_Public_Authentication;
     
+    use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+    use Zend\ModuleManager\Feature\ConfigProviderInterface;
     use Zend\Mvc\Application;
     use Zend\Mvc\ModuleRouteListener;
     use Zend\Mvc\MvcEvent;

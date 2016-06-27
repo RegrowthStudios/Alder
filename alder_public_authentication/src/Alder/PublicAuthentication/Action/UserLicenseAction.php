@@ -2,7 +2,7 @@
 
     namespace Alder\PublicAuthentication\Action;
     
-    use Alder\PublicAuthentication\Action\AbstractAction;
+    use Alder\PublicAuthentication\Action\AbstractRestfulAction;
     
     /**
      * The user license action middleware for Alder's public authentication service.
@@ -12,7 +12,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since 0.1.0
      */
-    class UserLicenseAction extends AbstractAction
+    class UserLicenseAction extends AbstractRestfulAction
     {
         
     }

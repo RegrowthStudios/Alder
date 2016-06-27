@@ -18,36 +18,18 @@
         "routes" => [
             [
                 "name" => "user",
-                "path" => "(/:locale)/user(/:id)",
-                "middleware" => Alder\PublicAuthentication\Action\UserAction::class,
-                "options" => [
-                    "conditions" => [
-                        "locale" => "[a-z]{2}_[A-Z]{2}",
-                        "id" => "[0-9]+"
-                    ]
-                ]
+                "path" => "(/{locale:[a-z]{2}_[A-Z]{2}})/user(/{id:[0-9]+})",
+                "middleware" => Alder\PublicAuthentication\Action\UserAction::class
             ],
             [
                 "name" => "user_license",
-                "path" => "(/:locale)/user/license(/:id)",
-                "middleware" => Alder\PublicAuthentication\Action\UserLicenseAction::class,
-                "options" => [
-                    "conditions" => [
-                        "locale" => "[a-z]{2}_[A-Z]{2}",
-                        "id" => "[0-9]+"
-                    ]
-                ]
+                "path" => "(/{locale:[a-z]{2}_[A-Z]{2}})/user/license(/{id:[0-9]+})",
+                "middleware" => Alder\PublicAuthentication\Action\UserLicenseAction::class
             ],
             [
                 "name" => "license",
-                "path" => "(/:locale)/license(/:id)",
-                "middleware" => Alder\PublicAuthentication\Action\LicenseAction::class,
-                "options" => [
-                    "conditions" => [
-                        "locale" => "[a-z]{2}_[A-Z]{2}",
-                        "id" => "[0-9]+"
-                    ]
-                ]
+                "path" => "(/{locale:[a-z]{2}_[A-Z]{2}})/license(/{id:[0-9]+})",
+                "middleware" => Alder\PublicAuthentication\Action\LicenseAction::class
             ],
         ],
     ];

@@ -1,6 +1,8 @@
 <?php
     
-    $rest_allowable_methods = ["GET", "POST", "PUT", "HEAD", "PATCH", "OPTIONS", "DELETE"];
+    /**
+     * Route configuration for the application.
+     */
 
     return [
         "dependencies" => [
@@ -17,8 +19,7 @@
             [
                 "name" => "user",
                 "path" => "(/:locale)/user(/:id)",
-                "middleware" => Alder\Action\UserAction::class,
-                "allowed_methods" => $rest_allowable_methods,
+                "middleware" => Alder\PublicAuthentication\Action\UserAction::class,
                 "options" => [
                     "conditions" => [
                         "locale" => "[a-z]{2}_[A-Z]{2}",
@@ -29,8 +30,7 @@
             [
                 "name" => "user_license",
                 "path" => "(/:locale)/user/license(/:id)",
-                "middleware" => Alder\Action\UserLicenseAction::class,
-                "allowed_methods" => $rest_allowable_methods,
+                "middleware" => Alder\PublicAuthentication\Action\UserLicenseAction::class,
                 "options" => [
                     "conditions" => [
                         "locale" => "[a-z]{2}_[A-Z]{2}",
@@ -41,8 +41,7 @@
             [
                 "name" => "license",
                 "path" => "(/:locale)/license(/:id)",
-                "middleware" => Alder\Action\LicenseAction::class,
-                "allowed_methods" => $rest_allowable_methods,
+                "middleware" => Alder\PublicAuthentication\Action\LicenseAction::class,
                 "options" => [
                     "conditions" => [
                         "locale" => "[a-z]{2}_[A-Z]{2}",

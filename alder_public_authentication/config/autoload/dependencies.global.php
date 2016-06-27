@@ -1,18 +1,21 @@
 <?php
-use Zend\Expressive\Application;
-use Zend\Expressive\Container\ApplicationFactory;
-use Zend\Expressive\Helper;
 
-return [
-    'dependencies' => [
-        'invokables' => [
-            // Fully\Qualified\InterfaceName::class => Fully\Qualified\ClassName::class,
-            Helper\ServerUrlHelper::class => Helper\ServerUrlHelper::class,
+    /**
+     * Global dependencies required by the entire application.
+     * 
+     * TODO(Matthew): Determine which of the current dependencies are actually needed.
+     */
+
+    return [
+        "dependencies" => [
+            // Use "invokables" for constructor-less services - i.e. no arguments need to be supplied to the constructor.
+            "invokables" => [
+                Zend\Expressive\Helper\ServerUrlHelper::class => Zend\Expressive\Helper\ServerUrlHelper::class,
+            ],
+            // Use "factories" for services provided by callbacks/factory classes.
+            "factories" => [
+                Zend\Expressive\Application::class => Zend\Expressive\Container\ApplicationFactory::class,
+                Zend\Expressive\Helper\UrlHelper::class => Zend\Expressive\Helper\UrlHelperFactory::class,
+            ],
         ],
-        // Use 'factories' for services provided by callbacks/factory classes.
-        'factories' => [
-            Application::class => ApplicationFactory::class,
-            Helper\UrlHelper::class => Helper\UrlHelperFactory::class,
-        ],
-    ],
-];
+    ];

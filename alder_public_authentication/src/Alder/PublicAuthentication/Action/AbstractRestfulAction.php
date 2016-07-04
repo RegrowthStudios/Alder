@@ -50,7 +50,6 @@
          * 
          * @param ServerRequestInterface $request The request object.
          * @param ResponseInterface $response The response object.
-         * 
          * @param callable $next The next middleware to be called.
          */
         public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \callable $next = null)
@@ -63,6 +62,13 @@
                 case "DELETE":
                     
             }
+        }
+        
+        protected function getParameter(ServerRequestInterface $request, $parameterHandle)
+        {
+            $params = $request->getQueryParams();
+            // TODO(Matthew): return from attribute first (as route matching data found there) then try from query params.
+            return $request->getAttribute($parameterHandle);
         }
         
         /** TODO(Matthew): Below functions from Zend-MVC. Should adapt further from original imlementation or figure out how to credit appropriately. **/

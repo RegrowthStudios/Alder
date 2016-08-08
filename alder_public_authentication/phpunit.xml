@@ -13,10 +13,10 @@
     forceCoversAnnotation="true">
     <testsuites>
         <testsuite name="Alder Public Authentication Unit Tests">
-            <directory>tests/Alder_Public_Authentication/unit</directory>
+            <directory>tests/Alder/unit/PublicAuthentication</directory>
         </testsuite>
-        <testsuite name="Alder Public Authentication Unit Integration Tests">
-            <directory>tests/Alder_Public_Authentication/functional</directory>
+        <testsuite name="Alder Public Authentication Integration Tests">
+            <directory>tests/Alder/functional/PublicAuthentication</directory>
         </testsuite>
     </testsuites>
     <filter>

@@ -18,7 +18,7 @@
      */
     class LocalisationMiddleware implements MiddlewareInterface
     {
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = NULL)
         {
             // TODO(Matthew): Figure how Expressive does DI so as to obtain the configured default locale.
             $locale = $request->getAttribute("locale", "en_GB");

@@ -38,7 +38,7 @@
     "autoload-dev": {
         "psr-4": {
             "AlderTest\\": "tests/",
-            "AlderTest\\Alder\\PublicAuthentication\\": [ "tests/Alder/unit/PublicAuthentication/", "tests/Alder/functional/PublicAuthentication/" ]
+            "AlderTest\\Alder\\": [ "tests/Alder/unit/", "tests/Alder/functional/" ]
         }
     }
 }

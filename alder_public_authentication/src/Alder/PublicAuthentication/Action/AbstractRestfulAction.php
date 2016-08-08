@@ -123,7 +123,7 @@
          * @param ResponseInterface $response The response object.
          * @param callable $next The next middleware to be called.
          */
-        public function __invoke(ServerRequestInterface& $request, ResponseInterface& $response, \callable $next = null)
+        public function __invoke(ServerRequestInterface& $request, ResponseInterface& $response, callable $next = null)
         {
             $this->request = $request;
             $this->response = $response;

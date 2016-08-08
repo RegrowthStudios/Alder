@@ -4,7 +4,7 @@
     backupGlobals="false" 
     backupStaticAttributes="false" 
     colors="true"
-    bootstrap="tests/index.php"
+    bootstrap="tests/Bootstrap.php"
     verbose="true"
     beStrictAboutOutputDuringTests="true"
     beStrictAboutTestSize="true"

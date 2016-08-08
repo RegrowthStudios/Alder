@@ -122,8 +122,10 @@
          * @param ServerRequestInterface $request The request object.
          * @param ResponseInterface $response The response object.
          * @param callable $next The next middleware to be called.
+         * 
+         * @return NULL|Psr\Http\Message\ResponseInterface
          */
-        public function __invoke(ServerRequestInterface& $request, ResponseInterface& $response, callable $next = null)
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
         {
             $this->request = $request;
             $this->response = $response;

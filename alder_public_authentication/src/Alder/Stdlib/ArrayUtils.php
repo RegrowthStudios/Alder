@@ -104,7 +104,6 @@
                 return $data;
             }
             
-            
             if ($arrayOnly) {
                 if (is_null($class)) {
                     $class = get_called_class();

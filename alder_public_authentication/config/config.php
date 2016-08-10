@@ -15,6 +15,6 @@
     
     $configManager = new ConfigManager([
         new PhpFileProvider(file_build_path(CONFIG_DIRECTORY, "autoload", $providerString))
-    ]);
+    ], file_build_path(CACHE_DIRECTORY, "config", "cachedConfig.php"));
     
     return new ArrayObject($configManager->getMergedConfig());

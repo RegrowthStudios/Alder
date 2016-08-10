@@ -52,7 +52,8 @@
                     "duration_extended" => 2629740/*~1 Month*/, // How long should an extended log-in session last.
                 ],
                 "token" => [ /* Token Settings */
-                    "private_key" => DEFAULT_VAL, // The ky used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.
+                    "private_key" => DEFAULT_VAL, // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.
+                    "private_key_passphrase" => DEFAULT_VAL, // The passphrase for the private key, if it exists.
                     "public_key" => DEFAULT_VAL, // The key used for verifying JWTs IF an asymmetric hash algorithm is specified. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the public RSA key file.
                     "hash_algorithm" => "HS256", // The hashing algorithm used for the signing of JWTs. Allowed values: HS256, HS384, HS512, RS256, RS384, RS512. HS values are Hmac symmetric key methods, RS values are asymmetric RSA public/private key methods.
                 ]

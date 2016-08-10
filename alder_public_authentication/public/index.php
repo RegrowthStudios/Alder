@@ -8,6 +8,7 @@
 
     namespace Alder;
     
+    use Alder\Container;
     use Alder\Stdlib\Timer;
     
     use Zend\Diactoros\ServerRequestFactory;
@@ -52,6 +53,9 @@
         /** @var \Interop\Container\ContainerInterface $container */
         $container = require file_build_path(CONFIG_DIRECTORY, "container.php");
 
+        // Set up the container holder.
+        Container::set($container);
+        
         // Initialise application.
         /** @var \Zend\Expressive\Application $app */
         $app = $container->get(Application::class);

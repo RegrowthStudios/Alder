@@ -19,8 +19,19 @@
      */
     abstract class AbstractTable extends AbstractTableGateway
     {
+        /**
+         * The local application settings.
+         *
+         * @var array
+         */
         protected $config;
         
+        /**
+         * Prepares the table with the DB adapter and local settings.
+         * 
+         * @param string $table The name of the table for this instance.
+         * @param \Zend\Db\ResultSet\ResultSetInterface|NULL $row The row object to construct with the results of queries.
+         */
         public function __construct($table, AbstractRowInterface& $row = NULL)
         {
             $this->config = Container::get()->get("config")["alder"];

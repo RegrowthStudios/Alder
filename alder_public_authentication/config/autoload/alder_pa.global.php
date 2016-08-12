@@ -61,7 +61,7 @@
             "security" => [ /* General Security Settings */
                 "access_cookies_via_http_only" => false, // If true, cookies are only accessible via the HTTP protocol.
                 "cookies_over_https_only" => true, // If true, cookies may only be sent to the user over a secure HTTPS connection.
-                //"enableClickjackingProtection" => true, // If true, prevents clickjacking attacks by not allowing site to be rendered in iframe.
+                //"enable_clickjacking_protection" => true, // If true, prevents clickjacking attacks by not allowing site to be rendered in iframe.
                 "simple_hash_algorithm" => "sha256", // The hashing algorithm to be used for simple hashes - no sensitive data is hashed using this.
             ]
         ]

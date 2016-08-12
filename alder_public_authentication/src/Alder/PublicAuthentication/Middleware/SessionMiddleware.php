@@ -2,7 +2,9 @@
 
     namespace Alder\PublicAuthentication\Middleware;
     
-    use Lcobucci\JWT\Builder;
+    use Alder\Container;
+    use Alder\Token\Parser;
+    use Alder\Token\Token;
     
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
@@ -20,10 +22,39 @@
      */
     class SessionMiddleware implements MiddlewareInterface
     {
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $out = null)
+        /**
+         * Process session data held by the user.
+         * 
+         * @param \Psr\Http\Message\ServerRequestInterface $request
+         * @param \Psr\Http\Message\ResponseInterface $response
+         * @param callable $next
+         */
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
         {
-            $alis = $request->getCookieParams()["alis"];
+            $cookieParams = $request->getCookieParams();
             
+            if (!isset($cookieParams["alis"]) || !($alis = $cookieParams["alis"])) {
+                $next($request, $response);
+            }
             
+            $alisToken = (new Parser())->parse($alis);
+            
+            $result = $alisToken->validate([
+                "validators" => [
+                    "sub" => "user"
+                ]
+            ]);
+            
+            if ($result !== Token::VALID) {
+                $request = $request->withAttribute("visitor", [
+                    "isLoggedIn" => false
+                ]);
+            } else {
+                $request = $request->withAttribute("visitor", array_merge([
+                    "isLoggedIn" => true
+                ], $alisToken->getClaims()[Container::get()->get("config")["alder"]["domain"]]));
+            }
+            
+            $next($request, $response);
         }
     }

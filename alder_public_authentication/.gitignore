@@ -2,3 +2,4 @@ vendor/
 cache/
 temp/
 composer.lock
+build_template.zip

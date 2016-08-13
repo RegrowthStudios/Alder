@@ -19,17 +19,17 @@
                 ],
                 "cache" => [ /* Cache Settings */
                     "namespace" => "alder_cache", // Namespace in which all application data is cached.
-                    "timeToLive" => 1800/*30 Mins*/, // How long does the data live for in cache?
+                    "time_to_live" => 1800/*30 Mins*/, // How long does the data live for in cache?
                     "adapter" => "filesystem", // Name of the type of cache to use.
                     "plugins" => [ /* Cache Plugin Details */
-                        "clearExpired" => [ /* Cache Clearing Plugin */
-                            "clearingFactor" => 100, // The probability that the clearing function will be called on a caching operation (1/n, where n is the value here).
+                        "clear_expired" => [ /* Cache Clearing Plugin */
+                            "clearing_factor" => 100, // The probability that the clearing function will be called on a caching operation (1/n, where n is the value here).
                         ],
-                        "ignoreUserAbort" =>  [ /* User Abort Plugin */
-                            "exitOnAbort" => false, // Whether the cache script should be aborted on user closing connection with server.
+                        "ignore_user_abort" =>  [ /* User Abort Plugin */
+                            "exit_on_abort" => false, // Whether the cache script should be aborted on user closing connection with server.
                         ],
                         "optimise" => [ /* Optimisation Plugin */
-                            "optimisingFactor" => 100, // The probability that the optimisation function will be called on a caching operation (1/n, where n is the value here).
+                            "optimising_factor" => 100, // The probability that the optimisation function will be called on a caching operation (1/n, where n is the value here).
                         ]
                     ],
                 ],

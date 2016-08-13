@@ -35,6 +35,9 @@ CALL COMPOSER install
 ECHO Optimising autoloader...
 CALL COMPOSER dump-autoload --optimize
 
+ECHO Patching vendors.
+ROBOCOPY /S "%~dp0VENDOR-PATCH" "%~dp0vendor"
+
 ECHO Copying vendors to build template zip...
 WHERE 7Z >nul 2>nul
 IF %ERRORLEVEL% EQU 0 ( GOTO 7Z_METHOD )

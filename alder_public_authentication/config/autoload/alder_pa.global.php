@@ -17,8 +17,24 @@
                     "password" => "", // The password with which to connect to the database.
                     "charset" => "utf8", // The charset to use in communicating with database.
                 ],
-                "table_prefix" => "", // The prefix to be added to all table names for the application.
+                "cache" => [ /* Cache Settings */
+                    "namespace" => "alder_cache", // Namespace in which all application data is cached.
+                    "timeToLive" => 1800/*30 Mins*/, // How long does the data live for in cache?
+                    "adapter" => "filesystem", // Name of the type of cache to use.
+                    "plugins" => [ /* Cache Plugin Details */
+                        "clearExpired" => [ /* Cache Clearing Plugin */
+                            "clearingFactor" => 100, // The probability that the clearing function will be called on a caching operation (1/n, where n is the value here).
+                        ],
+                        "ignoreUserAbort" =>  [ /* User Abort Plugin */
+                            "exitOnAbort" => false, // Whether the cache script should be aborted on user closing connection with server.
+                        ],
+                        "optimise" => [ /* Optimisation Plugin */
+                            "optimisingFactor" => 100, // The probability that the optimisation function will be called on a caching operation (1/n, where n is the value here).
+                        ]
+                    ],
+                ],
                 "force_db_fetch" => false, // Whether to force DB fetches and skip the cache. This is NOT recommended outside of development.
+                "table_prefix" => "", // The prefix to be added to all table names for the application.
             ],
             "default_locale" => "en_GB", // The default locale of the application. (http://www.roseindia.net/tutorials/I18N/locales-list.shtml has a list of possible locales.)
             "domain" => "example.com", // Domain of the application.

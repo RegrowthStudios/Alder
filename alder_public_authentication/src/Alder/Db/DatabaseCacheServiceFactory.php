@@ -35,9 +35,9 @@
             ]);
             $pluginsConfig = $cacheConfig["plugins"];
             $pluginOptions = new Plugin\PluginOptions([
-                "ClearingFactor" => $pluginsConfig["clearExpired"]["clearingFactor"],
-                "ExitOnAbort" => $pluginsConfig["ignoreUserAbort"]["exitOnAbort"],
-                "OptimizingFactor" => $pluginsConfig["optimise"]["optimisingFactor"],
+                "ClearingFactor" => $pluginsConfig["clear_expired"]["clearing_factor"],
+                "ExitOnAbort" => $pluginsConfig["ignore_user_abort"]["exit_on_abort"],
+                "OptimizingFactor" => $pluginsConfig["optimise"]["optimising_factor"],
             ]);
             
             $clearExpired = new Plugin\ClearExpiredByFactor();

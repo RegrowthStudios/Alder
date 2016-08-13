@@ -3,6 +3,7 @@
     namespace Alder\Db\Table;
     
     use Alder\Container;
+    use Alder\Db\Table\AbstractTableInterface;
     use Alder\Db\Row\AbstractRowInterface;
     use Alder\Stdlib\CacheUtils;
     
@@ -18,7 +19,7 @@
      * @since 0.1.0
      * @abstract
      */
-    abstract class AbstractTable extends AbstractTableGateway
+    abstract class AbstractTable extends AbstractTableGateway implements AbstractTableInterface
     {
         /**
          * The local application settings.
@@ -266,7 +267,7 @@
          * 
          * @return int The number of rows affected by the update execution.
          */
-        public function updateRow(AbstractRow $row, $identifiers = NULL) {
+        public function updateRow(AbstractRowInterface $row, $identifiers = NULL) {
             return $this->update($row->toArray(), $identifiers);
         }
         
@@ -277,7 +278,7 @@
          * 
          * @return int The number of affected rows.
          */
-        public function insertRow(AbstractRow $row)
+        public function insertRow(AbstractRowInterface $row)
         {
             return $this->insert($row->toArray());
         }

@@ -3,4 +3,5 @@ logs/
 docs/
 vendor/
 test_results/
+.idea/
 composer.lock

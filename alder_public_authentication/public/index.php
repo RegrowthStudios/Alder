@@ -12,6 +12,7 @@
     use Alder\Stdlib\Timer;
     
     use Zend\Diactoros\ServerRequestFactory;
+    use Zend\Diactoros\Response\JsonResponse;
     use Zend\Expressive\Application;
     use Zend\Log\Logger;
     use Zend\Log\Writer\Stream as WriteStream;
@@ -85,14 +86,14 @@
             $data["query"][] = $request->getUri()->getQuery();
             $data["post"][] = $request->getParsedBody();
             $data["header"][] = json_encode($request->getHeaders());
-            file_put_contents($timingFile, json_encode($data));
+            file_put_contents($timingFileHandle, json_encode($data));
         }
     } catch (Exception $ex) {
         // Log error if a critical exception occurred.
         error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL
                 . "Error Code: " . $ex->getCode() . PHP_EOL
                 . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL
-                . "Error Message: " . $ex->getMessage()) . PHP_EOL
-                . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString();
+                . "Error Message: " . $ex->getMessage() . PHP_EOL
+                . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString());
         exit();
     }

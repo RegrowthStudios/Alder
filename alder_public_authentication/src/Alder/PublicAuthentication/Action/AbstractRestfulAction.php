@@ -4,8 +4,7 @@
     
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
-    
-    use Zend\Json\Json;
+
     use Zend\Stratigility\MiddlewareInterface;
 
     /**
@@ -54,19 +53,28 @@
          * 
          * @param string The ID of the resource to fetch.
          */
-        abstract function get($id);
+        protected function get($id) {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to acquire a set of specific resources.
          * 
          * @abstract
          */
-        abstract function getList();
+        protected function getList() {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to create a new resource.
          * 
          * @abstract
          */
-        abstract function create();
+        protected function create() {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to update a specific resource.
          * 
@@ -74,13 +82,19 @@
          * 
          * @param string The ID of the resource to update.
          */
-        abstract function update($id);
+        protected function update($id) {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to update a set of resources.
          * 
          * @abstract
          */
-        abstract function updateList();
+        protected function updateList() {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to replace a specific resource.
          * 
@@ -88,19 +102,28 @@
          * 
          * @param string The ID of the resource to replace.
          */
-        abstract function replace($id);
+        protected function replace($id) {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to replace a set of resources.
          * 
          * @abstract
          */
-        abstract function replaceList();
+        protected function replaceList() {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to delete a specific resource.
          * 
          * @abstract
          */
-        abstract function delete($id);
+        protected function delete($id) {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request to delete a set of resources.
          * 
@@ -108,13 +131,18 @@
          * 
          * @param string The ID of the resource to delete.
          */
-        abstract function deleteList();
+        protected function deleteList() {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
+        
         /**
          * Processes a request for the options related to the route path of the request.
          * 
          * @abstract
          */
-        abstract function options();
+        protected function options() {
+            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+        }
         
         /**
          * Determines the appropriate action function to call for the request method and parameters.
@@ -130,8 +158,8 @@
             $this->request = $request;
             $this->response = $response;
             
-            $method = strtoupper($request->getMethod());
-            switch($method) {
+            $method = strtoupper($this->request->getMethod());
+            switch ($method) {
                 case "GET":
                     $id = $this->getParameter("id");
                     if ($id === NULL) {
@@ -162,85 +190,86 @@
                     $this->options();
                 case "HEAD":
                     $this->head($this->getParameter("id"));
-                    $response = $response->withBody(NULL);
+                    $this->response = $this->response->withBody(NULL);
                 default:
-                    $response = $response->withStatus(405);
+                    $this->response = $this->response->withStatus(405);
             }
-            
-            return $response;
+
+            if ($next) {
+                return $next($this->request, $this->response);
+            }
+            return $this->response;
         }
         
         /**
          * Fetches the named parameter from the route matching first, and if nothing is found in the route, from
-         * the query string. Returns NULL if nothing is found.
+         * the parsed body if method type is POST, else from the query string. Returns NULL if nothing is found.
          * 
          * @param string $parameterHandle The handle of the parameter to be fetched.
          * 
          * @return string The parameter fetched.
          */
-        protected function getParameter($parameterHandle)
-        {
+        protected function getParameter($parameterHandle) {
             $params = $this->request->getQueryParams();
-            if (isset ($params["$parameterHandle"])) {
+            if (isset($params["$parameterHandle"])) {
                 $param = $params["$parameterHandle"];
             }
+
+            $parsedBody = $this->request->getParsedBody();
+            if ($parsedBody && isset($parsedBody["$parameterHandle"])) {
+                $param = $parsedBody["$parameterHandle"];
+            }
             
-            $param = $this->request->getAttribute($parameterHandle, $param ?: NULL);
-            
-            return $param;
+            return $this->request->getAttribute($parameterHandle, $param ?: NULL);
         }
+
+//        /**
+//         * Determines if the request header content type handle is a valid handle of the given content type.
+//         *
+//         * @param type $contentType The content type to check for.
+//         *
+//         * @return boolean True if the given content type is the request's content type, false otherwise.
+//         */
+//        protected function bodyIsContentType($contentType)
+//        {
+//            $headerContentType = $this->request->getHeader("content-type");
+//
+//            if (empty($headerContentType)) {
+//                return false;
+//            }
+//
+//            if (array_key_exists($contentType, self::CONTENT_TYPES)) {
+//                foreach (self::CONTENT_TYPES[$contentType] as $contentTypeHandle) {
+//                    if (stripos($contentTypeHandle, $headerContentType[0]) == 0) {
+//                        return true;
+//                    }
+//                }
+//            }
+//
+//            return false;
+//        }
         
-        /** TODO(Matthew): Below functions from Zend-MVC. Should adapt further from original imlementation or figure out how to credit appropriately. **/
-        
-        /**
-         * Determines if the request header content type handle is a valid handle of the given content type.
-         * 
-         * @param ServerRequestInterface $request The request object.
-         * @param type $contentType The content type to check for.
-         * 
-         * @return boolean True if the given content type is the request's content type, false otherwise.
-         */
-        protected function bodyIsContentType(ServerRequestInterface $request, $contentType)
-        {
-            $headerContentType = $request->getHeader("content-type");
-            
-            if (empty($headerContentType)) {
-                return false;
-            }
-            
-            if (array_key_exists($contentType, self::CONTENT_TYPES)) {
-                foreach (self::CONTENT_TYPES[$contentType] as $contentTypeHandle) {
-                    if (stripos($contentTypeHandle, $headerContentType[0]) == 0) {
-                        return true;
-                    } 
-                }
-            }
-            
-            return false;
-        }
-        
-        /**
-         * Processes the body content of the request.
-         * 
-         * @return object|string|array
-         */
-        protected function processBodyContent()
-        {
-            // TODO(Matthew): This is a stream, and body could be HUGE, so we should be checking size and rejecting bodies of ridiculous size.
-            //                Should be done at earlier stage, e.g. at pre-routing stage.
-            $body = (string) $this->request->getBody();
-            
-            if ($this->bodyIsContentType($request, "json")) {
-                return Json::decode($body, Json::TYPE_ARRAY);
-            }
-            
-            parse_str($body, $parsedBody);
-            
-            if (!is_array($parsedBody) || empty($parsedBody) ||
-                    (count($parsedBody) == 1 && $parsedBody[0] == "")) {
-                return $body;
-            }
-            
-            return $parsedBody;
-        }
+//        /**
+//         * Processes the body content of the request.
+//         *
+//         * @return object|string|array
+//         */
+//        protected function processBodyContent()
+//        {
+//            // TODO(Matthew): This is a stream, and body could be HUGE, so we should be checking size and rejecting bodies of ridiculous size. Should be done at earlier stage, e.g. at pre-routing stage.
+//            $body = (string) $this->request->getBody();
+//
+//            if ($this->bodyIsContentType($this->request, "json")) {
+//                return Json::decode($body, Json::TYPE_ARRAY);
+//            }
+//
+//            parse_str($body, $parsedBody);
+//
+//            if (!is_array($parsedBody) || empty($parsedBody) ||
+//                    (count($parsedBody) == 1 && $parsedBody[0] == "")) {
+//                return $body;
+//            }
+//
+//            return $parsedBody;
+//        }
     }

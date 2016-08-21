@@ -3,6 +3,8 @@
     namespace Alder\Db\Table;
     
     use Alder\Container;
+    use Alder\Db\DatabaseCacheServiceFactory;
+    use Alder\Db\Table\AbstractTableInterface;
     use Alder\Db\Row\AbstractRowInterface;
     use Alder\Stdlib\CacheUtils;
     
@@ -18,7 +20,7 @@
      * @since 0.1.0
      * @abstract
      */
-    abstract class AbstractTable extends AbstractTableGateway
+    abstract class AbstractTable extends AbstractTableGateway implements AbstractTableInterface
     {
         /**
          * The local application settings.
@@ -31,7 +33,7 @@
          * Prepares the table with the DB adapter and local settings.
          * 
          * @param string $table The name of the table for this instance.
-         * @param \Zend\Db\ResultSet\ResultSetInterface|NULL $row The row object to construct with the results of queries.
+         * @param \Alder\Db\Row\AbstractRowInterface|NULL $row The row object to construct with the results of queries.
          */
         public function __construct($table, AbstractRowInterface& $row = NULL)
         {
@@ -71,7 +73,7 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . $cacheExtra, $cacheWhere);
             
             // Grab the database cache.
-            $dbCache = $this->serviceManager->get("SycamoreDbCache");            
+            $dbCache = DatabaseCacheServiceFactory::create();
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
@@ -112,6 +114,28 @@
                 $forceDbFetch
             );
         }
+
+        /**
+         * Fetches all rows matching the provided key values as stored in cache,
+         * if none are present in cache or $forceDbFetch is true, fetches from
+         * the database.
+         *
+         * @param array $keys
+         * @param array $values
+         * @param bool $forceDbFetch
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
+         */
+        protected function getByMultipleKeys(array $keys, array $values, $forceDbFetch = false) {
+            return $this->getBySelect(
+                array_combine($keys, $values),
+                $values,
+                "get_by" . array_reduce($keys, function ($carry, $item) {
+                    return $carry . "_" . $item;
+                }, ""),
+                $forceDbFetch
+            );
+        }
         
         /**
          * Fetches a row matching the provided unique key value as stored in cache, 
@@ -122,12 +146,26 @@
          * @param mixed $value The value of the provided key's column for rows that should be fetched.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return array|\ArrayObject|NULL Array if no prototype is specified for this table, an object implementing \ArrayObject if a prototype was specified.
-         * NULL if no matches were found for the fetch parameters.
+         * @return \Alder\Db\Row\AbstractRowInterface|NULL The fetched item, NULL if no matches found.
          */
-        protected function getByUniqueKey($key, $value, $forceDbFetch = false)
+        protected function getUniqueByKey($key, $value, $forceDbFetch = false)
         {
             return $this->getByKey($key, $value, $forceDbFetch)->current();
+        }
+
+        /**
+         * Fetches the unique row matching the provided key values as stored in cache,
+         * if none are present in cache or $forceDbFetch is true, fetches from
+         * the database.
+         *
+         * @param array $keys
+         * @param array $values
+         * @param bool $forceDbFetch
+         *
+         * @return \Alder\Db\Row\AbstractRowInterface|NULL The fetched item, NULL if no matches found.
+         */
+        protected function getUniqueByMultipleKeys(array $keys, array $values, $forceDbFetch = false) {
+            return $this->getByMultipleKeys($keys, $values, $forceDbFetch)->current();
         }
         
         /**
@@ -237,11 +275,11 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . "fetch_all", NULL);
             
             // Grab the database cache.
-            $dbCache = $this->serviceManager->get("SycamoreDbCache");            
+            $dbCache = DatabaseCacheServiceFactory::create();
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
-            if (!$forceDbFetch && !$this->serviceManager->get("Config")["Sycamore"]["db"]["forceDbFetch"]) {
+            if (!$forceDbFetch && !$this->config["db"]["force_db_fetch"]) {
                 $cachedResult = $dbCache->getItem($cacheLocation, $cacheFetchSuccess);
             }
             
@@ -261,23 +299,23 @@
         /**
          * Updates rows matching the given identifiers.
          * 
-         * @param \Sycamore\Row\Row $row The row of data to update with.
+         * @param \Alder\Db\Row\AbstractRowInterface $row The row of data to update with.
          * @param Where|\Closure|string|array $identifiers The identifiers for rows that should be updated.
          * 
          * @return int The number of rows affected by the update execution.
          */
-        public function updateRow(AbstractRow $row, $identifiers = NULL) {
+        public function updateRow(AbstractRowInterface $row, $identifiers = NULL) {
             return $this->update($row->toArray(), $identifiers);
         }
         
         /**
          * Inserts a new row to the table.
          * 
-         * @param \Sycamore\Db\Row\AbstractRow $row The row to be inserted.
+         * @param \Alder\Db\Row\AbstractRowInterface $row The row to be inserted.
          * 
          * @return int The number of affected rows.
          */
-        public function insertRow(AbstractRow $row)
+        public function insertRow(AbstractRowInterface $row)
         {
             return $this->insert($row->toArray());
         }

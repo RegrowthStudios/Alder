@@ -14,15 +14,31 @@
      */
     class SessionFactory
     {
+        /**
+         * Construct a session token for the
+         *
+         * @param int $id The ID of the user to create the token for.
+         * @param array $data The data of the user to create the token for.
+         * @param bool $extendedSession Whether the token should be for an extended session.
+         *
+         * @return \Alder\Token\Token|bool The created token, or false if the token could not be created.
+         */
         public static function create($id, array $data = [], $extendedSession = false) {
+            $container = Container::get();
+
             if (count($data) != 4 ||
-                    !(isset($data["username"]) && isset($data["primary_email"])
-                    && isset($data["license_keys"]) && isset($data["staff_member"]))) {
-                // Access database model of user with given ID.
-                // Fail if ID is invalid, otherwise merge with data that does exist.
+                    ! (isset($data["username"]) && isset($data["primary_email_local"])
+                    && isset($data["primary_email_domain"]) && isset($data["license_keys"])
+                    && isset($data["staff_member"]))) {
+                $user = $container->get("AlderTableCache")
+                            ->fetchTable("User")->getById($id);
+                if (!$user) {
+                    return false;
+                }
+                $data = array_merge($user->toArray(), $data);
             }
             
-            $config = Container::get()->get("config")["alder"];
+            $config = $container->get("config")["alder"];
             if (!$extendedSession) {
                 $sessionLength = $config["public_authentication"]["session"]["duration"];
             } else {
@@ -37,7 +53,7 @@
                 "applicationPayload" => [
                     "id" => $id,
                     "username" => $data["username"],
-                    "primary_email" => $data["primary_email"],
+                    "primary_email" => $data["primary_email_local"] . "@" . $data["primary_email_domain"],
                     "license_keys" => $data["license_keys"],
                     "staff_member" => $data["staff_member"]
                 ]

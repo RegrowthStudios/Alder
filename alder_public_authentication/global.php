@@ -39,12 +39,16 @@
         }
     }
 
-    /**
-     * Builds a file path from the given segments using DIRECTORY_SEPARATOR.
-     * 
-     * @param variadic $segments The segments to build the path from.
-     */
-    function file_build_path(...$segments)
-    {
-        return join(DIRECTORY_SEPARATOR, $segments);
+    namespace {
+        /**
+         * Builds a file path from the given segments using DIRECTORY_SEPARATOR.
+         *
+         * @param array ...$segments The segments to build the path from.
+         *
+         * @return string The resulting file path.
+         */
+        function file_build_path(...$segments)
+        {
+            return join(DIRECTORY_SEPARATOR, $segments);
+        }
     }

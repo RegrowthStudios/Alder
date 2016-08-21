@@ -19,6 +19,8 @@
     define("ENV", require CONFIG_DIRECTORY."/env.state.php");
     // Define value to set config values to that MUST be overridden by a given installation.
     define("DEFAULT_VAL", "CHANGE");
+    // Define miscellaneous constances.
+    define("USER_SESSION", "alis");
     
     // Define password strictness consts.
     define("PASSWORD_STRICTNESS_NORMAL", "normal");

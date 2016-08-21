@@ -3,7 +3,6 @@
     namespace Alder\Db\Table;
     
     use Alder\Container;
-    use Alder\Db\DatabaseCacheServiceFactory;
     use Alder\Db\Table\AbstractTableInterface;
     use Alder\Db\Row\AbstractRowInterface;
     use Alder\Stdlib\CacheUtils;

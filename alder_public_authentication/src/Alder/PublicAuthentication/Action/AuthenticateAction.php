@@ -1,7 +1,7 @@
 <?php
 
     namespace Alder\PublicAuthentication\Action;
-
+    
     use Alder\Action\AbstractRestfulAction;
     use Alder\Container;
     use Alder\Error\Container as ErrorContainer;

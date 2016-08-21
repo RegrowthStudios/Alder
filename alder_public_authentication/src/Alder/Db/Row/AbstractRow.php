@@ -1,8 +1,8 @@
 <?php
-    namespace Sycamore\Db\Row;
+    namespace Alder\Db\Row;
     
-    use Sycamore\Db\Row\AbstractRowInterface;
-    use Sycamore\Stdlib\ArrayUtils;
+    use Alder\Db\Row\AbstractRowInterface;
+    use Alder\Stdlib\ArrayUtils;
     
     /**
      * Abstract row representation class, implementing functions for creating rows from, and transforming rows into, arrays.

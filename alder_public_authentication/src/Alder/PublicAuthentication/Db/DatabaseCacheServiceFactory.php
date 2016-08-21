@@ -1,9 +1,9 @@
 <?php
     
-    namespace Alder\Db;
-    
-    use Alder\Container;
-    
+    namespace Alder\PublicAuthentication\Db;
+
+    use Interop\Container\ContainerInterface;
+
     use Zend\Cache\StorageFactory;
     use Zend\Cache\Storage\Plugin;
     
@@ -16,14 +16,15 @@
      */
     class DatabaseCacheServiceFactory
     {
-        // TODO(Matthew): Allow greater configurability for different cache services 
-        //                per database, or even table.
+        // TODO(Matthew): Allow greater configurability for different cache services per database, or even table.
         /**
          * Creates a database cache service in the container.
+         *
+         * @param \Interop\Container\ContainerInterface $container The container for the application instance.
+         *
+         * @return \Zend\Cache\Storage\StorageInterface The caching object for database entries.
          */
-        public function create() {
-            $container = Container::get();
-            
+        public static function __invoke(ContainerInterface $container) {
             $cacheConfig = $container->get("config")["alder"]["db"]["cache"];
             
             $cache = StorageFactory::factory([
@@ -54,7 +55,7 @@
             
             $serialiser = new Plugin\Serializer();
             $cache->addPlugin($serialiser);
-            
-            $container->setService("AlderDbCache", $cache);
+
+            return $cache;
         }
     }

@@ -3,4 +3,8 @@ logs/
 docs/
 vendor/
 test_results/
+cache/
+temp/
+.idea/
 composer.lock
+build_template.zip

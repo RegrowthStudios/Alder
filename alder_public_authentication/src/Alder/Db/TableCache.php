@@ -49,8 +49,9 @@
          * Attempts to fetch the table with the given table name, returning it on success.
          * 
          * @param string $tableName The name of the table to be fetched.
+         * @param string|NULL $namespace The namespace in which the table class resides.
          * 
-         * @return \Sycamore\Db\Table\AbstractTable The fetched table.
+         * @return \Alder\Db\Table\AbstractTable The fetched table.
          * 
          * @throws \InvalidArgumentException If no table exists with the given name.
          */

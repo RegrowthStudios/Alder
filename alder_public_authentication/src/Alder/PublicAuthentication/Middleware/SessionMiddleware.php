@@ -28,18 +28,21 @@
          * @param \Psr\Http\Message\ServerRequestInterface $request
          * @param \Psr\Http\Message\ResponseInterface $response
          * @param callable $next
+         *
+         * @return \Psr\Http\Message\ResponseInterface The resulting response of the middleware execution.
          */
         public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
         {
             $cookieParams = $request->getCookieParams();
+            $sessionTokenString = $this->getParameter(USER_SESSION, isset($cookieParams[USER_SESSION]) ? $cookieParams[USER_SESSION] : NULL);
             
-            if (!isset($cookieParams["alis"]) || !($alis = $cookieParams["alis"])) {
-                $next($request, $response);
+            if (is_null($sessionTokenString)) {
+                return $next($request, $response);
             }
             
-            $alisToken = (new Parser())->parse($alis);
+            $sessionToken = (new Parser())->parse($sessionTokenString);
             
-            $result = $alisToken->validate([
+            $result = $sessionToken->validate([
                 "validators" => [
                     "sub" => "user"
                 ]
@@ -52,9 +55,9 @@
             } else {
                 $request = $request->withAttribute("visitor", array_merge([
                     "isLoggedIn" => true
-                ], $alisToken->getClaims()[Container::get()->get("config")["alder"]["domain"]]));
+                ], $sessionToken->getClaims()[Container::get()->get("config")["alder"]["domain"]]));
             }
             
-            $next($request, $response);
+            return $next($request, $response);
         }
     }

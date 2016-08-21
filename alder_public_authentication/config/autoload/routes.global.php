@@ -15,7 +15,13 @@
             ],
         ],
 
+        // TODO(Matthew): Ensure all paths are of valid format.
         "routes" => [
+            [
+                "name" => "auth",
+                "path" => "/auth",
+                "middleware" => Alder\PublicAuthentication\Action\AuthenticateAction::class,
+            ],
             [
                 "name" => "user",
                 "path" => "(/{locale:[a-z]{2}_[A-Z]{2}})/user(/{id:[0-9]+})",

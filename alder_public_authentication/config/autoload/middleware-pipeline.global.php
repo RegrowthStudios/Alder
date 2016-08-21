@@ -42,20 +42,20 @@
             // defined in multiple configuration files/locations. This file defines
             // some conventional keys for middleware to execute early, routing
             // middleware, and error middleware.
-            
-            "pre_routing" => [
+
+            // Middleware for bootstrapping, pre-conditions and modifications to outgoing responses.
+            [
                 "middleware" => [
-                    // Middleware for bootstrapping, pre-conditions and modifications to outgoing responses.
                     Alder\PublicAuthentication\Middleware\SessionMiddleware::class,
                     Zend\Expressive\Helper\ServerUrlMiddleware::class,
                 ],
-                "priority" => 10000,
+                "priority" => PHP_INT_MAX,
             ],
 
-            "routing" => [
+            [
                 "middleware" => [
                     Zend\Expressive\Container\ApplicationFactory::ROUTING_MIDDLEWARE,
-                    Alder\PublicAuthentication\Middleware\CacheMiddleware::class,
+                    //Alder\PublicAuthentication\Middleware\CacheMiddleware::class,
                     Zend\Expressive\Helper\UrlHelperMiddleware::class,
                     Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class,
                     // Middleware for route-based authentication, validation and authorisation.
@@ -64,7 +64,7 @@
                 "priority" => 1,
             ],
 
-            "error" => [
+            [
                 "middleware" => [
                     // Add error middleware here. 404 error?
                 ],

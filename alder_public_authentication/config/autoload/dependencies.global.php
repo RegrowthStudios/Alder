@@ -16,6 +16,8 @@
             "factories" => [
                 Zend\Expressive\Application::class => Zend\Expressive\Container\ApplicationFactory::class,
                 Zend\Expressive\Helper\UrlHelper::class => Zend\Expressive\Helper\UrlHelperFactory::class,
+                "AlderDbCache" => Alder\PublicAuthentication\Db\DatabaseCacheServiceFactory::class,
+                "AlderTableCache" => Alder\PublicAuthentication\Db\TableCacheServiceFactory::class
             ],
         ],
     ];

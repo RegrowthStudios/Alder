@@ -24,6 +24,8 @@
             foreach($oldData as $key => $_) {
                 if (isset($validatedData[$key])) {
                     $this->$key = $validatedData[$key];
+                } else {
+                    unset($this->$key);
                 }
             }
             return $oldData;

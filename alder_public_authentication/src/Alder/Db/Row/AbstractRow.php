@@ -25,7 +25,7 @@
                 if (isset($validatedData[$key])) {
                     $this->$key = $validatedData[$key];
                 } else {
-                    unset($this->$key);
+                    $this->$key = NULL;
                 }
             }
             return $oldData;

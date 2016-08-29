@@ -24,20 +24,20 @@
         return false;
     }
     
-    require dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
-    require file_build_path(dirname(__DIR__), "config", "constants.php");
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
+    require_once file_build_path(dirname(__DIR__), "config", "constants.php");
     
     // Bootstrap application.
     try {
         // Time the request-to-response time if in development mode.
         if (ENV != PRODUCTION) {
-            require file_build_path(ALDER_SRC_DIRECTORY, "Stdlib", "Timer.php");
+            require_once file_build_path(ALDER_SRC_DIRECTORY, "Stdlib", "Timer.php");
             $timer = new Timer();
             $timer->start();
         }
         
         // Prepare autoloader.
-        require file_build_path(VENDOR_DIRECTORY, "autoload.php");
+        require_once file_build_path(VENDOR_DIRECTORY, "autoload.php");
         
         // Prepare error logger.
         $errorStream = @fopen(file_build_path(LOGS_DIRECTORY, "errors.log"), "a");

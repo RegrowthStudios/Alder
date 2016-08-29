@@ -21,6 +21,12 @@
     define("DEFAULT_VAL", "CHANGE");
     // Define miscellaneous constances.
     define("USER_SESSION", "alis");
+
+    // Define canonical action names.
+    define("AUTHENTICATE", "authenticate");
+    define("LICENSE", "license");
+    define("USER", "user");
+    define("USERLICENSE", "user_license");
     
     // Define password strictness consts.
     define("PASSWORD_STRICTNESS_NORMAL", "normal");

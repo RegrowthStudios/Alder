@@ -3,9 +3,10 @@
     namespace Alder\PublicAuthentication\Middleware;
     
     use Alder\Container;
+    use Alder\Middleware\MiddlewareTrait;
     use Alder\Token\Parser;
     use Alder\Token\Token;
-    
+
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     
@@ -22,6 +23,8 @@
      */
     class SessionMiddleware implements MiddlewareInterface
     {
+        use MiddlewareTrait;
+
         /**
          * Process session data held by the user.
          * 
@@ -33,11 +36,14 @@
          */
         public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
         {
-            $cookieParams = $request->getCookieParams();
+            $this->request = $request;
+            $this->response = $response;
+
+            $cookieParams = $this->request->getCookieParams();
             $sessionTokenString = $this->getParameter(USER_SESSION, isset($cookieParams[USER_SESSION]) ? $cookieParams[USER_SESSION] : NULL);
             
             if (is_null($sessionTokenString)) {
-                return $next($request, $response);
+                return $next($this->request, $this->response);
             }
             
             $sessionToken = (new Parser())->parse($sessionTokenString);
@@ -47,17 +53,18 @@
                     "sub" => "user"
                 ]
             ]);
-            
+
+            // TODO(Matthew): If logged in and token on verge of expiring/just expired then generate and issue new token.
             if ($result !== Token::VALID) {
-                $request = $request->withAttribute("visitor", [
+                $this->request = $this->request->withAttribute("visitor", [
                     "isLoggedIn" => false
                 ]);
             } else {
-                $request = $request->withAttribute("visitor", array_merge([
+                $this->request = $this->request->withAttribute("visitor", array_merge([
                     "isLoggedIn" => true
                 ], $sessionToken->getClaims()[Container::get()->get("config")["alder"]["domain"]]));
             }
             
-            return $next($request, $response);
+            return $next($this->request, $this->response);
         }
     }

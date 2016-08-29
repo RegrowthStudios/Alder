@@ -46,6 +46,7 @@
             // Middleware for bootstrapping, pre-conditions and modifications to outgoing responses.
             [
                 "middleware" => [
+                    Alder\PublicAuthentication\Middleware\ApiMapMiddleware::class,
                     Alder\PublicAuthentication\Middleware\SessionMiddleware::class,
                     Zend\Expressive\Helper\ServerUrlMiddleware::class,
                 ],
@@ -66,7 +67,7 @@
 
             [
                 "middleware" => [
-                    // Add error middleware here. 404 error?
+                    // TODO(Matthew): Add error middleware here. 404 error?
                 ],
                 "error"    => true,
                 "priority" => -10000,

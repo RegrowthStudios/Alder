@@ -4,7 +4,7 @@
     backupGlobals="false" 
     backupStaticAttributes="false" 
     colors="true"
-    bootstrap="tests/index.php"
+    bootstrap="tests/Bootstrap.php"
     verbose="true"
     beStrictAboutOutputDuringTests="true"
     beStrictAboutTestSize="true"
@@ -13,20 +13,17 @@
     forceCoversAnnotation="true">
     <testsuites>
         <testsuite name="Alder Public Authentication Unit Tests">
-            <directory>tests/Alder_Public_Authentication/unit</directory>
+            <directory>tests/Alder/unit</directory>
         </testsuite>
-        <testsuite name="Alder Public Authentication Unit Integration Tests">
-            <directory>tests/Alder_Public_Authentication/functional</directory>
+        <testsuite name="Alder Public Authentication Integration Tests">
+            <directory>tests/Alder/functional</directory>
         </testsuite>
     </testsuites>
     <filter>
       <whitelist
           addUncoveredFilesFromWhitelist="true"
           processUncoveredFilesFromWhitelist="true">
-          <directory suffix=".php">modules/</directory>
-          <exclude>
-              <directory suffix=".php">modules/Alder_Public_Authentication/config/</directory>
-          </exclude>
+          <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
 </phpunit>

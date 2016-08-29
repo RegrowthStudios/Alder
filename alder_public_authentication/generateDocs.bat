@@ -6,7 +6,7 @@ WHERE PHPDOC >nul 2>nul
 IF %ERRORLEVEL% NEQ 0 ( GOTO NO_PHPDOC )
 
 ECHO Generating docs...
-PHPDOC run -d "%~dp0modules" -t "%~dp0docs" --title="Alder" --sourcecode --template="responsive-twig"
+PHPDOC run -d "%~dp0src" -t "%~dp0docs" --title="Alder" --sourcecode --template="responsive-twig"
 EXIT /B 0
 
 :NO_DIR_EXISTS

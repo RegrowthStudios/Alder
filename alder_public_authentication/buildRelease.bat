@@ -64,7 +64,7 @@ EXIT 99
 ECHO Building project zip...
 
 COPY /Y "build_template.zip" %BUILD_ARCHIVE%
-7Z a -r -y -tzip %BUILD_ARCHIVE% "LICENSE.txt" "VERSION.txt" "global.php" "public\*.php" "modules\*.php" "config\*.php"
+7Z a -r -y -tzip %BUILD_ARCHIVE% "LICENSE.txt" "VERSION.txt" "global.php" "public\*.php" "src\*.php" "config\*.php"
 
 CD VENDOR-PATCH
 7Z a -r -y -tzip "../%BUILD_ARCHIVE%" "*.php"

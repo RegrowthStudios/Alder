@@ -61,7 +61,7 @@
                 $sessionLength = $config["security"]["sessionLengthExtended"];
             }
 
-            $token = strval(JwtFactory::create([
+            $token = strval(JwtFactory::create($this->serviceManager, [
                 "tokenLifetime" => $sessionLength,
                 "registeredClaims" => [
                     "sub" => "user"
@@ -86,22 +86,27 @@
          */
         public function acquire(& $tokenClaimsDump)
         {
-            $slis = filter_input(INPUT_COOKIE, "SLIS");
-            if (!$slis) {
+            if (!isset($_COOKIE["SLIS"]) || !($slis = $_COOKIE["SLIS"])) {
                 return 0;
             }
 
             // Create JWT object.
             $token = new Jwt($this->serviceManager, $slis);
 
-            // Dump claims.
-            $tokenClaimsDump = $token->getClaims();
-
-            // Return validation of the JWT.
-            return $token->validate([
+            $result = $token->validate([
                 "validators" => [
                     "sub" => "user"
                 ]
             ]);
+            // Return validation of the JWT early if invalid, so as not to write to claims dump.
+            if ($result !== Jwt::VALID) {
+                return $result;
+            }
+            
+            // Dump claims.
+            $tokenClaimsDump = $token->getClaims()[$this->serviceManager->get("Config")["Sycamore"]["domain"]]->getValue();
+
+            // Return validation of the JWT.
+            return $result;
         }
     }

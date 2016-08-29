@@ -14,8 +14,17 @@
     class API extends AbstractSerialiser
     {
         /**
+         * Serialiser adapter for serialising data.
+         * 
+         * @var \Zend\Serializer\Adapter\AbstractAdapter
+         */
+        protected static $serialiser;
+        
+        /**
          * {@inheritdoc}
          */
         protected static $serialiserType = "Json";
+        
+        // TODO(Matthew): Define callback to serialise objects with object serialiser?
     }
     

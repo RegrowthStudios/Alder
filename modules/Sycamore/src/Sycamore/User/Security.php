@@ -38,7 +38,7 @@
          */
         public function hashPassword($password)
         {
-            return password_hash($password, PASSWORD_DEFAULT, ["cost" => $this->serviceManager->get("Config")["Sycamore"]["security"]["passwordHashingStrength"] ]);
+            return password_hash($password, PASSWORD_DEFAULT, ["cost" => $this->serviceManager->get("Config")["Sycamore"]["security"]["password"]["hashingStrength"] ]);
         }
         
         /**
@@ -63,6 +63,6 @@
          */
         public function passwordNeedsRehash($password)
         {
-            return password_needs_rehash($password, PASSWORD_DEFAULT, [ 'cost' => $this->serviceManager->get("Config")["Sycamore"]["security"]["passwordHashingStrength"] ]);
+            return password_needs_rehash($password, PASSWORD_DEFAULT, [ 'cost' => $this->serviceManager->get("Config")["Sycamore"]["security"]["password"]["hashingStrength"] ]);
         }
     }

@@ -62,19 +62,21 @@
          * Verifies the verification token.
          *
          * @param int $userId The ID of the user whom this token applies to.
-         * @param string $token The token to verify.
+         * @param string $tokenStr The token to verify.
          * @param array $itemsExpected The expected items if token is to be verfied. E.g. delete key.
          * @param string $purpose The purpose of this verification token.
          *
          * @return bool|array The application payload if the token is valid, otherwise false.
          */
-        public function verify($userId, $token, $itemsExpected, $purpose = "verification")
+        public function verify($userId, $tokenStr, $itemsExpected, $purpose = "verification")
         {
-            $token = new Jwt($this->serviceManager, $token);
+            $token = new Jwt($this->serviceManager, $tokenStr);
             // Ensure token is generally valid as per public claims.
-            if (!$token->validate([
-                "sub" => $purpose
-            ])) {
+            if ($token->validate([
+                "validators" => [
+                    "sub" => $purpose
+                ]
+            ]) !== Jwt::VALID) {
                 return false;
             }
 
@@ -83,13 +85,15 @@
 
             // Get item claims.
             $payload = $token->getClaims();
-            $itemClaims = $payload[$domain];
+            if (isset($payload[$domain])) {
+                $itemClaims = $payload[$domain]->getValue();
 
-            // If application payload and expected items + user ID are equivalent, then token is truly verified.
-            if (empty( ArrayUtils::xorArrays( array_merge((array) $itemsExpected, [
-                                    "id" => $userId
-                                ]), (array) $itemClaims))) {
-                return $itemClaims;
+                // If application payload and expected items + user ID are equivalent, then token is truly verified.
+                if (empty( ArrayUtils::xorArrays( array_merge((array) $itemsExpected, [
+                                        "id" => $userId
+                                    ]), (array) $itemClaims))) {
+                    return $itemClaims;
+                }
             }
 
             return false;

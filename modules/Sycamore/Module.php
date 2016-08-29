@@ -35,7 +35,7 @@
      * Module class for Sycamore.
      */
     class Module implements AutoloaderProviderInterface, ConfigProviderInterface
-    {        
+    {
         /**
          * Initialises listeners during the bootstrap process.
          *
@@ -66,23 +66,27 @@
             $e->stopPropagation();
             $response = $e->getResponse();
             $exception = $e->getParam("exception");
-            if ($e->getError() == Application::ERROR_ROUTER_NO_MATCH) {
+            $error = $e->getError();
+            
+            if ($error == Application::ERROR_ROUTER_NO_MATCH) {
                 $response->setStatusCode(404);
                 $response->setContent(API::encode(["error" => "No route match was found for the given URI."]));
-            } else if ($e->getError() == Application::ERROR_CONTROLLER_NOT_FOUND
-                    || $e->getError() == Application::ERROR_CONTROLLER_INVALID
-                    || $e->getError() == Application::ERROR_CONTROLLER_CANNOT_DISPATCH
-                    || $e->getError() == Application::ERROR_EXCEPTION
-                    || $exception) {
+            } else if ($error == Application::ERROR_CONTROLLER_NOT_FOUND
+                    || $error == Application::ERROR_CONTROLLER_INVALID
+                    || $error == Application::ERROR_CONTROLLER_CANNOT_DISPATCH
+                    || $error == Application::ERROR_EXCEPTION) {
                 if ($exception) {
                     $e->getApplication()->getServiceManager()->get("Logger")->crit($exception);
                 }
                 $response->setStatusCode(500);
                 if (ENV != PRODUCTION) {
-                    $response->setContent(API::encode(["error" => "A critical error: \n    " . $e->getError() . "\nhas occurred in processing this request. Please contact the service provider."]));
+                    $response->setContent(API::encode(["error" => "A critical error: \n    " . $error . "\nhas occurred in processing this request."]));
                 } else {
-                    $response->setContent(API::encode(["error" => "A critical error has occurred in processing this request. Please contact the service provider."]));
+                    $response->setContent(API::encode(["error" => "A critical error has occurred in processing this request. Please contact the service provider if this persists."]));
                 }
+            } else {
+                $response->setStatusCode(500);
+                $response->setContent(API::encode(["error" => "An unknown critical error has occurred. Please contact the service provider if this persists."]));
             }
             return $response;
         }
@@ -94,7 +98,7 @@
          */
         public function getConfig()
         {
-            return include SYCAMORE_MODULE_DIRECTORY."/config/module.config.php";
+            return include file_build_path(SYCAMORE_MODULE_DIRECTORY, "config", "module.config.php");
         }
 
         /**
@@ -107,7 +111,7 @@
             return [
                 "Zend\Loader\StandardAutoloader" => [
                     "namespaces" => [
-                        "Sycamore" => SYCAMORE_MODULE_DIRECTORY."/src/Sycamore",
+                        "Sycamore" => file_build_path(SYCAMORE_MODULE_DIRECTORY, "src", "Sycamore"),
                     ]
                 ]
             ];

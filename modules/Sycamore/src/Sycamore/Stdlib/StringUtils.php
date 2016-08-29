@@ -33,23 +33,24 @@
                     $string .= ($data ? "true" : "false");
                     break;
                 case "array":
-                    asort($data);
+                    ksort($data);
                     foreach ($data as $key => $val) 
                     {
                         if (is_string($key)) {
                             $string .= $key . "_";
                         }
-                        $string .= static::convertToString($val) . "_";;;
+                        $string .= static::convertToString($val) . "_";
                     }
                     break;
                 case "object":
-                    $string = serialize($data);
+                    $string = method_exists($data, "__toString") ? strval($data) : serialize($data);
                     break;
                 case "NULL":
-                    $string = "";
+                    $string = "__";
                     break;
-                default:
-                    $string .= preg_replace("#[\\\/.]+#", "_", strval($data));
+                case "resource":
+                case "unknown type":
+                    throw new \InvalidArgumentException("Resource or unknown type cannot be uniquely and deterministically converted to a string.");
                     break;
             }
             return str_replace(["\\", "/"], "_", $string);

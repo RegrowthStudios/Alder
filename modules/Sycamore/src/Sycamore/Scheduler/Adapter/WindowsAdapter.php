@@ -38,7 +38,7 @@
         public function removeTask(TaskInterface& $task)
         {
             // Remove task via shell.
-            $result = Shell::execute($task->getTaskRm());
+            $result = Shell::execute($task->getRemoveTaskCommand());
             
             // Return result of execution of task removal.
             return $result;

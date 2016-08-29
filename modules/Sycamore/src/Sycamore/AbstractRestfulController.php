@@ -7,8 +7,8 @@
      * Extension of the Zend RESTful controller.
      * 
      * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
-     * @since 0.1.0
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @since 0.1.0
      * @abstract
      */
     abstract class AbstractRestfulController extends ZendAbstractRestfulController
@@ -23,6 +23,7 @@
             "body" => [
                 "OPTIONS" => [
                     "description" => "Provides a breakdown of the options for interacting with this particular URI.",
+                    "parameters" => [],
                 ],
             ],
         ];
@@ -65,7 +66,7 @@
             // Grab route match and ensure it is valid.
             $routeMatch = $event->getRouteMatch();
             if (!$routeMatch) {
-                throw new Exception\DomainException('Missing route matches; unsure how to retrieve action.');
+                throw new \DomainException('Missing route matches; unsure how to retrieve action.');
             }
 
             // Grab request.
@@ -109,8 +110,17 @@
                     break;
                 // GET
                 case 'get':
-                    $action = 'get';
-                    $return = $this->get();
+                    $id = $this->getIdentifier($routeMatch, $request);
+                    $data = $this->processBodyContent($request);
+
+                    if ($id !== false) {
+                        $action = 'get';
+                        $return = $this->get($id);
+                        break;
+                    }
+
+                    $action = 'getList';
+                    $return = $this->getList($data);
                     break;
                 // HEAD
                 case 'head':

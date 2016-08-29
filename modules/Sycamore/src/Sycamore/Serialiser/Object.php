@@ -13,6 +13,13 @@
     class Object extends AbstractSerialiser
     {
         /**
+         * Serialiser adapter for serialising data.
+         * 
+         * @var \Zend\Serializer\Adapter\AbstractAdapter
+         */
+        protected static $serialiser;
+        
+        /**
          * {@inheritdoc}
          */
         protected static $serialiserType = "PhpSerialize";

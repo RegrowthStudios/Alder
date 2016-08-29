@@ -20,7 +20,7 @@
         /**
          * {@inheritdoc}
          */
-        public function getTaskRm()
+        public function getRemoveTaskCommand()
         {
             if (!$this->hasId()) {
                 throw new UnusedTaskException("Task has not been used yet, so no ID to construct a remove command with.");

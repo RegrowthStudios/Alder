@@ -1,7 +1,6 @@
 <?php
     namespace Sycamore\Token;
 
-    use Sycamore\Application;
     use Sycamore\Stdlib\ArrayUtils;
 
     use Lcobucci\JWT\Signer\Key;
@@ -216,7 +215,7 @@
             if (isset($verifiedData["signMethod"])) {
                 $signMethod = $verifiedData["signMethod"];
             }
-            if (self::SIGNERS[$signMethod] == NULL) {
+            if (!array_key_exists($signMethod, self::SIGNERS)) {
                 throw new \InvalidArgumentException("The sign method provided via data or application config is an invalid method.");
             }
 
@@ -245,10 +244,16 @@
 
             // Prepare validation object.
             $validationFilters = new ValidationData();
+            $validationFilters->setIssuer($config["domain"]);
+            $validationFilters->setAudience($config["domain"]);
             if (isset($verifiedData["validators"])) {
                 $validators = $verifiedData["validators"];
-                $validationFilters->setIssuer(isset($validators["iss"]) ? $validators["iss"] : $config["domain"]);
-                $validationFilters->setAudience(isset($validators["aud"]) ? $validators["aud"] : $config["domain"]);
+                if (isset($validators["iss"])) {
+                    $validationFilters->setIssuer($validators["iss"]);
+                }
+                if (isset($validators["aud"])) {
+                    $validationFilters->setAudience($validators["aud"]);
+                }
                 if (isset($validators["currentTime"])) {
                     $validationFilters->setCurrentTime($validators["currentTime"]);
                 }

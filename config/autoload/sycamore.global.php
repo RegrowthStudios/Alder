@@ -81,7 +81,7 @@
                 "accessCookiesViaHttpOnly" => false, // If true, cookies are only accessible via the HTTP protocol.
                 "enableClickjackingProtection" => true, // If true, prevents clickjacking attacks by not allowing site to be rendered in frame of another site.
                 "password" => [ /* Password Security Details */
-                    "strictness" => "normal", // How secure must passwords be? Normal -> >8 characters long, include numbers and letters. High -> Normal + include capital letter. Strict -> High + include symbol. Retroactively checks passwords.
+                    "strictness" => PASSWORD_STRICTNESS_NORMAL, // How secure must passwords be? PASSWORD_STRICTNESS_NORMAL -> include numbers and letters. PASSWORD_STRICTNESS_HIGH -> PASSWORD_STRICTNESS_NORMAL + include capital letter. PASSWORD_STRICTNESS_STRICT -> PASSWORD_STRICTNESS_HIGH + include symbol. Retroactively checks passwords.
                     "hashingStrength" => 11, // How strong should the hash be? Higher is stronger, but requires more CPU time.
                     "minimumLength" => 8,
                     "maximumLength" => 48,

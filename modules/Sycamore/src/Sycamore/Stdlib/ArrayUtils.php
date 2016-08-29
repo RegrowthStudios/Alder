@@ -42,7 +42,7 @@
         public static function arrayKeyExistsRecursive($key, $array)
         {
             foreach ($array as $k => $v) {
-                if (($k == $key) || (is_array($v) && static::arrayKeyExistsRecursive($key, $v))) {
+                if (($k === $key) || (is_array($v) && static::arrayKeyExistsRecursive($key, $v))) {
                     return true;
                 }
             }
@@ -56,7 +56,7 @@
          * 
          * @return bool True on success, false on failure.
          */
-        public static function recursiveAsort(& $array)
+        public static function recursiveAsort(array& $array)
         {
             foreach ($array as & $value) {
                 if (is_array($value)) {
@@ -73,11 +73,11 @@
          * 
          * @return bool True on success, false on failure.
          */
-        public static function recursiveKsort(& $array)
+        public static function recursiveKsort(array& $array)
         {
             foreach ($array as & $value) {
                 if (is_array($value)) {
-                    static::recursiveAsort($value);
+                    static::recursiveKsort($value);
                 }
             }
             return ksort($array);
@@ -94,7 +94,7 @@
          * 
          * @throws \InvalidArgumentException If the data was in a form not castable into an array accessible form.
          */
-        public static function validateArrayLike($data, $class, $arrayOnly = false)
+        public static function validateArrayLike($data, $class = NULL, $arrayOnly = false)
         {
             if (is_array($data)) {
                 return $data;
@@ -105,17 +105,25 @@
                 return $data;
             }
             
+            
             if ($arrayOnly) {
+                if (is_null($class)) {
+                    $class = get_called_class();
+                }
                 throw new \InvalidArgumentException($class . "expected an array or \Traversable object.");
             }
             
             if (!$data instanceof \ArrayAccess) {
+                if (is_null($class)) {
+                    $class = get_called_class();
+                }
                 throw new \InvalidArgumentException($class . " expected an array, or object that implemens \Traversable or \ArrayAccess.");
             }
             
             return $data;
         }
         
+        // TODO(Matthew): Create and use custom array_diff that handles objects better.
         /**
          * Performs an XOR operation on two arrays.
          * 

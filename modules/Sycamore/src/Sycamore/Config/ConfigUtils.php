@@ -34,6 +34,7 @@
         {
             // Construct writer.
             $writer = new PhpArray();
+            $writer->setUseBracketArraySyntax(true);
             
             // Get config into expected form.
             if ($config instanceof ZendConfig) {
@@ -49,8 +50,6 @@
                 $writer->toFile($filename, $config);
             } catch (\InvalidArgumentException $invArgEx) {
                 throw $invArgEx;
-            } catch (\RuntimeException $runtimeEx) {
-                throw $runtimeEx;
             }
             
             return true;

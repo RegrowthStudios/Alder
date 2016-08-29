@@ -4,6 +4,7 @@
     use Zend\Serializer\Adapter\AdapterOptions;
     use Zend\Serializer\Serializer;
     
+    // TODO(Matthew): Rework this wrapper.
     /**
      * Facilitates serialisation of data via various serialisation methods.
      * 
@@ -15,24 +16,11 @@
     abstract class AbstractSerialiser
     {
         /**
-         * Serialiser adapter for serialising data.
-         * 
-         * @var \Zend\Serializer\Adapter\AbstractAdapter
-         */
-        protected static $serialiser;
-        
-        /**
-         * Type of this instance's serialiser adapter.
-         * 
-         * @var string
-         */
-        protected static $serialiserType = "";
-        /**
          * Options for a given instance's serialiser adapter.
          *
          * @var array
          */
-        protected static $options = [];
+//        protected static $options = [];
         
         /**
          * Constructs the instance's serialiser if not already constructed and returns it.
@@ -43,9 +31,9 @@
         {
             if (!isset(static::$serialiser)) {
                 static::$serialiser = Serializer::factory(static::$serialiserType);
-                if (!empty(static::$options)) {
-                    static::$serialiser->setOptions(new AdapterOptions(static::$options));
-                }
+//                if (!empty(static::$options)) {
+//                    static::$serialiser->setOptions(new AdapterOptions(static::$options));
+//                }
             }
             return static::$serialiser;
         }

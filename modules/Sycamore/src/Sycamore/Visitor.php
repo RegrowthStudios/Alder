@@ -39,8 +39,6 @@
         
         /**
          * Prepares the visitor object with information from any valid session data obtained.
-         * 
-         * @return void
          */
         protected function prepareVisitor()
         {
@@ -55,7 +53,7 @@
             }
             
             // Visitor is logged in, add data here.
-            $this->data = array_merge($tokenPayload["applicationPayload"], [
+            $this->data = array_merge($tokenPayload, [
                 "isLoggedIn" => true
             ]);
         }

@@ -57,14 +57,14 @@
          */
         public function fetchTable($tableName, $namespace = NULL)
         {
-            if (!isset(self::$tables[$tableName])) {
-                $classPath = ($namespace ? $namespace : self::$namespace) . $tableName;
+            if (!isset($this->tables[$tableName])) {
+                $classPath = ($namespace ? $namespace : $this->namespace) . $tableName;
                 if (!class_exists($classPath)) {
                     throw new \InvalidArgumentException("No table exists by the name of $tableName.");
                 }
-                self::$tables[$tableName] = new $classPath();
+                $this->tables[$tableName] = new $classPath();
             }
             
-            return self::$tables[$tableName];
+            return $this->tables[$tableName];
         }   
     }

@@ -1,7 +1,8 @@
 <?php
 
     namespace Alder\Token;
-    
+
+    use Alder\Container;
     use Alder\Token\Token;
     use Alder\Token\Builder;
     
@@ -86,7 +87,7 @@
             $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : $domain)
                                     ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : $domain)
                                     ->setIssuedAt(   isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
-                                    ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time + $verifiedData["tokenLifetime"])
+                                    ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time + $data["tokenLifetime"])
                                     ->setNotBefore(  isset($registeredClaims["nbf"]) ? $registeredClaims["nbf"] : $time)
                                     ->setId(        (isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12, Rand::ALPHANUMERIC, true)), true);
             // Set subject if specified.
@@ -125,6 +126,6 @@
             $signer = new $signerClassName();
             $token->sign($signer, $key);
             // Return JWT object.
-            return (new Token($serviceManager, (string) $token->getToken()));
+            return $token->getToken();
         }
     }

@@ -11,8 +11,11 @@
      */
     class Builder extends LcobucciBuilder
     {
+        // TODO(Matthew): Fix this.
         /**
-         * {@inheritdoc}
+         * Returns the constructed token
+         *
+         * @return \Alder\Token\Token The built token.
          */
         public function getToken()
         {

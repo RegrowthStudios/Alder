@@ -36,8 +36,6 @@
          * Processes a request to acquire a specific resource.
          *
          * @param mixed $data Data from request.
-         *
-         * @abstract
          */
         protected function get($data) {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
@@ -47,8 +45,6 @@
          * Processes a request to create a new resource.
          *
          * @param mixed $data Data from request.
-         * 
-         * @abstract
          */
         protected function create($data) {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
@@ -58,8 +54,6 @@
          * Processes a request to update a specific resource.
          *
          * @param mixed $data Data from request.
-         * 
-         * @abstract
          */
         protected function update($data) {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
@@ -69,8 +63,6 @@
          * Processes a request to replace a specific resource.
          *
          * @param mixed $data Data from request.
-         * 
-         * @abstract
          */
         protected function replace($data) {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
@@ -80,8 +72,6 @@
          * Processes a request to delete a specific resource.
          *
          * @param mixed $data Data from request.
-         * 
-         * @abstract
          */
         protected function delete($data) {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
@@ -89,8 +79,6 @@
         
         /**
          * Processes a request for the options related to the route path of the request.
-         * 
-         * @abstract
          */
         protected function options() {
             $action = constant(strtoupper(str_replace("Action", "", end(explode("\\", get_class($this))))));
@@ -115,13 +103,17 @@
          * Processes a HEAD request to a specific resource.
          *
          * @param mixed $data Data from request.
-         *
-         * @abstract
          */
         protected function head($data) {
-            $this->response = $this->response->withStatus(405, "Method Not Allowed");
+            $this->get($data);
+
+            $bodySize = $this->response->getBody()->getSize();
+            $this->response = $this->response->withBody(new Stream(""))
+                                             ->withHeader("Content-Length", $bodySize);
         }
-        
+
+        // TODO(Matthew): May be more sensible to require JSON content-type requests instead of x-www-form-url-encoded.
+        // TODO(Matthew): Should move the JSON decoding to its own function to handle potential exceptions.
         /**
          * Determines the appropriate action function to call for the request method and parameters.
          * 
@@ -157,8 +149,7 @@
                     $this->options();
                     break;
                 case "HEAD":
-                    $this->head(Json::decode($this->getParameter("data")));
-                    $this->response = $this->response->withBody(new Stream(""));
+                    $this->head(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
                     break;
                 default:
                     $this->response = $this->response->withStatus(405);

@@ -72,10 +72,11 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . $cacheExtra, $cacheWhere);
             
             // Grab the database cache.
-            $dbCache = DatabaseCacheServiceFactory::create();
+            $dbCache = Container::get()->get("AlderDbCache");
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
+            $cachedResult = NULL;
             if (!$forceDbFetch && !$this->config["db"]["force_db_fetch"]) {
                 $cachedResult = $dbCache->getItem($cacheLocation, $cacheFetchSuccess);
             }

@@ -3,7 +3,7 @@
     namespace Alder\PublicAuthentication\User;
     
     use Alder\Container;
-    use Alder\Error\Container as ErrorContainer;
+    use Alder\Error\Stack as ErrorStack;
     
     /**
      * Provides utility functions for validating user data.
@@ -19,11 +19,12 @@
          * is not already in use.
          *
          * @param string $username The username to validate.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if valid, false otherwise.
          */
-        public static function validateUsername($username) {
-            return (self::isUsername($username) && self::isUniqueUsername($username));
+        public static function validateUsername($username, ErrorStack& $errors) {
+            return (self::isUsername($username, $errors) && self::isUniqueUsername($username, $errors));
         }
 
         /**
@@ -31,20 +32,22 @@
          * is not already in use.
          *
          * @param string $email The email to validate.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if valid, false otherwise.
          */
-        public static function validateEmail($email) {
-            return (self::isEmail($email) && self::isUniqueEmail($email));
+        public static function validateEmail($email, ErrorStack& $errors) {
+            return (self::isEmail($email, $errors) && self::isUniqueEmail($email, $errors));
         }
         /**
          * Ascertains the given password is sufficiently strong.
          *
          * @param string $password The password to validate.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if password is sufficiently strong, false otherwise.
          */
-        public static function validatePassword($password) {
+        public static function validatePassword($password, ErrorStack& $errors) {
             $passwordConfig = Container::get()->get("config")["alder"]["public_authentication"]["password"];
 
             if ($passwordConfig["max_length"] > 0 && $passwordConfig["min_length"] > $passwordConfig["max_length"]) {
@@ -52,21 +55,20 @@
                 return false & trigger_error("Password configuration malformed: minimum password length less than maximum length. Maximum length assumed to be infinite.", E_USER_WARNING);
             }
 
-            $errorContainer = ErrorContainer::getInstance();
             $result = true;
 
             // Check password length.
             if (strlen($password) < $passwordConfig["min_length"]) {
-                $errorContainer->addError(103030101);
+                $errors->push(103030101);
                 $result = false;
             } else if ($passwordConfig["max_length"] > 0 && strlen($password) > $passwordConfig["max_length"]) {
-                $errorContainer->addError(103030102);
+                $errors->push(103030102);
                 $result = false;
             }
 
             // Check password has a letter and number.
             if (!preg_match("#[0-9a-zA-Z]+#", $password)) {
-                $errorContainer->addError(103030103);
+                $errors->push(103030103);
                 $result = false;
             }
 
@@ -74,7 +76,7 @@
             if ($passwordConfig["strictness"] == PASSWORD_STRICTNESS_HIGH
                 || $passwordConfig["strictness"] == PASSWORD_STRICTNESS_STRICT) {
                 if (!preg_match("#[A-Z]+#", $password)) {
-                    $errorContainer->addError(103030104);
+                    $errors->push(103030104);
                     $result = false;
                 }
             }
@@ -82,7 +84,7 @@
             // Check password has a symbol.
             if ($passwordConfig["strictness"] == PASSWORD_STRICTNESS_STRICT) {
                 if (!preg_match("#\W+#", $password)) {
-                    $errorContainer->addError(103030105);
+                    $errors->push(103030105);
                     $result = false;
                 }
             }
@@ -94,28 +96,28 @@
          * Validate the format of the given username.
          *
          * @param string $username The username to validate the format of.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if valid format, false otherwise.
          */
-        public static function isUsername($username) {
+        public static function isUsername($username, ErrorStack& $errors) {
             $usernameConfig = Container::get()->get("config")["alder"]["public_authentication"]["username"];
             $usernameLength = strlen($username);
 
-            $errorContainer = ErrorContainer::getInstance();
             $result = true;
 
             if ($usernameLength > $usernameConfig["max_length"]) {
-                $errorContainer->addError(103030201);
+                $errors->push(103030201);
                 $result = false;
             }
 
             if ($usernameLength < $usernameConfig["min_length"]) {
-                $errorContainer->addError(103030202);
+                $errors->push(103030202);
                 $result = false;
             }
 
             if (preg_match("#[^a-zA-Z0-9\_]+#", $username)) {
-                $errorContainer->addError(103030203);
+                $errors->push(103030203);
                 $result = false;
             }
 
@@ -126,12 +128,13 @@
          * Validate the format of the given email.
          *
          * @param string $email The email to validate the format of.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if valid format, false otherwise.
          */
-        public static function isEmail($email) {
+        public static function isEmail($email, ErrorStack& $errors) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                ErrorContainer::getInstance()->addError(103030301);
+                $errors->push(103030301);
                 return true;
             }
             return false;
@@ -141,13 +144,14 @@
          * Validate the uniqueness of the given username.
          *
          * @param string $username The username to validate the uniqueness of.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if unique, false otherwise.
          */
-        public static function isUniqueUsername($username) {
+        public static function isUniqueUsername($username, ErrorStack& $errors) {
             if (Container::get()->get("AlderTableCache")
                 ->fetchTable("User")->isUsernameUnique($username)) {
-                ErrorContainer::getInstance()->addError(103030401);
+                $errors->push(103030401);
                 return true;
             }
             return false;
@@ -157,13 +161,14 @@
          * Validate the uniqueness of the given email.
          *
          * @param string $email The email to validate the uniqueness of.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          *
          * @return bool True if unique, false otherwise.
          */
-        public static function isUniqueEmail($email) {
+        public static function isUniqueEmail($email, ErrorStack& $errors) {
             if (Container::get()->get("AlderTableCache")
                 ->fetchTable("User")->isEmailUnique($email)) {
-                ErrorContainer::getInstance()->addError(103030501);
+                $errors->push(103030501);
                 return true;
             }
             return false;

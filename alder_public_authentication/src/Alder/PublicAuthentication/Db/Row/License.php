@@ -1,6 +1,6 @@
 <?php
 
-    namespace Alder\Db\Row;
+    namespace Alder\PublicAuthentication\Db\Row;
 
     use Alder\Db\Row\AbstractRow;
 

@@ -24,13 +24,13 @@
          *
          * @return \Zend\Cache\Storage\StorageInterface The caching object for database entries.
          */
-        public static function __invoke(ContainerInterface $container) {
+        public function __invoke(ContainerInterface $container) {
             $cacheConfig = $container->get("config")["alder"]["db"]["cache"];
             
             $cache = StorageFactory::factory([
                 "adapter" => $cacheConfig["adapter"],
                 "options" => [
-                    "ttl" => $cacheConfig["timeToLive"],
+                    "ttl" => $cacheConfig["time_to_live"],
                 ],
                 "namespace" => $cacheConfig["namespace"]
             ]);

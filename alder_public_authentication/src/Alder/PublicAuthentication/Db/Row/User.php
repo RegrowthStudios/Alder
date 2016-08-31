@@ -1,6 +1,6 @@
 <?php
 
-    namespace Alder\Db\Row;
+    namespace Alder\PublicAuthentication\Db\Row;
 
     use Alder\Db\Row\AbstractRow;
 
@@ -18,5 +18,6 @@
         public $primary_email_local;
         public $primary_email_domain;
         public $password_hash;
+        public $license_keys;
         public $employee_flag;
     }

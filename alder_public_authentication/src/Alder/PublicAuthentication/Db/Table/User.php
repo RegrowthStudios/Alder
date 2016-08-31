@@ -1,9 +1,9 @@
 <?php
 
-    namespace Alder\Db\Table;
+    namespace Alder\PublicAuthentication\Db\Table;
 
-    use Alder\Db\Row\User as UserRow;
     use Alder\Db\Table\AbstractTable;
+    use Alder\PublicAuthentication\Db\Row\User as UserRow;
 
     /**
      * Gateway for the user table.
@@ -28,7 +28,7 @@
          * @param int $id The ID of the user to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          *
-         * @return \Alder\Db\Row\User The fetched user.
+         * @return \Alder\PublicAuthentication\Db\Row\User The fetched user.
          */
         public function getById($id, $forceDbFetch = false) {
             return $this->getUniqueByKey("id", $id, $forceDbFetch);
@@ -40,7 +40,7 @@
          * @param string $username The username of the user to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          *
-         * @return \Alder\Db\Row\User The fetched user.
+         * @return \Alder\PublicAuthentication\Db\Row\User The fetched user.
          */
         public function getByUsername($username, $forceDbFetch = false) {
             return $this->getUniqueByKey("username", $username, $forceDbFetch);
@@ -66,7 +66,7 @@
          * @param string $emailDomain The domain component of the email of the user to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          *
-         * @return \Alder\Db\Row\User The fetched user.
+         * @return \Alder\PublicAuthentication\Db\Row\User The fetched user.
          */
         public function getByEmail($emailLocal, $emailDomain, $forceDbFetch = false)
         {

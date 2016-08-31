@@ -51,21 +51,30 @@
          * @param bool $clear Whether to clear the stack afterwords.
          * @return array The error messages keyed by their respective error codes.
          */
-        public function retrieveErrors($clear = true) {
+        public function retrieve($clear = true) {
             $result = [];
             foreach ($this->errorCodes as $code) {
                 $result[$code] = Error::retrieveString($code);
             }
             if ($clear) {
-                $this->clearErrors();
+                $this->clear();
             }
             return $result;
+        }
+
+        /**
+         * Determines if error codes exist on the stack.
+         *
+         * @return bool True if error codes on stack, false otherwise.
+         */
+        public function notEmpty() {
+            return !empty($this->errorCodes);
         }
         
         /**
          * Clears all errors stored in the container.
          */
-        public function clearErrors() {
+        public function clear() {
             $this->errorCodes = [];
         }
 

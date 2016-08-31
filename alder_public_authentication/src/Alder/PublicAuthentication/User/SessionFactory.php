@@ -26,10 +26,9 @@
         public static function create($id, array $data = [], $extendedSession = false) {
             $container = Container::get();
 
-            if (count($data) != 4 ||
-                    ! (isset($data["username"]) && isset($data["primary_email_local"])
-                    && isset($data["primary_email_domain"]) && isset($data["license_keys"])
-                    && isset($data["staff_member"]))) {
+            if (! (isset($data["username"]) && isset($data["primary_email_local"])
+                && isset($data["primary_email_domain"]) && isset($data["license_keys"])
+                && isset($data["employee_flag"]))) {
                 $user = $container->get("AlderTableCache")
                             ->fetchTable("User")->getById($id);
                 if (!$user) {
@@ -55,7 +54,7 @@
                     "username" => $data["username"],
                     "primary_email" => $data["primary_email_local"] . "@" . $data["primary_email_domain"],
                     "license_keys" => $data["license_keys"],
-                    "staff_member" => $data["staff_member"]
+                    "employee_flag" => $data["employee_flag"]
                 ]
             ]);
         }

@@ -4,7 +4,8 @@
     
     use Alder\Action\AbstractRestfulAction;
     use Alder\Container;
-    use Alder\Error\Container as ErrorContainer;
+    use Alder\Error\Error;
+    use Alder\Error\Stack;
     use Alder\PublicAuthentication\User\SessionFactory;
     use Alder\PublicAuthentication\User\Security;
     use Alder\PublicAuthentication\User\Validation;
@@ -36,44 +37,46 @@
          *  101010105 - No user exists with data provided.
          *  101010106 - Could not generate session token.
          *  101010107 - Invalid password.
+         *
+         * @param mixed $data Data from request.
          */
-        protected function create()
+        protected function create($data)
         {
             // Get data passed in through request.
-            $password = $this->getParameter("password");
-            $username = $this->getParameter("username");
-            $email = $this->getParameter("email");
-            $extended = $this->getParameter("extended_session", false);
+            $password = isset($data["password"]) ? $data["password"] : NULL;
+            $username = isset($data["username"]) ? $data["username"] : NULL;
+            $email = isset($data["email"]) ? $data["email"] : NULL;
+            $extended = isset($data["extended"]) ? $data["extended"] : false;
 
             // Get error container.
-            $errorContainer = ErrorContainer::getInstance();
+            $errorStack = new Stack();
 
             // Assert that needed data was provided.
             if (!$password) {
-                $errorContainer->addError(101010101);
+                $errorStack->push(101010101);
             }
             if (!$username && !$email) {
-                $errorContainer->addError(101010102);
+                $errorStack->push(101010102);
             }
-            if ($errorContainer->hasErrors()) {
+            if ($errorStack->notEmpty()) {
                 $this->response = new JsonResponse([
-                    "errors" => $errorContainer->retrieveErrors()
+                    "errors" => $errorStack->retrieve()
                 ], 400);
                 return;
             }
 
             // Assert that the username or email, as provided, are valid.
-            if (!$username && !Validation::isEmail($email)) {
+            if (!$username && !Validation::isEmail($email, $errorStack)) {
                 $this->response = new JsonResponse([
                     "errors" => [
-                        101010103 => $errorContainer->retrieveErrorString(101010103)
+                        101010103 => Error::retrieveString(101010103)
                     ]
                 ], 400);
                 return;
-            } else if ($username && !Validation::isUsername($username)) {
+            } else if ($username && !Validation::isUsername($username, $errorStack)) {
                 $this->response = new JsonResponse([
                     "errors" => [
-                        101010104 => $errorContainer->retrieveErrorString(101010104)
+                        101010104 => Error::retrieveString(101010104)
                     ]
                 ], 400);
                 return;
@@ -81,13 +84,13 @@
 
             // Acquire the user table.
             /**
-             * @var \Alder\Db\Table\User $userTable
+             * @var \Alder\PublicAuthentication\Db\Table\User $userTable
              */
             $userTable = Container::get()->get("AlderTableCache")->fetchTable("User");
 
             // Acquire the user authenticating from the database.
             /**
-             * @var \Alder\Db\Row\User $user
+             * @var \Alder\PublicAuthentication\Db\Row\User $user
              */
             $user = NULL;
             if ($username) {
@@ -101,7 +104,7 @@
             if (!$user) {
                 $this->response = new JsonResponse([
                     "errors" => [
-                        101010105 => $errorContainer->retrieveErrorString(101010105)
+                        101010105 => Error::retrieveString(101010105)
                     ]
                 ], 400);
                 return;
@@ -111,7 +114,7 @@
             if (Security::verifyPassword($password, $user->password_hash)) {
                 // Update password hash if hashing standards have changed.
                 if (Security::passwordNeedsRehash($user->password_hash)) {
-                    $user->password_hash = UserUtils::hashPassword($password);
+                    $user->password_hash = Security::hashPassword($password);
                     $userTable->updateRow($user, [ "id" => $user->id ]);
                 }
 
@@ -122,7 +125,7 @@
                 if (!$sessionToken) {
                     $this->response = new JsonResponse([
                         "errors" => [
-                            101010106 => $errorContainer->retrieveErrorString(101010106)
+                            101010106 => Error::retrieveString(101010106)
                         ]
                     ], 400);
                     return;
@@ -154,7 +157,7 @@
             // Fail due to invalid password.
             $this->response = new JsonResponse([
                 "errors" => [
-                    101010107 => $errorContainer->retrieveErrorString(101010107)
+                    101010107 => Error::retrieveString(101010107)
                 ]
             ], 400);
             return;

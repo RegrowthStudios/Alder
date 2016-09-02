@@ -14,6 +14,10 @@
      */
     abstract class AbstractRow implements AbstractRowInterface
     {
+        public $etag;
+        public $last_change_timestamp;
+        public $creation_timestamp;
+
         /**
          * {@inheritdoc}
          */

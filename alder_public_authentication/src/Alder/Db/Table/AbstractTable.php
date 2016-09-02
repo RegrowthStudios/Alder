@@ -10,6 +10,7 @@
     use Zend\Db\Adapter\Adapter;
     use Zend\Db\TableGateway\AbstractTableGateway;
     use Zend\Db\ResultSet\ResultSet;
+    use Zend\Db\Sql\Select;
     
     /**
      * Alder-specific implementation of Zend's abstract table gateway.
@@ -34,7 +35,7 @@
          * @param string $table The name of the table for this instance.
          * @param \Alder\Db\Row\AbstractRowInterface|NULL $row The row object to construct with the results of queries.
          */
-        public function __construct($table, AbstractRowInterface& $row = NULL)
+        protected function __construct($table, AbstractRowInterface& $row = NULL)
         {
             $this->config = Container::get()->get("config")["alder"];
             $dbConfig = $this->config["db"];
@@ -265,7 +266,7 @@
          * Gets all entries of a table from cache if existent and if 
          * $forceDbFetch is false, otherwise fetches from the database.
          * 
-         * @param bool Whether to force a db fetch.
+         * @param bool $forceDbFetch Whether to force a db fetch.
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
@@ -275,10 +276,11 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . "fetch_all", NULL);
             
             // Grab the database cache.
-            $dbCache = DatabaseCacheServiceFactory::create();
+            $dbCache = Container::get()->get("AlderDbCache");
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
+            $cachedResult = NULL;
             if (!$forceDbFetch && !$this->config["db"]["force_db_fetch"]) {
                 $cachedResult = $dbCache->getItem($cacheLocation, $cacheFetchSuccess);
             }
@@ -295,12 +297,104 @@
             // Return the resulting data.
             return $result;
         }
-        
+
+        /**
+         * Gets a user by their ETag.
+         *
+         * @param string $etag The ETag of the user to fetch.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Alder\Db\Row\AbstractRowInterface The fetched record.
+         */
+        public function getByEtag($etag, $forceDbFetch = false) {
+            return $this->getUniqueByKey("etag", $etag, $forceDbFetch);
+        }
+
+        /**
+         * Get matching row objects with a minimum creation time matching that given.
+         *
+         * @param int $creationTimeMin The minimum creation time of objects to be retrieved.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched objects.
+         */
+        public function getByCreationTimeAfter($creationTimeMin, $forceDbFetch = false)
+        {
+            return $this->getByKeyGreaterThanOrEqualTo("creation_timestamp", $creationTimeMin, $forceDbFetch);
+        }
+
+        /**
+         * Get matching row objects with a maximum creation time matching that given.
+         *
+         * @param int $creationTimeMax The maximum creation time of objects to be retrieved.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched objects.
+         */
+        public function getByCreationTimeBefore($creationTimeMax, $forceDbFetch = false)
+        {
+            return $this->getByKeyLessThanOrEqualTo("creation_timestamp", $creationTimeMax, $forceDbFetch);
+        }
+
+        /**
+         * Get matching row objects with a minimum and maximum creation time matching those given.
+         *
+         * @param int $creationTimeMin The minimum creation time of objects to be retrieved.
+         * @param int $creationTimeMax The maximum creation time of objects to be retrieved.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched objects.
+         */
+        public function getByCreationTimeRange($creationTimeMin, $creationTimeMax, $forceDbFetch = false)
+        {
+            return $this->getByKeyBetween("creation_timestamp", $creationTimeMin, $creationTimeMax, $forceDbFetch);
+        }
+
+        /**
+         * Get matching row objects with a minimum creation time matching that given.
+         *
+         * @param int $lastChangeTimeMin The minimum creation time of objects to be retrieved.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched objects.
+         */
+        public function getByLastChangeTimeAfter($lastChangeTimeMin, $forceDbFetch = false)
+        {
+            return $this->getByKeyGreaterThanOrEqualTo("last_change_timestamp", $lastChangeTimeMin, $forceDbFetch);
+        }
+
+        /**
+         * Get matching row objects with a maximum creation time matching that given.
+         *
+         * @param int $lastChangeTimeMax The maximum creation time of objects to be retrieved.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched objects.
+         */
+        public function getByLastChangeTimeBefore($lastChangeTimeMax, $forceDbFetch = false)
+        {
+            return $this->getByKeyLessThanOrEqualTo("last_change_timestamp", $lastChangeTimeMax, $forceDbFetch);
+        }
+
+        /**
+         * Get matching row objects with a minimum and maximum creation time matching those given.
+         *
+         * @param int $lastChangeTimeMin The minimum creation time of objects to be retrieved.
+         * @param int $lastChangeTimeMax The maximum creation time of objects to be retrieved.
+         * @param bool $forceDbFetch Whether to force a db fetch.
+         *
+         * @return \Zend\Db\ResultSet\ResultSet The set of fetched objects.
+         */
+        public function getByLastChangeTimeRange($lastChangeTimeMin, $lastChangeTimeMax, $forceDbFetch = false)
+        {
+            return $this->getByKeyBetween("last_change_timestamp", $lastChangeTimeMin, $lastChangeTimeMax, $forceDbFetch);
+        }
+
         /**
          * Updates rows matching the given identifiers.
          * 
          * @param \Alder\Db\Row\AbstractRowInterface $row The row of data to update with.
-         * @param Where|\Closure|string|array $identifiers The identifiers for rows that should be updated.
+         * @param \Zend\Db\Sql\Where|\Closure|string|array $identifiers The identifiers for rows that should be updated.
          * 
          * @return int The number of rows affected by the update execution.
          */

@@ -1,9 +1,14 @@
 <?php
     namespace Alder\Db\Row;
-    
+
+    use Alder\Container;
     use Alder\Db\Row\AbstractRowInterface;
-    use Alder\Stdlib\ArrayUtils;
-    
+
+    use Zend\Db\Adapter\Adapter;
+    use Zend\Db\Metadata\MetadataInterface;
+    use Zend\Db\RowGateway\AbstractRowGateway;
+    use Zend\Db\Sql\Sql;
+
     /**
      * Abstract row representation class, implementing functions for creating rows from, and transforming rows into, arrays.
      * 
@@ -12,34 +17,120 @@
      * @since 0.1.0
      * @abstract
      */
-    abstract class AbstractRow implements AbstractRowInterface
+    abstract class AbstractRow extends AbstractRowGateway  implements AbstractRowInterface
     {
-        public $etag;
-        public $last_change_timestamp;
-        public $creation_timestamp;
+        /**
+         * @var array
+         */
+        protected $uniqueKeyColumns = NULL;
 
         /**
-         * {@inheritdoc}
+         * Prepares the row with the needed SQL object and data to operate on the associated database.
+         *
+         * @param string $table The table in which the row resides.
          */
-        public function exchangeArray($data)
+        protected function __construct($table)
         {
-            $validatedData = ArrayUtils::validateArrayLike($data, get_class($this), true);
-            $oldData = get_object_vars($this);
-            foreach($oldData as $key => $_) {
-                if (isset($validatedData[$key])) {
-                    $this->$key = $validatedData[$key];
-                } else {
-                    $this->$key = NULL;
+            $container = Container::get();
+
+            // Prefix table.
+            $this->table = $container->get("config")["alder"]["db"]["table_prefix"] . $table;
+
+            // Acquire adapter from service container and create SQL object with it.
+            $this->sql = new Sql($container->get(Adapter::class), $this->table);
+
+            // Acquire the metadata for the table.
+            /**
+             * @var \Zend\Db\Metadata\Object\TableObject $metadata
+             */
+            $metadata = $container->get(MetadataInterface::class)->getTable($this->table);
+
+            $uniqueKeyColumns = [];
+
+            /**
+             * @var \Zend\Db\Metadata\Object\ConstraintObject $constraint
+             */
+            foreach ($metadata->getConstraints() as $constraint) {
+                if ($constraint->isPrimaryKey()) {
+                    $this->primaryKeyColumn = $constraint->getColumns();
+                } else if ($constraint->isUnique()) {
+                    $uniqueKeyColumns[] = $constraint->getColumns();
                 }
             }
-            return $oldData;
+
+            // Set unique key columns.
+            $this->uniqueKeyColumns = empty($uniqueKeyColumns) ? NULL : $uniqueKeyColumns;
+
+            // Initialise the row gateway.
+            $this->initialize();
         }
-        
+
         /**
-         * {@inheritdoc}
+         * Determines if the row instance exists in the database.
+         *
+         * @return bool True if the row exists, false otherwise.
+         *
+         * @throws \Exception Thrown if not all necessary primary key data was provided.
          */
-        public function toArray()
+        public function exists()
         {
-            return get_object_vars($this);
+            if ($this->rowExistsInDatabase()) {
+                return true;
+            }
+            try {
+                return $this->existsInDatabase();
+            } catch (\Exception $ex) {
+                throw $ex;
+            }
+        }
+
+        /**
+         * Determines if a row instance exists in the database.
+         * In contrast to rowExistsInDatabase() this method checks the actual
+         * database instead of if primary key data has been defined.
+         *
+         * @return bool True if the row exists, false otherwise.
+         *
+         * @throws \Exception Thrown if not all necessary primary key data was provided.
+         */
+        protected function existsInDatabase()
+        {
+            $where = [];
+
+            foreach ($this->primaryKeyColumn as $pkColumn) {
+                if (!isset($this->data[$pkColumn])) {
+                    $where = [];
+                    break;
+                }
+                $where[$pkColumn] = $this->data[$pkColumn];
+            }
+
+            if (empty($where)) {
+                foreach ($this->uniqueKeyColumns as $uniqueKeyColumn) {
+                    $success = true;
+                    foreach ($uniqueKeyColumn as $ukColumn) {
+                        if (!isset($this->data[$ukColumn])) {
+                            $where = [];
+                            $success = false;
+                            break;
+                        }
+                        $where[$ukColumn] = $this->data[$ukColumn];
+                    }
+                    if ($success) {
+                        break;
+                    }
+                }
+            }
+
+            if (empty($where)) {
+                throw new \Exception("Neither the primary key data or any unique key data has been provided, at least one of these must be to determine existence of the row in the database.");
+            }
+
+            $select = $this->sql->select();
+            $select->where($where)->columns([end($this->primaryKeyColumn)]);
+
+            $statement = $this->sql->prepareStatementForSqlObject($select);
+
+            return (bool) $statement->execute()->count();
         }
     }

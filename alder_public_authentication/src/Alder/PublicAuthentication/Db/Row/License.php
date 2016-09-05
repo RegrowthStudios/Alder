@@ -3,6 +3,7 @@
     namespace Alder\PublicAuthentication\Db\Row;
 
     use Alder\Db\Row\AbstractRow;
+    use Alder\PublicAuthentication\Db\Table\License as LicenseTable;
 
     /**
      * Representation of a row in the table of licenses.
@@ -13,9 +14,8 @@
      */
     class License extends AbstractRow
     {
-        public $id;
-        public $name;
-        public $description;
-        public $product_id;
-        public $simultaneous_usage_count;
+        public function __construct()
+        {
+            parent::__construct(LicenseTable::NAME);
+        }
     }

@@ -3,6 +3,7 @@
     namespace Alder\PublicAuthentication\Db\Row;
 
     use Alder\Db\Row\AbstractRow;
+    use Alder\PublicAuthentication\Db\Table\User as UserTable;
 
     /**
      * Representation of a row in the table of users.
@@ -13,11 +14,8 @@
      */
     class User extends AbstractRow
     {
-        public $id;
-        public $username;
-        public $primary_email_local;
-        public $primary_email_domain;
-        public $password_hash;
-        public $license_keys;
-        public $employee_flag;
+        public function __construct()
+        {
+            parent::__construct(UserTable::NAME);
+        }
     }

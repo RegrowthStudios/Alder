@@ -10,13 +10,13 @@
     return [
         "dependencies" => [
             "invokables" => [
-                Alder\PublicAuthentication\Middleware\SessionMiddleware::class => Alder\PublicAuthentication\Middleware\SessionMiddleware::class,
-                Alder\PublicAuthentication\Middleware\CacheMiddleware::class => Alder\PublicAuthentication\Middleware\CacheMiddleware::class,
-                Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class => Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class,
+                \Alder\PublicAuthentication\Middleware\SessionMiddleware::class => \Alder\PublicAuthentication\Middleware\SessionMiddleware::class,
+                \Alder\PublicAuthentication\Middleware\CacheMiddleware::class => \Alder\PublicAuthentication\Middleware\CacheMiddleware::class,
+                \Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class => \Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class,
             ],
             "factories" => [
-                Zend\Expressive\Helper\ServerUrlMiddleware::class => Zend\Expressive\Helper\ServerUrlMiddlewareFactory::class,
-                Zend\Expressive\Helper\UrlHelperMiddleware::class => Zend\Expressive\Helper\UrlHelperMiddlewareFactory::class,
+                \Zend\Expressive\Helper\ServerUrlMiddleware::class => \Zend\Expressive\Helper\ServerUrlMiddlewareFactory::class,
+                \Zend\Expressive\Helper\UrlHelperMiddleware::class => \Zend\Expressive\Helper\UrlHelperMiddlewareFactory::class,
             ],
         ],
         
@@ -46,21 +46,21 @@
             // Middleware for bootstrapping, pre-conditions and modifications to outgoing responses.
             [
                 "middleware" => [
-                    Alder\PublicAuthentication\Middleware\ApiMapMiddleware::class,
-                    Alder\PublicAuthentication\Middleware\SessionMiddleware::class,
-                    Zend\Expressive\Helper\ServerUrlMiddleware::class,
+                    \Alder\PublicAuthentication\Middleware\ApiMapMiddleware::class,
+                    \Alder\PublicAuthentication\Middleware\SessionMiddleware::class,
+                    \Zend\Expressive\Helper\ServerUrlMiddleware::class,
                 ],
                 "priority" => PHP_INT_MAX,
             ],
 
             [
                 "middleware" => [
-                    Zend\Expressive\Container\ApplicationFactory::ROUTING_MIDDLEWARE,
+                    \Zend\Expressive\Container\ApplicationFactory::ROUTING_MIDDLEWARE,
                     //Alder\PublicAuthentication\Middleware\CacheMiddleware::class,
-                    Zend\Expressive\Helper\UrlHelperMiddleware::class,
-                    Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class,
+                    \Zend\Expressive\Helper\UrlHelperMiddleware::class,
+                    \Alder\PublicAuthentication\Middleware\LocalisationMiddleware::class,
                     // Middleware for route-based authentication, validation and authorisation.
-                    Zend\Expressive\Container\ApplicationFactory::DISPATCH_MIDDLEWARE,
+                    \Zend\Expressive\Container\ApplicationFactory::DISPATCH_MIDDLEWARE,
                 ],
                 "priority" => 1,
             ],

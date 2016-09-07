@@ -120,7 +120,7 @@
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByColumnWithValue($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
+        public function getByColumnWithValue($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
                 [$column => $value],
@@ -143,7 +143,7 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByMultipleColumnsWithValues(array $columns, array $values, array $columnsToFetch = NULL, $forceDbFetch = false) {
+        public function getByMultipleColumnsWithValues(array $columns, array $values, array $columnsToFetch = NULL, $forceDbFetch = false) {
             return $this->getBySelect(
                 array_combine($columns, $values),
                 $values,
@@ -154,7 +154,7 @@
                 $forceDbFetch
             );
         }
-        
+
         /**
          * Fetches a row matching the provided unique key value as stored in cache, 
          * if none are present in cache or $forceDbFetch is true, fetches from 
@@ -167,7 +167,7 @@
          * 
          * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
-        protected function getByUniqueKey($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
+        public function getByUniqueKey($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getByColumnWithValue($column, $value, $columnsToFetch, $forceDbFetch)->current();
         }
@@ -184,7 +184,7 @@
          *
          * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
-        protected function getByCompositeUniqueKey(array $columns, array $values, array $columnsToFetch = NULL, $forceDbFetch = false) {
+        public function getByCompositeUniqueKey(array $columns, array $values, array $columnsToFetch = NULL, $forceDbFetch = false) {
             return $this->getByMultipleColumnsWithValues($columns, $values, $columnsToFetch, $forceDbFetch)->current();
         }
         
@@ -201,7 +201,7 @@
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByColumnWithValueBetween($column, $valueMin, $valueMax, array $columnsToFetch = NULL, $forceDbFetch = false)
+        public function getByColumnWithValueBetween($column, $valueMin, $valueMax, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
                 function (Select $select) use ($column, $valueMin, $valueMax) {
@@ -226,7 +226,7 @@
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByColumnWithValueGreaterThanOrEqualTo($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
+        public function getByColumnWithValueGreaterThanOrEqualTo($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
                 function (Select $select) use ($column, $value) {
@@ -251,7 +251,7 @@
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByColumnWithValueLessThanOrEqualTo($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
+        public function getByColumnWithValueLessThanOrEqualTo($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
                 function (Select $select) use ($column, $value) {
@@ -276,7 +276,7 @@
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByColumnWithValueInCollection($column, $valueCollection, array $columnsToFetch = NULL, $forceDbFetch = false)
+        public function getByColumnWithValueInCollection($column, $valueCollection, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
                 function (Select $select) use ($column, $valueCollection) {
@@ -288,7 +288,69 @@
                 $forceDbFetch
             );
         }
-        
+
+        /*
+         * ""
+         * "Between"
+         * "GreaterThanOrEqualTo"
+         * "LessThanOrEqualTo"
+         * "InCollection"
+         */
+        /**
+         * Handles dynamic calls to retrieve entries based on one column's value.
+         *
+         * "getBy*"
+         * "getBy*Between"
+         * "getBy*GreaterThanOrEqualTo"
+         * "getBy*LessThanOrEqualTo"
+         * "getBy*InCollection"
+         *
+         * @param string $method The method called.
+         * @param array $arguments The arguments passed to the method.
+         *
+         * @return mixed
+         */
+        public function __call($method, $arguments)
+        {
+            // Assert that the method starts with the correct form.
+            if (strpos($method, "getBy") !== 0) {
+                throw new \BadFunctionCallException("No function exists by the name: $method.");
+            }
+
+            // Get the name of the desired column.
+            $column = NULL;
+            $result = [];
+            if (preg_match("/getBy([a-zA-Z]+)Between/", $method, $result)
+                || preg_match("/getBy([a-zA-Z]+)GreaterThanOrEqualTo/", $method, $result)
+                || preg_match("/getBy([a-zA-Z]+)LessThanOrEqualTo/", $method, $result)
+                || preg_match("/getBy([a-zA-Z]+)InCollection/", $method, $result)) {
+                $column = $result[1];
+            }  else {
+                $column = substr($method, 5);
+            }
+
+            // Convert the column name from function name format to field name format.
+            $column = implode("_", preg_split('/(?=[A-Z])/', $column));
+
+            // Check the target column exists.
+            $success = false;
+            foreach ($this->columns as $realColumn) {
+                if ($realColumn === $column) {
+                    $success = true;
+                    break;
+                }
+            }
+            if (!$success) {
+                throw new \BadFunctionCallException("No column exists by the name: $column.");
+            }
+
+            // Find which is the appropriate real function to call.
+
+            // Assert necessary arguments have been provided.
+
+            // Call real function and return results.
+        }
+
         /**
          * Gets all entries of a table from cache if existent and if 
          * $forceDbFetch is false, otherwise fetches from the database.

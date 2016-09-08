@@ -4,12 +4,16 @@
     
     use Alder\Container;
     use Alder\Db\Table\AbstractTableInterface;
-    use Alder\Db\Row\AbstractRowInterface;
     use Alder\Stdlib\CacheUtils;
     
     use Zend\Db\Adapter\Adapter;
+    use Zend\Db\Metadata\MetadataInterface;
     use Zend\Db\TableGateway\AbstractTableGateway;
-    use Zend\Db\ResultSet\ResultSet;
+    use Zend\Db\TableGateway\Feature\FeatureSet;
+    use Zend\Db\TableGateway\Feature\MetadataFeature;
+    use Zend\Db\TableGateway\Feature\RowGatewayFeature;
+    use Zend\Db\RowGateway\RowGatewayInterface;
+    use Zend\Db\Sql\Select;
     
     /**
      * Alder-specific implementation of Zend's abstract table gateway.
@@ -22,34 +26,39 @@
     abstract class AbstractTable extends AbstractTableGateway implements AbstractTableInterface
     {
         /**
-         * The local application settings.
-         *
-         * @var array
-         */
-        protected $config;
-        
-        /**
          * Prepares the table with the DB adapter and local settings.
          * 
          * @param string $table The name of the table for this instance.
-         * @param \Alder\Db\Row\AbstractRowInterface|NULL $row The row object to construct with the results of queries.
+         * @param array $columns The columns of the table represented.
+         * @param \Zend\Db\RowGateway\RowGatewayInterface|NULL $row The row object to construct with the results of queries.
          */
-        public function __construct($table, AbstractRowInterface& $row = NULL)
+        protected function __construct($table, array $columns = NULL, RowGatewayInterface $row = NULL)
         {
-            $this->config = Container::get()->get("config")["alder"];
-            $dbConfig = $this->config["db"];
-            
+            $container = Container::get();
+
             // Prefix table.
-            $this->table = $dbConfig["table_prefix"] . $table;
+            $this->table = $container->get("config")["alder"]["db"]["table_prefix"] . $table;
             
-            // Create adapter.
-            $this->adapter = new Adapter($dbConfig["adapter"]);
-            
-            // Prepare result set prototype.
-            $this->resultSetPrototype = new ResultSet();
-            if ($row) {
-                $this->resultSetPrototype->setArrayObjectPrototype($row);
+            // Acquire adapter from service container.
+            $this->adapter = $container->get(Adapter::class);
+
+            // Set columns if provided.
+            if ($columns) {
+                $this->columns = $columns;
             }
+
+            // Create list of features to be used, preparing the metadata feature.
+            $features = [
+                new MetadataFeature($container->get(MetadataInterface::class))
+            ];
+
+            // If a row prototype is provided add the row gateway feature.
+            if ($row) {
+                $features[] = new RowGatewayFeature($row);
+            }
+
+            // Set the feature set.
+            $this->featureSet = new FeatureSet($features);
             
             // Initialise the table gateway. Sets up SQL object.
             $this->initialize();
@@ -62,29 +71,34 @@
          * @param mixed $select The select object to make the selection with.
          * @param mixed $cacheWhere The parameters of the object(s) to be fetched.
          * @param string $cacheExtra The extra details that identify the specific object(s) to be fetched.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch in this get.
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of results from the selection.
          */
-        protected function getBySelect($select, $cacheWhere, $cacheExtra, $forceDbFetch = false)
+        protected function getBySelect($select, $cacheWhere, $cacheExtra, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             // Generate the location in cache for the appropriate data.
-            $cacheLocation = CacheUtils::generateCacheAddress($this->table . $cacheExtra, $cacheWhere);
-            
+            $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":" . $cacheExtra, $cacheWhere, $columnsToFetch);
+
+            $container = Container::get();
+
             // Grab the database cache.
-            $dbCache = Container::get()->get("AlderDbCache");
+            $dbCache = $container->get("AlderDbCache");
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
             $cachedResult = NULL;
-            if (!$forceDbFetch && !$this->config["db"]["force_db_fetch"]) {
+            if (!$forceDbFetch && !$container->get("config")["alder"]["db"]["force_db_fetch"]) {
                 $cachedResult = $dbCache->getItem($cacheLocation, $cacheFetchSuccess);
             }
             
             // Fetch from db if cache fails or if db fetch is forced.
             // Else set final result from fetched cache item.
             if (!$cacheFetchSuccess) {
-                $result = $this->select($select);
+                $select = $this->sql->select()->where($select)
+                                            ->columns($columnsToFetch ?: $this->columns ?: Select::SQL_STAR);
+                $result = $this->selectWith($select);
                 $dbCache->setItem($cacheLocation, $result);
             } else {
                 $result = $cachedResult;
@@ -99,18 +113,20 @@
          * if none are present in cache or $forceDbFetch is true, fetches from 
          * the database.
          * 
-         * @param string $key The key to fetch by.
+         * @param string $column The fields to fetch by.
          * @param mixed $value The value of the provided key's column for rows that should be fetched.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByKey($key, $value, $forceDbFetch = false)
+        public function getByColumnWithValue($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
-                [$key => $value],
+                [$column => $value],
                 $value,
-                "get_by_$key",
+                "get_by_$column",
+                $columnsToFetch,
                 $forceDbFetch
             );
         }
@@ -120,37 +136,40 @@
          * if none are present in cache or $forceDbFetch is true, fetches from
          * the database.
          *
-         * @param array $keys
-         * @param array $values
+         * @param array $columns The fields to fetch by.
+         * @param array $values The values to match records against.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByMultipleKeys(array $keys, array $values, $forceDbFetch = false) {
+        public function getByMultipleColumnsWithValues(array $columns, array $values, array $columnsToFetch = NULL, $forceDbFetch = false) {
             return $this->getBySelect(
-                array_combine($keys, $values),
+                array_combine($columns, $values),
                 $values,
-                "get_by" . array_reduce($keys, function ($carry, $item) {
+                "get_by" . array_reduce($columns, function ($carry, $item) {
                     return $carry . "_" . $item;
                 }, ""),
+                $columnsToFetch,
                 $forceDbFetch
             );
         }
-        
+
         /**
          * Fetches a row matching the provided unique key value as stored in cache, 
          * if none are present in cache or $forceDbFetch is true, fetches from 
          * the database.
          * 
-         * @param string $key The key to fetch by.
+         * @param string $column The unique keyed field to fetch by.
          * @param mixed $value The value of the provided key's column for rows that should be fetched.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
-         * @return \Alder\Db\Row\AbstractRowInterface|NULL The fetched item, NULL if no matches found.
+         * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
-        protected function getUniqueByKey($key, $value, $forceDbFetch = false)
+        public function getByUniqueKey($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
-            return $this->getByKey($key, $value, $forceDbFetch)->current();
+            return $this->getByColumnWithValue($column, $value, $columnsToFetch, $forceDbFetch)->current();
         }
 
         /**
@@ -158,14 +177,15 @@
          * if none are present in cache or $forceDbFetch is true, fetches from
          * the database.
          *
-         * @param array $keys
-         * @param array $values
-         * @param bool $forceDbFetch
+         * @param array $columns The fields of the composite key.
+         * @param array $values The values to match records against.
+         * @param array $columnsToFetch The columns to fetch.
+         * @param bool $forceDbFetch Whether to force a db fetch.
          *
-         * @return \Alder\Db\Row\AbstractRowInterface|NULL The fetched item, NULL if no matches found.
+         * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
-        protected function getUniqueByMultipleKeys(array $keys, array $values, $forceDbFetch = false) {
-            return $this->getByMultipleKeys($keys, $values, $forceDbFetch)->current();
+        public function getByCompositeUniqueKey(array $columns, array $values, array $columnsToFetch = NULL, $forceDbFetch = false) {
+            return $this->getByMultipleColumnsWithValues($columns, $values, $columnsToFetch, $forceDbFetch)->current();
         }
         
         /**
@@ -173,21 +193,23 @@
          * if none are present in cache or $forceDbFetch is true, fetches from 
          * the database.
          * 
-         * @param string $key The key to fetch by.
+         * @param string $column The key to fetch by.
          * @param int|string|float $valueMin The minimum value of range to fetch within.
          * @param int|string|float $valueMax The maximum value of range to fetch within.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByKeyBetween($key, $valueMin, $valueMax, $forceDbFetch = false)
+        public function getByColumnWithValueBetween($column, $valueMin, $valueMax, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
-                function (Select $select) use ($key, $valueMin, $valueMax) {
-                    $select->where->between($key, $valueMin, $valueMax);
+                function (Select $select) use ($column, $valueMin, $valueMax) {
+                    $select->where->between($column, $valueMin, $valueMax);
                 },
-                strval($valueMin) . strval($valueMax),
-                "get_between_$key",
+                strval($valueMin) . "_" . strval($valueMax),
+                "get_between_$column",
+                $columnsToFetch,
                 $forceDbFetch
             );
         }
@@ -197,20 +219,22 @@
          * if none are present in cache or $forceDbFetch is true, fetches from 
          * the database.
          * 
-         * @param string $key The key to fetch by.
+         * @param string $column The key to fetch by.
          * @param int|string|float $value The minimum value of range to fetch within.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByKeyGreaterThanOrEqualTo($key, $value, $forceDbFetch = false)
+        public function getByColumnWithValueGreaterThanOrEqualTo($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
-                function (Select $select) use ($key, $value) {
-                    $select->where->greaterThanOrEqualTo($key, $value);
+                function (Select $select) use ($column, $value) {
+                    $select->where->greaterThanOrEqualTo($column, $value);
                 },
                 $value,
-                "get_greater_than_or_equal_to_$key",
+                "get_greater_than_or_equal_to_$column",
+                $columnsToFetch,
                 $forceDbFetch
             );
         }
@@ -220,20 +244,22 @@
          * if none are present in cache or $forceDbFetch is true, fetches from 
          * the database.
          * 
-         * @param string $key The key to fetch by.
+         * @param string $column The key to fetch by.
          * @param int|string|float $value The maximum value of range to fetch within.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByKeyLessThanOrEqualTo($key, $value, $forceDbFetch = false)
+        public function getByColumnWithValueLessThanOrEqualTo($column, $value, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
-                function (Select $select) use ($key, $value) {
-                    $select->where->lessThanOrEqualTo($key, $value);
+                function (Select $select) use ($column, $value) {
+                    $select->where->lessThanOrEqualTo($column, $value);
                 },
                 $value,
-                "get_less_than_or_equal_to_$key",
+                "get_less_than_or_equal_to_$column",
+                $columnsToFetch,
                 $forceDbFetch
             );
         }
@@ -243,50 +269,130 @@
          * if none are present in cache or $forceDbFetch is true, fetches from 
          * the database.
          * 
-         * @param string $key The key to fetch by.
+         * @param string $column The key to fetch by.
          * @param array $valueCollection The collection of values to check for in the provided key's column.
+         * @param array $columnsToFetch The columns to fetch.
          * @param bool $forceDbFetch Whether to force a db fetch.
          * 
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        protected function getByKeyInCollection($key, $valueCollection, $forceDbFetch = false)
+        public function getByColumnWithValueInCollection($column, $valueCollection, array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             return $this->getBySelect(
-                function (Select $select) use ($key, $valueCollection) {
-                    $select->where->in($key, $valueCollection);
+                function (Select $select) use ($column, $valueCollection) {
+                    $select->where->in($column, $valueCollection);
                 },
                 $valueCollection,
-                "get_in_collection_$key",
+                "get_in_collection_$column",
+                $columnsToFetch,
                 $forceDbFetch
             );
         }
-        
+
+        // TODO(Matthew): Delete this? Not much point to it for the performance hit that comes with it.
+//        /*
+//         * ""
+//         * "Between"
+//         * "GreaterThanOrEqualTo"
+//         * "LessThanOrEqualTo"
+//         * "InCollection"
+//         */
+//        /**
+//         * Handles dynamic calls to retrieve entries based on one column's value.
+//         *
+//         * "getBy*"
+//         * "getBy*Between"
+//         * "getBy*GreaterThanOrEqualTo"
+//         * "getBy*LessThanOrEqualTo"
+//         * "getBy*InCollection"
+//         *
+//         * @param string $method The method called.
+//         * @param array $arguments The arguments passed to the method.
+//         *
+//         * @return mixed
+//         */
+//        public function __call($method, $arguments)
+//        {
+//            // Assert that the method is of the correct form and get the name of the desired column.
+//            $column = NULL;
+//            $result = [];
+//            $type = "";
+//            if (preg_match("/getBy([a-zA-Z]+)(Between)/", $method, $result)
+//                || preg_match("/getBy([a-zA-Z]+)(GreaterThanOrEqualTo)/", $method, $result)
+//                || preg_match("/getBy([a-zA-Z]+)(LessThanOrEqualTo)/", $method, $result)
+//                || preg_match("/getBy([a-zA-Z]+)(InCollection)/", $method, $result)) {
+//                $column = $result[1];
+//                $type= $result[2];
+//            }  else if (strpos($method, "getBy") === 0) {
+//                $column = substr($method, 5);
+//            } else {
+//                throw new \BadFunctionCallException("No function exists by the name: $method.");
+//            }
+//
+//            // Convert the column name from function name format to field name format.
+//            $column = implode("_", preg_split('/(?=[A-Z])/', $column));
+//
+//            // Check the target column exists.
+//            $success = false;
+//            foreach ($this->columns as $realColumn) {
+//                if ($realColumn === $column) {
+//                    $success = true;
+//                    break;
+//                }
+//            }
+//            if (!$success) {
+//                throw new \BadFunctionCallException("No column exists by the name: $column.");
+//            }
+//
+//            // Find which is the appropriate real function to call.
+//            // Then assert necessary arguments have been provided.
+//            // Finally, call real function and return results.
+//            switch ($type) {
+//                case "Between":
+//
+//                    break;
+//                case "GreaterThanOrEqualTo":
+//                    break;
+//                case "LessThanOrEqualTo":
+//                    break;
+//                case "InCollection":
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+
         /**
          * Gets all entries of a table from cache if existent and if 
          * $forceDbFetch is false, otherwise fetches from the database.
-         * 
-         * @param bool Whether to force a db fetch.
+         *
+         * @param array $columnsToFetch The columns to fetch.
+         * @param bool $forceDbFetch Whether to force a db fetch.
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function fetchAll($forceDbFetch = false)
+        public function getAll(array $columnsToFetch = NULL, $forceDbFetch = false)
         {
             // Generate the location in cache for fetch_all data.
-            $cacheLocation = CacheUtils::generateCacheAddress($this->table . "fetch_all", NULL);
-            
+            $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":get_all", $columnsToFetch);
+
+            $container = Container::get();
+
             // Grab the database cache.
-            $dbCache = DatabaseCacheServiceFactory::create();
+            $dbCache = $container->get("AlderDbCache");
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
-            if (!$forceDbFetch && !$this->config["db"]["force_db_fetch"]) {
+            $cachedResult = NULL;
+            if (!$forceDbFetch && !$container->get("config")["alder"]["db"]["force_db_fetch"]) {
                 $cachedResult = $dbCache->getItem($cacheLocation, $cacheFetchSuccess);
             }
             
             // Fetch from db if cache fails or if db fetch is forced.
             // Else set final result from fetched cache item.
             if (!$cacheFetchSuccess) {
-                $result = $this->select();
+                $select = $this->sql->select()->columns($columnsToFetch ?: $this->columns ?: Select::SQL_STAR);
+                $result = $this->selectWith($select);
                 $dbCache->setItem($cacheLocation, $result);
             } else {
                 $result = $cachedResult;
@@ -294,29 +400,5 @@
             
             // Return the resulting data.
             return $result;
-        }
-        
-        /**
-         * Updates rows matching the given identifiers.
-         * 
-         * @param \Alder\Db\Row\AbstractRowInterface $row The row of data to update with.
-         * @param Where|\Closure|string|array $identifiers The identifiers for rows that should be updated.
-         * 
-         * @return int The number of rows affected by the update execution.
-         */
-        public function updateRow(AbstractRowInterface $row, $identifiers = NULL) {
-            return $this->update($row->toArray(), $identifiers);
-        }
-        
-        /**
-         * Inserts a new row to the table.
-         * 
-         * @param \Alder\Db\Row\AbstractRowInterface $row The row to be inserted.
-         * 
-         * @return int The number of affected rows.
-         */
-        public function insertRow(AbstractRowInterface $row)
-        {
-            return $this->insert($row->toArray());
         }
     }

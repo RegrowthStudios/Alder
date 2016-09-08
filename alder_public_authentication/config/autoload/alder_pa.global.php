@@ -11,7 +11,7 @@
                 "adapter" => [ /* Adapter Settings */
                     "driver" => "Pdo_Mysql", // The driver of the database. Values: "Mysqli", "Sqlsrv", "Pdo_Sqlite", "Pdo_Mysql",...
                     "database" => "", // The name of the database for the Sycamore application.
-                    "host" => "localhost", // The host IP of the database.
+                    "hostname" => "localhost", // The host IP of the database.
                     "port" => "3306", // The port over which to connect to the database.
                     "username" => "", // The username with which to connect to the database.
                     "password" => "", // The password with which to connect to the database.

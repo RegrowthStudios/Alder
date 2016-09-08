@@ -14,6 +14,22 @@
      */
     class UserAudit extends AbstractRow
     {
+        /*
+         * NAME                       |  TYPE           |  PK   |  FK   |  UK   |  DESCRIPTION
+         * id                         |  INT(11)        |  Yes  |       |       |  The ID of the user.
+         * etag                       |  VARCHAR(15)    |       |       |  1,1  |  The ETag of the user.
+         * last_change_timestamp      |  VARCHAR(11)    |       |       |       |  The timestamp of the last change made to the user.
+         * creation_timestamp         |  VARCHAR(11)    |       |       |       |  The timestamp of the creation of the user.
+         * username                   |  VARCHAR(32)    |       |  Yes  |       |  The username of the user.
+         * primary_email_local        |  VARCHAR(64)    |       |  Yes  |       |  The local part of the primary email of the user.
+         * primary_email_domain       |  VARCHAR(255)   |       |       |       |  The domain part of the primary email of the user.
+         * password_hash              |  VARCHAR(255)   |       |       |       |  The hash of the user's password.
+         * editor_id                  |  INT(11)        |       |       |       |  The ID of the user that made the change represented by this audit instance.
+         * editor_ip                  |  VARCHAR(16)    |       |       |       |  The IP of the user that made the change at the time in its packed in_addr representation.
+         * editor_action              |  ENUM(...)      |       |       |       |  The action taken by the editor.
+         * last_etag                  |  VARCHAR(15)    |       |  Yes  |       |  The ETag of the user in its last instance.
+         */
+
         /**
          * The name of the table.
          *

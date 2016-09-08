@@ -14,6 +14,16 @@
      */
     class UserLicenseMap extends AbstractRow
     {
+        /*
+         * NAME                       |  TYPE           |  PK   |  FK   |  UK   |  DESCRIPTION
+         * user_id                    |  INT(11)        |       |  Yes  |  1,1  |  The ID of the user.
+         * license_id                 |  INT(11)        |       |  Yes  |  1,1  |  The ID of the license.
+         * etag                       |  VARCHAR(15)    |       |       |  2,1  |  The ETag of the user license map.
+         * last_change_timestamp      |  VARCHAR(11)    |       |       |       |  The timestamp of the last change made to the user.
+         * creation_timestamp         |  VARCHAR(11)    |       |       |       |  The timestamp of the creation of the user.
+         * license_quantity           |  INT(3)         |       |       |       |  The number of the license the associated user holds.
+         */
+
         /**
          * The name of the table.
          *

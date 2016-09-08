@@ -14,8 +14,32 @@
      */
     class UserLicenseMap extends AbstractRow
     {
+        /**
+         * The name of the table.
+         *
+         * @var string
+         */
+        protected static $table = UserLicenseMapTable::NAME;
+        
+        /**
+         * The columns of the unique keys of the table.
+         * 
+         * @var array
+         */
+        protected static $uniqueKeyColumns = NULL;
+        
+        /**
+         * The columns of the primary key of the table.
+         * 
+         * @var array
+         */
+        protected static $primaryKeyColumns = NULL;
+        
+        /**
+         * Prepare the row.
+         */
         public function __construct()
         {
-            parent::__construct(UserLicenseMapTable::NAME);
+            parent::__construct(static::$table);
         }
     }

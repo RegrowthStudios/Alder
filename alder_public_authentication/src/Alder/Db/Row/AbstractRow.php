@@ -20,10 +20,69 @@
     abstract class AbstractRow extends AbstractRowGateway  implements AbstractRowInterface
     {
         /**
+         * Gets the columns of the unique keys of the table.
+         * Acquires them from metadata if not already available.
+         * 
+         * @return array
+         */
+        protected static function getUniqueKeyColumns()
+        {
+            if (!static::$uniqueKeyColumns) {
+                self::fetchMetadata();
+            }
+            return static::$uniqueKeyColumns;
+        }
+        
+        /**
+         * Gets the columns of the primary key of the table.
+         * Acquires them from metadata if not already available.
+         * 
+         * @return array
+         */
+        protected static function getPrimaryKeyColumns()
+        {
+            if (!static::$primaryKeyColumns) {
+                self::fetchMetadata();
+            }
+            return static::$primaryKeyColumns;
+        }
+        
+        /**
+         * Fetches the metadata for unique and primary keys.
+         */
+        protected static function fetchMetadata()
+        {
+            // Acquire the metadata for the table.
+            /**
+             * @var \Zend\Db\Metadata\Object\TableObject $metadata
+             */
+            $metadata = Container::get()->get(MetadataInterface::class)->getTable(static::$table);
+            
+            $uniqueKeyColumns = [];
+
+            // Iterate over constraints and set unique/primary key columns.
+            /**
+             * @var \Zend\Db\Metadata\Object\ConstraintObject $constraint
+             */
+            foreach ($metadata->getConstraints() as $constraint) {
+                if ($constraint->isPrimaryKey()) {
+                    static::$primaryKeyColumn = $constraint->getColumns();
+                } else if ($constraint->isUnique()) {
+                    $uniqueKeyColumns[] = $constraint->getColumns();
+                }
+            }
+
+            // Set unique key columns.
+            static::$uniqueKeyColumns = empty($uniqueKeyColumns) ? NULL : $uniqueKeyColumns;
+        }
+        
+        /**
+         * The columns of the unique keys of the table.
+         * 
          * @var array
          */
         protected $uniqueKeyColumns = NULL;
-
+        
         /**
          * Prepares the row with the needed SQL object and data to operate on the associated database.
          *
@@ -36,30 +95,12 @@
             // Prefix table.
             $this->table = $container->get("config")["alder"]["db"]["table_prefix"] . $table;
 
+            // Acquire unique and primary key column info.
+            $this->primaryKeyColumn = self::getPrimaryKeyColumns();
+            $this->uniqueKeyColumns = self::getUniqueKeyColumns();
+            
             // Acquire adapter from service container and create SQL object with it.
             $this->sql = new Sql($container->get(Adapter::class), $this->table);
-
-            // Acquire the metadata for the table.
-            /**
-             * @var \Zend\Db\Metadata\Object\TableObject $metadata
-             */
-            $metadata = $container->get(MetadataInterface::class)->getTable($this->table);
-
-            $uniqueKeyColumns = [];
-
-            /**
-             * @var \Zend\Db\Metadata\Object\ConstraintObject $constraint
-             */
-            foreach ($metadata->getConstraints() as $constraint) {
-                if ($constraint->isPrimaryKey()) {
-                    $this->primaryKeyColumn = $constraint->getColumns();
-                } else if ($constraint->isUnique()) {
-                    $uniqueKeyColumns[] = $constraint->getColumns();
-                }
-            }
-
-            // Set unique key columns.
-            $this->uniqueKeyColumns = empty($uniqueKeyColumns) ? NULL : $uniqueKeyColumns;
 
             // Initialise the row gateway.
             $this->initialize();

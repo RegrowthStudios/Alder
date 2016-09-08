@@ -289,67 +289,78 @@
             );
         }
 
-        /*
-         * ""
-         * "Between"
-         * "GreaterThanOrEqualTo"
-         * "LessThanOrEqualTo"
-         * "InCollection"
-         */
-        /**
-         * Handles dynamic calls to retrieve entries based on one column's value.
-         *
-         * "getBy*"
-         * "getBy*Between"
-         * "getBy*GreaterThanOrEqualTo"
-         * "getBy*LessThanOrEqualTo"
-         * "getBy*InCollection"
-         *
-         * @param string $method The method called.
-         * @param array $arguments The arguments passed to the method.
-         *
-         * @return mixed
-         */
-        public function __call($method, $arguments)
-        {
-            // Assert that the method starts with the correct form.
-            if (strpos($method, "getBy") !== 0) {
-                throw new \BadFunctionCallException("No function exists by the name: $method.");
-            }
-
-            // Get the name of the desired column.
-            $column = NULL;
-            $result = [];
-            if (preg_match("/getBy([a-zA-Z]+)Between/", $method, $result)
-                || preg_match("/getBy([a-zA-Z]+)GreaterThanOrEqualTo/", $method, $result)
-                || preg_match("/getBy([a-zA-Z]+)LessThanOrEqualTo/", $method, $result)
-                || preg_match("/getBy([a-zA-Z]+)InCollection/", $method, $result)) {
-                $column = $result[1];
-            }  else {
-                $column = substr($method, 5);
-            }
-
-            // Convert the column name from function name format to field name format.
-            $column = implode("_", preg_split('/(?=[A-Z])/', $column));
-
-            // Check the target column exists.
-            $success = false;
-            foreach ($this->columns as $realColumn) {
-                if ($realColumn === $column) {
-                    $success = true;
-                    break;
-                }
-            }
-            if (!$success) {
-                throw new \BadFunctionCallException("No column exists by the name: $column.");
-            }
-
-            // Find which is the appropriate real function to call.
-
-            // Assert necessary arguments have been provided.
-
-            // Call real function and return results.
-        }
+        // TODO(Matthew): Delete this? Not much point to it for the performance hit that comes with it.
+//        /*
+//         * ""
+//         * "Between"
+//         * "GreaterThanOrEqualTo"
+//         * "LessThanOrEqualTo"
+//         * "InCollection"
+//         */
+//        /**
+//         * Handles dynamic calls to retrieve entries based on one column's value.
+//         *
+//         * "getBy*"
+//         * "getBy*Between"
+//         * "getBy*GreaterThanOrEqualTo"
+//         * "getBy*LessThanOrEqualTo"
+//         * "getBy*InCollection"
+//         *
+//         * @param string $method The method called.
+//         * @param array $arguments The arguments passed to the method.
+//         *
+//         * @return mixed
+//         */
+//        public function __call($method, $arguments)
+//        {
+//            // Assert that the method is of the correct form and get the name of the desired column.
+//            $column = NULL;
+//            $result = [];
+//            $type = "";
+//            if (preg_match("/getBy([a-zA-Z]+)(Between)/", $method, $result)
+//                || preg_match("/getBy([a-zA-Z]+)(GreaterThanOrEqualTo)/", $method, $result)
+//                || preg_match("/getBy([a-zA-Z]+)(LessThanOrEqualTo)/", $method, $result)
+//                || preg_match("/getBy([a-zA-Z]+)(InCollection)/", $method, $result)) {
+//                $column = $result[1];
+//                $type= $result[2];
+//            }  else if (strpos($method, "getBy") === 0) {
+//                $column = substr($method, 5);
+//            } else {
+//                throw new \BadFunctionCallException("No function exists by the name: $method.");
+//            }
+//
+//            // Convert the column name from function name format to field name format.
+//            $column = implode("_", preg_split('/(?=[A-Z])/', $column));
+//
+//            // Check the target column exists.
+//            $success = false;
+//            foreach ($this->columns as $realColumn) {
+//                if ($realColumn === $column) {
+//                    $success = true;
+//                    break;
+//                }
+//            }
+//            if (!$success) {
+//                throw new \BadFunctionCallException("No column exists by the name: $column.");
+//            }
+//
+//            // Find which is the appropriate real function to call.
+//            // Then assert necessary arguments have been provided.
+//            // Finally, call real function and return results.
+//            switch ($type) {
+//                case "Between":
+//
+//                    break;
+//                case "GreaterThanOrEqualTo":
+//                    break;
+//                case "LessThanOrEqualTo":
+//                    break;
+//                case "InCollection":
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
 
         /**
          * Gets all entries of a table from cache if existent and if 

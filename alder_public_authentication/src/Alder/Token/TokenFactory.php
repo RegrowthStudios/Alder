@@ -8,6 +8,8 @@
     
     use Lcobucci\JWT\Signer\Key;
     
+    use Zend\Json\Json;
+    
     /**
      * Factory for creating Token objects.
      * 
@@ -87,7 +89,7 @@
             $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : $domain)
                                     ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : $domain)
                                     ->setIssuedAt(   isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
-                                    ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time + $data["tokenLifetime"])
+                                    ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] + $data["tokenLifetime"] : $time + $data["tokenLifetime"])
                                     ->setNotBefore(  isset($registeredClaims["nbf"]) ? $registeredClaims["nbf"] : $time)
                                     ->setId(        (isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12, Rand::ALPHANUMERIC, true)), true);
             // Set subject if specified.
@@ -96,7 +98,7 @@
             }
             // Add application payload if provided.
             if (isset($data["applicationPayload"])) {
-                $token->set($domain, $data["applicationPayload"]);
+                $token->set($domain, Json::encode($data["applicationPayload"]));
             }
             // Add additional private claims if specified.
             if (isset($data["privateClaims"])) {

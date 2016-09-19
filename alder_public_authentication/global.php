@@ -67,6 +67,10 @@
          */
         function build_cookie($name, $value, $expiryTime, $domain, $path = "/", $secure = true, $httpOnly = true)
         {
+            if (!is_string($name) || !is_string($value) || !is_numeric($expiryTime) || !is_string($domain) || !is_string($path)) {
+                throw new \InvalidArgumentException("Parameters name, value, expiryTime, domain and path must be of type string, string, numeric, string and string respectively. One was of invalid type.");
+            }
+            
             $cookie = "$name=$value; Expires=" . gmstrftime("%a, %d %b %Y %H:%M:%S GMT", $expiryTime) . "; Domain=$domain; Path=$path";
             if ($secure !== false) {
                 $cookie .= "; Secure";

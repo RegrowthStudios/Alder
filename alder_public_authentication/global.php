@@ -51,4 +51,30 @@
         {
             return join(DIRECTORY_SEPARATOR, $segments);
         }
+        
+        /**
+         * Builds a cookie string using the provided parameters.
+         * 
+         * @param string $name The name of the cookie.
+         * @param string $value The value of the cookie.
+         * @param integer|string $expiryTime The expiry time in seconds since the epoch.
+         * @param string $domain The domain of the cookie.
+         * @param string $path The path of the cookie.
+         * @param boolean $secure Whether the cookie can only be sent over encrypted messages.
+         * @param boolean $httpOnly Whether the cookie can only be sent over the HTTP protocol.
+         * 
+         * @return string The built cookie.
+         */
+        function build_cookie($name, $value, $expiryTime, $domain, $path = "/", $secure = true, $httpOnly = true)
+        {
+            $cookie = "$name=$value; Expires=" . gmstrftime("%a, %d %b %Y %H:%M:%S GMT", $expiryTime) . "; Domain=$domain; Path=$path";
+            if ($secure !== false) {
+                $cookie .= "; Secure";
+            }
+            if ($httpOnly !== false) {
+                $cookie .= "; HttpOnly";
+            }
+            
+            return $cookie;
+        }
     }

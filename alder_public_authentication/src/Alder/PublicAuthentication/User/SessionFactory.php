@@ -3,6 +3,7 @@
     namespace Alder\PublicAuthentication\User;
     
     use Alder\Container;
+    use Alder\Error\Stack as ErrorStack;
     use Alder\Token\TokenFactory;
     
     /**
@@ -18,12 +19,13 @@
          * Construct a session token for the
          *
          * @param int $id The ID of the user to create the token for.
+         * @param \Alder\Error\Stack $errors The error stack to push errors onto.
          * @param array $data The data of the user to create the token for.
          * @param bool $extendedSession Whether the token should be for an extended session.
          *
          * @return \Alder\Token\Token|bool The created token, or false if the token could not be created.
          */
-        public static function create($id, array $data = [], $extendedSession = false) {
+        public static function create($id, ErrorStack& $errors, array $data = [], $extendedSession = false) {
             $container = Container::get();
 
             if (! (isset($data["username"]) && isset($data["primary_email_local"])
@@ -38,13 +40,14 @@
             }
             
             $config = $container->get("config")["alder"];
+            
             if (!$extendedSession) {
                 $sessionLength = $config["public_authentication"]["session"]["duration"];
             } else {
                 $sessionLength = $config["public_authentication"]["session"]["duration_extended"];
             }
             
-            return TokenFactory::create([
+            $token = TokenFactory::create([
                 "tokenLifetime" => $sessionLength,
                 "registeredClaims" => [
                     "sub" => "user"
@@ -54,8 +57,25 @@
                     "username" => $data["username"],
                     "primary_email" => $data["primary_email_local"] . "@" . $data["primary_email_domain"],
                     "license_keys" => $data["license_keys"],
-                    "employee_flag" => $data["employee_flag"]
+                    "employee_flag" => $data["employee_flag"],
+                    "extended_session" => $extendedSession
                 ]
             ]);
+            
+            // If token failed to be generated, fail.
+            if (!$token) {
+                $errors->push(103020101);
+                return false;
+            }
+            
+            $cookie = USER_SESSION . "=$sessionToken; Expires=" . gmstrftime("%a, %d %b %Y %H:%M:%S GMT", $sessionToken->getClaim("exp")) . "; Domain=" . $config["domain"] . "; Path=/";
+            if ($config["security"]["cookies_over_https_only"] !== false) {
+                $cookie .= "; Secure";
+            }
+            if ($config["security"]["acces_cookies_via_http_only"] !== false) {
+                $cookie .= "; HttpOnly";
+            }
+            
+            return $token;
         }
     }

@@ -5,7 +5,7 @@
     use Alder\Action\AbstractRestfulAction;
     use Alder\Container;
     use Alder\Error\Error;
-    use Alder\Error\Stack;
+    use Alder\Error\Stack as ErrorStack;
     use Alder\PublicAuthentication\User\SessionFactory;
     use Alder\PublicAuthentication\User\Security;
     use Alder\PublicAuthentication\User\Validation;
@@ -49,7 +49,7 @@
             $extended = isset($data["extended"]) ? $data["extended"] : false;
 
             // Get error container.
-            $errorStack = new Stack();
+            $errorStack = new ErrorStack();
 
             // Assert that needed data was provided.
             if (!$password) {
@@ -118,48 +118,25 @@
                     $userTable->updateRow($user, [ "id" => $user->id ]);
                 }
 
-                // Create session token.
-                $sessionToken = SessionFactory::create($user->id, $user->toArray(), $extended);
+                // Create session cookie.
+                $cookie = SessionFactory::create($user->id, $errorStack, $user->toArray(), $extended);
 
-                // If token failed to be generated, fail.
-                if (!$sessionToken) {
+                if ($errorStack->notEmpty()) {
+                    // If token failed to be generated, send 400 code and errors.
                     $this->response = new JsonResponse([
-                        "errors" => [
-                            101010106 => Error::retrieveString(101010106)
-                        ]
+                        "errors" => $errorStack->retrieve()
                     ], 400);
-                    return;
-                }
-
-                // Acquire configuration object.
-                $config = Container::get()->get("config")["alder"];
-
-                // Acquire the correct session length.
-                if (!$extended) {
-                    $sessionLength = $config["public_authentication"]["session"]["duration"];
                 } else {
-                    $sessionLength = $config["public_authentication"]["session"]["duration_extended"];
+                    $this->response = $this->response->withAddedHeader("Set-Cookie", $cookie)
+                                                     ->withStatus(200);
                 }
-
-                // Attempt to set the cookie, fail on false return.
+            } else {
+                // Fail due to invalid password.
                 $this->response = new JsonResponse([
-                    "session" => [
-                        "token" => $sessionToken,
-                        "duration" => time() + $sessionLength,
-                        "domain" => $config["domain"],
-                        "https_only_flag" => $config["security"]["cookies_over_https_only"],
-                        "access_by_http_only_flag" => $config["security"]["access_cookies_via_http_only"]
+                    "errors" => [
+                        101010106 => Error::retrieveString(101010106)
                     ]
-                ], 200);
-                return;
+                ], 400);
             }
-
-            // Fail due to invalid password.
-            $this->response = new JsonResponse([
-                "errors" => [
-                    101010107 => Error::retrieveString(101010107)
-                ]
-            ], 400);
-            return;
         }
     }

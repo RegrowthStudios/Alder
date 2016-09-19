@@ -65,7 +65,7 @@
                 ],
                 "session" => [ /* Session Settings */
                     "duration" => 43200/*12 Hours*/, // How long should a standard length log-in session last.
-                    "duration_extended" => 2629740/*~1 Month*/, // How long should an extended log-in session last.
+                    "duration_extended" => 2592000/*~1 Month*/, // How long should an extended log-in session last.
                 ],
                 "token" => [ /* Token Settings */
                     "private_key" => DEFAULT_VAL, // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.
@@ -79,6 +79,7 @@
                 "cookies_over_https_only" => true, // If true, cookies may only be sent to the user over a secure HTTPS connection.
                 //"enable_clickjacking_protection" => true, // If true, prevents clickjacking attacks by not allowing site to be rendered in iframe.
                 "simple_hash_algorithm" => "sha256", // The hashing algorithm to be used for simple hashes - no sensitive data is hashed using this.
+                "refresh_sessions_with_expiry_within" => 1296000/*0.5 Months*/, // Refresh sessions that interact with the server where their expiry will occur within the specified time.
             ]
         ]
     ];

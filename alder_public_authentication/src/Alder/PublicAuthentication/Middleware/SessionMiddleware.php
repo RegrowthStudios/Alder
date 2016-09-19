@@ -3,13 +3,16 @@
     namespace Alder\PublicAuthentication\Middleware;
     
     use Alder\Container;
+    use Alder\Error\Stack as ErrorStack;
     use Alder\Middleware\MiddlewareTrait;
+    use Alder\PublicAuthentication\User\SessionFactory;
     use Alder\Token\Parser;
     use Alder\Token\Token;
 
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     
+    use Zend\Json\Json;
     use Zend\Stratigility\MiddlewareInterface;
     
     /**
@@ -42,27 +45,55 @@
             $cookieParams = $this->request->getCookieParams();
             $sessionTokenString = $this->getParameter(USER_SESSION, isset($cookieParams[USER_SESSION]) ? $cookieParams[USER_SESSION] : NULL);
             
-            if (is_null($sessionTokenString)) {
+            if (!$sessionTokenString) {
+                $this->request = $this->request->withAttribute("visitor", [
+                    "isLoggedIn" => false
+                ]);
+                
                 return $next($this->request, $this->response);
             }
             
             $sessionToken = (new Parser())->parse($sessionTokenString);
             
+            $time = time();
             $result = $sessionToken->validate([
                 "validators" => [
                     "sub" => "user"
                 ]
             ]);
 
-            // TODO(Matthew): If logged in and token on verge of expiring/just expired then generate and issue new token.
             if ($result !== Token::VALID) {
+                // TODO(Matthew): Consider the following:
+                // Not valid, treat as just not logged in or forbid access?
+                // For now treating as not logged in - can just remove invalid tokens for second request after all.
+                // Maybe log details for suspicious behaviour metric.
                 $this->request = $this->request->withAttribute("visitor", [
                     "isLoggedIn" => false
                 ]);
             } else {
+                $config = Container::get()->get("config")["alder"];
+                
+                // Get application-specific claims of current token.
+                $appClaims = Json::decode($sessionToken->getClaim($config["domain"]), Json::TYPE_ARRAY);
+                  
+                // If token is nearly expired, renew it.
+                if ($sessionToken->getClaim("exp") - $time <= $config["security"]["refresh_sessions_with_expiry_within"]) {
+                    $errors = new ErrorStack();
+                    
+                    // Generate new token.
+                    $newCookie = SessionFactory::create($appClaims["id"], $errors, $appClaims, $appClaims["extended_session"]);
+                    
+                    if ($errors->notEmpty()) {
+                        // Warn internally if new token could not be generated, but proceed - user may log in again if current token expires.
+                        trigger_error("Failed to create replacement token for existing session.", E_USER_WARNING);
+                    } else {
+                        $this->response = $this->response->withAddedHeader("Set-Cookie", $newCookie);
+                    }
+                }
+                
                 $this->request = $this->request->withAttribute("visitor", array_merge([
                     "isLoggedIn" => true
-                ], $sessionToken->getClaims()[Container::get()->get("config")["alder"]["domain"]]));
+                ], $appClaims));
             }
             
             return $next($this->request, $this->response);

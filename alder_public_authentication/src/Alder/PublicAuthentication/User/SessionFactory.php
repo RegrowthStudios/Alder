@@ -68,14 +68,14 @@
                 return false;
             }
             
-            $cookie = USER_SESSION . "=$sessionToken; Expires=" . gmstrftime("%a, %d %b %Y %H:%M:%S GMT", $sessionToken->getClaim("exp")) . "; Domain=" . $config["domain"] . "; Path=/";
-            if ($config["security"]["cookies_over_https_only"] !== false) {
-                $cookie .= "; Secure";
-            }
-            if ($config["security"]["acces_cookies_via_http_only"] !== false) {
-                $cookie .= "; HttpOnly";
-            }
-            
-            return $token;
+            return build_cookie(
+                USER_SESSION,
+                (string) $token,
+                $token->getClaim("exp"),
+                $config["domain"],
+                "/",
+                $config["security"]["cookies_over_https_only"],
+                $config["security"]["acces_cookies_via_http_only"]
+            );
         }
     }

@@ -14,15 +14,14 @@
     class Acl
     {
         /**
-         * Cache file for the ACL object.
+         * Filepath to configuration for the default ACL object.
          */
-        const ACL_CACHE = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl/acl.cache";
+        const DEFAULT_ACL_FILEPATH = CONFIG_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR . "acl.default.php";
         
         /**
-         *
-         * @var \Zend\Permissions\Acl\Acl;
+         * Filepath to cache for the custom ACL object.
          */
-        protected $acl = NULL;
+        const CUSTOM_ACL_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR . "acl.cache";
         
         /**
          * The single instance of the ACL.
@@ -32,6 +31,7 @@
         protected static $instance = NULL;
         
         /**
+         * Create an ACL instance, or get the existing one.
          * 
          * @return \Alder\Acl\Acl The created instance of the Acl.
          */
@@ -44,13 +44,20 @@
         }
         
         /**
+         * The actual ACL object.
+         *
+         * @var \Zend\Permissions\Acl\Acl;
+         */
+        protected $acl = NULL;
+        
+        /**
          * Prepares the ACL object, fetching from the filesystem if cached, constructing from default settings otherwise.
          */
         protected function __construct() {
             // TODO(Matthew): Measure performance metrics of unserialize vs reconstructing ACL each time.
             // Retrieve ACL from filesystem if it exists and is valid.
-            if (file_exists(self::ACL_CACHE)) {
-                $acl = unserialize(file_get_contents(self::ACL_CACHE));
+            if (file_exists(self::CUSTOM_ACL_FILEPATH)) {
+                $acl = unserialize(file_get_contents(self::CUSTOM_ACL_FILEPATH));
                 if (!$acl instanceof Acl) {
                     $this->acquireDefaultAcl();
                 } else {
@@ -71,8 +78,22 @@
             return $this->acl;
         }
         
+        /**
+         * Saves the custom ACL object to cache.
+         * 
+         * @return int|bool Number of bytes written on success, false on failure.
+         */
+        public function save()
+        {
+            return file_put_contents(self::CUSTOM_ACL_FILEPATH, serialize($this->acl));
+        }
+                
+        /**
+         * Acquires the default ACL and saves it to the cache.
+         */
         protected function acquireDefaultAcl()
         {
-            
+            $this->acl = require self::DEFAULT_ACL_FILEPATH;
+            $this->save();
         }
     }

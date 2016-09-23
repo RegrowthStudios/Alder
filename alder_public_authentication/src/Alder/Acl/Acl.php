@@ -53,7 +53,8 @@
         /**
          * Prepares the ACL object, fetching from the filesystem if cached, constructing from default settings otherwise.
          */
-        protected function __construct() {
+        protected function __construct()
+        {
             // TODO(Matthew): Measure performance metrics of unserialize vs reconstructing ACL each time.
             // Retrieve ACL from filesystem if it exists and is valid.
             if (file_exists(self::CUSTOM_ACL_FILEPATH)) {

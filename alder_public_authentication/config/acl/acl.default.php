@@ -4,6 +4,7 @@
     use Zend\Permissions\Acl\Resource\GenericResource as Resource;
     use Zend\Permissions\Acl\Role\GenericRole as Role;
     
+    // TODO(Matthew): Custom roll of ACL object to allow for per role, per resource, per privilege restrictions beyond just allow/deny (e.g. frequency of usage, hide etc.)?
     
     $acl = new Acl();
     
@@ -16,12 +17,22 @@
     $acl->addResource(new Resource(AUTHENTICATION));
     $acl->addResource(new Resource(LICENSE));
     $acl->addResource(new Resource(LICENSE_TEXT));
-    $acl->addResource(new Resource(LICENSE_LICENSE_TEXT_MAP));
     $acl->addResource(new Resource(USER));
-    $acl->addResource(new Resource(USER_LICENSE_MAP));
+    // Maps shouldn't be end points?
+    // Would just be seen as change to user or license.
+    //$acl->addResource(new Resource(LICENSE_LICENSE_TEXT_MAP));
+    //$acl->addResource(new Resource(USER_LICENSE_MAP));
     
-    $acl->allow(NULL, NULL, [ OPTIONS ]);
+    // Allow access to all endpoints' OPTIONS and GET requests.
+    $acl->allow(NULL, NULL, [ GET, OPTIONS ]);
     
-    $acl->allow([ GUEST, ADMIN, SUPER_ADMIN ], AUTHENTICATION, [ CREATE ]);
+    // Allow admins and super admins to create, delete, modify and replace resources.
+    $acl->allow([ ADMIN, SUPER_ADMIN ], NULL, [ CREATE, DELETE, REPLACE, UPDATE ]);
+    
+    // Allow guests, in addition to admins and super admins, access to create users and user sessions.
+    $acl->allow([ GUEST ], [ USER, AUTHENTICATION ], [ CREATE ]);
+    
+    // Allow registered to delete and modify users (themselves).
+    $acl->allow([ REGISTERED ], [ USER ], [ DELETE, UPDATE ]);
     
     return $acl;

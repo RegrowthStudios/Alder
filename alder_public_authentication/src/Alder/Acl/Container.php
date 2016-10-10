@@ -11,7 +11,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since 0.1.0
      */
-    class Acl
+    class Container
     {
         /**
          * Filepath to configuration for the default ACL object.
@@ -44,11 +44,11 @@
         }
         
         /**
-         * The actual ACL object.
+         * The actual container object.
          *
          * @var \Zend\Permissions\Acl\Acl;
          */
-        protected $acl = NULL;
+        protected $container = NULL;
         
         /**
          * Prepares the ACL object, fetching from the filesystem if cached, constructing from default settings otherwise.
@@ -62,7 +62,7 @@
                 if (!$acl instanceof Acl) {
                     $this->acquireDefaultAcl();
                 } else {
-                    $this->acl = $acl;
+                    $this->container = $acl;
                 }
             } else {
                 $this->acquireDefaultAcl();
@@ -76,7 +76,7 @@
          */
         public function get()
         {
-            return $this->acl;
+            return $this->container;
         }
         
         /**
@@ -86,7 +86,7 @@
          */
         public function save()
         {
-            return file_put_contents(self::CUSTOM_ACL_FILEPATH, serialize($this->acl));
+            return file_put_contents(self::CUSTOM_ACL_FILEPATH, serialize($this->container));
         }
                 
         /**
@@ -94,7 +94,7 @@
          */
         protected function acquireDefaultAcl()
         {
-            $this->acl = require self::DEFAULT_ACL_FILEPATH;
+            $this->container = require self::DEFAULT_ACL_FILEPATH;
             $this->save();
         }
     }

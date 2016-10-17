@@ -3,6 +3,7 @@
     namespace Alder\Acl;
     
     use Zend\Permissions\Acl\Acl as ZendAcl;
+    use Zend\Permissions\Acl\Assertion\AssertionInterface;
     
     /**
      * Provides functionality for retrieving and storing ACL data as well as checking access rights of users against it.
@@ -18,10 +19,10 @@
          */
         const TYPE_HIDE = "TYPE_HIDE";
         
-        /**
-         * Rule type: frequency of usage
-         */
-        const TYPE_FREQ = "TYPE_FREQ";
+//        /**
+//         * Rule type: frequency of usage
+//         */
+//        const TYPE_FREQ = "TYPE_FREQ";
         
         /**
          * ACL rules; whitelist (deny everything to all) by default
@@ -43,21 +44,47 @@
             ],
             "byResourceId" => []
         ];
-    
+        
+        /**
+         * Adds a "hide" rule to the ACL
+         *
+         * @param  Role\RoleInterface|string|array          $roles
+         * @param  Resource\ResourceInterface|string|array  $resources
+         * @param  string|array                             $privileges
+         * @param  Assertion\AssertionInterface             $assert
+         * @return Acl Provides a fluent interface
+         */
+        public function hide($roles = NULL, $resources = NULL, $privileges = NULL, AssertionInterface $assert = NULL)
+        {
+            return $this->setRule(self::OP_ADD, self::TYPE_HIDE, $roles, $resources, $privileges, $assert);
+        }
+
+        /**
+         * Removes "hide" restrictions from the ACL
+         *
+         * @param  Role\RoleInterface|string|array         $roles
+         * @param  Resource\ResourceInterface|string|array $resources
+         * @param  string|array                            $privileges
+         * @return Acl Provides a fluent interface
+         */
+        public function removeHide($roles = NULL, $resources = NULL, $privileges = NULL)
+        {
+            return $this->setRule(self::OP_REMOVE, self::TYPE_HIDE, $roles, $resources, $privileges);
+        }
+        
         /**
          * {@inheritdoc}
          */
-        public function setRule($operation, $type, $roles = NULL, $resources = NULL, $privileges = NULL, \Zend\Permissions\Acl\Assertion\AssertionInterface $assert = NULL)
+        public function setRule($operation, $type, $roles = NULL, $resources = NULL, $privileges = NULL, AssertionInterface $assert = NULL)
         {
             $type = strtoupper($type);
             if (self::TYPE_ALLOW !== $type && self::TYPE_DENY !== $type &&
-                    self::TYPE_HIDE !== $type && self::TYPE_FREQ !== $type) {
+                    self::TYPE_HIDE !== $type /*&& self::TYPE_FREQ !== $type*/) {
                 throw new \InvalidArgumentException(sprintf(
-                    "Unsupported rule type; must be either \"%s\", \"%s\", \"%s\" or \"%s\"",
+                    "Unsupported rule type; must be either \"%s\", \"%s\" or \"%s\"",
                     self::TYPE_ALLOW,
                     self::TYPE_DENY,
-                    self::TYPE_HIDE,
-                    self::TYPE_FREQ
+                    self::TYPE_HIDE
                 ));
             }
 
@@ -67,51 +94,25 @@
             
             $this->normalisePrivileges($privileges);
             
-            // Figure out how the ACL tree works.
             switch ($operation) {
                 case self::OP_ADD:
-                    foreach ($resources as $resource) {
-                        foreach ($roles as $role) {
-                            $rules = &$this->getRules($resource, $role, true);
-                            if ($type !== self::TYPE_FREQ) {
-                                if (count($privileges) === 0) {
-                                    $rules["allPrivileges"]["type"]   = $type;
-                                    $rules["allPrivileges"]["assert"] = $assert;
-                                    if (!isset($rules["byPrivilegeId"])) {
-                                        $rules["byPrivilegeId"] = [];
-                                    }
-                                } else {
-                                    foreach ($privileges as $privilege) {
-                                        $rules["byPrivilegeId"][$privilege]["type"]   = $type;
-                                        $rules["byPrivilegeId"][$privilege]["assert"] = $assert;
-                                    }
-                                }
-                            } else {
-                                if (count($privileges) === 0) {
-                                    if (!isset($rules["allPrivileges"]) || !isset($rules["allPrivileges"]["type"])) {
-                                        $rules["allPrivileges"]["type"]   = self::TYPE_DENY;
-                                        $rules["allPrivileges"]["assert"] = NULL;
-                                        if (!isset($rules["byPrivilegeId"])) {
-                                            $rules["byPrivilegeId"] = [];
-                                        }
-                                    }
-                                    // Set frequency.
-                                } else {
-                                    foreach ($privileges as $privilege) {
-                                        if (!isset($rules["byPrivilegeId"]) || !isset($rules["byPrivilegeId"][$privilege])) {
-                                            $rules["byPrivilegeId"][$privilege]["type"]   = self::TYPE_DENY;
-                                            $rules["byPrivilegeId"][$privilege]["assert"] = NULL;
-                                        }
-                                        // Set frequency.
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    $this->applyAddOperation($type, $roles, $resources, $privileges, $assert);
                     break;
+
                 case self::OP_REMOVE:
-                    
+                    $this->applyRemoveOperation($type, $roles, $resources, $privileges);
+                    break;
+                
+                default:
+                    throw new \InvalidArgumentException(sprintf(
+                        "Unsupported rule type; must be either \"%s\", \"%s\" or \"%s\"",
+                        self::TYPE_ALLOW,
+                        self::TYPE_DENY,
+                        self::TYPE_HIDE
+                    ));
             }
+
+            return $this;
         }
         
         /**
@@ -185,6 +186,80 @@
                 $privileges = [];
             } else if (!is_array($privileges)) {
                 $privileges = [$privileges];
+            }
+        }
+        
+        /**
+         * Apply the add operation for a given rule type on a given set of rules, resources and privileges.
+         * 
+         * @param string $type
+         * @param Role\RoleInterface|string|array $roles
+         * @param Resource\ResourceInterface|string|array $resources
+         * @param string|array $privileges
+         * @param \Zend\Permissions\Acl\Assertion\AssertionInterface $assert
+         */
+        protected function applyAddOperation($type, $roles, $resources, $privileges, AssertionInterface $assert)
+        {
+            foreach ($resources as $resource) {
+                foreach ($roles as $role) {
+                    $rules =& $this->getRules($resource, $role, true);
+                    if (count($privileges) === 0) {
+                        $rules['allPrivileges']['type']   = $type;
+                        $rules['allPrivileges']['assert'] = $assert;
+                        if (!isset($rules['byPrivilegeId'])) {
+                            $rules['byPrivilegeId'] = [];
+                        }
+                    } else {
+                        foreach ($privileges as $privilege) {
+                            $rules['byPrivilegeId'][$privilege]['type']   = $type;
+                            $rules['byPrivilegeId'][$privilege]['assert'] = $assert;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Apply the remove operation for a given rule type on a given set of rules, resources and privileges.
+         * 
+         * @param string $type
+         * @param Role\RoleInterface|string|array $roles
+         * @param Resource\ResourceInterface|string|array $resources
+         * @param string|array $privileges
+         */
+        protected function applyRemoveOperation($type, $roles, $resources, $privileges)
+        {
+            foreach ($resources as $resource) {
+                foreach ($roles as $role) {
+                    $rules =& $this->getRules($resource, $role);
+                    if (null === $rules) {
+                        continue;
+                    }
+                    if (count($privileges) === 0) {
+                        if ($resource === NULL && $role === NULL) {
+                            if ($type === $rules['allPrivileges']['type']) {
+                                $rules = [
+                                    'allPrivileges' => [
+                                        'type'   => self::TYPE_DENY,
+                                        'assert' => NULL
+                                    ],
+                                    'byPrivilegeId' => []
+                                ];
+                            }
+                            continue;
+                        }
+
+                        if (isset($rules['allPrivileges']['type']) && $type === $rules['allPrivileges']['type']) {
+                            unset($rules['allPrivileges']);
+                        }
+                    } else {
+                        foreach ($privileges as $privilege) {
+                            if (isset($rules['byPrivilegeId'][$privilege]) && $type === $rules['byPrivilegeId'][$privilege]['type']) {
+                                unset($rules['byPrivilegeId'][$privilege]);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -262,4 +262,108 @@
                 }
             }
         }
+        
+        /**
+         * {@inheritdoc}
+         */
+        public function isAllowed($role = NULL, $resource = NULL, $privilege = NULL)
+        {
+            // Reset role & resource to NULL.
+            $this->isAllowedRole = NULL;
+            $this->isAllowedResource = NULL;
+            $this->isAllowedPrivilege = NULL;
+
+            if ($role !== NULL) {
+                // Keep track of originally called role.
+                $this->isAllowedRole = $role;
+                $role = $this->getRoleRegistry()->get($role);
+                if (!$this->isAllowedRole instanceof RoleInterface) {
+                    $this->isAllowedRole = $role;
+                }
+            }
+
+            if ($resource !== NULL) {
+                // Keep track of originally called resource
+                $this->isAllowedResource = $resource;
+                $resource = $this->getResource($resource);
+                if (!$this->isAllowedResource instanceof ResourceInterface) {
+                    $this->isAllowedResource = $resource;
+                }
+            }
+
+            if ($privilege === NULL) {
+                // Query on all privileges, loop terminates at 'allResources' pseudo-parent
+                while (true) {
+                    // Depth-first search on $role if it is not 'allRoles' pseudo-parent
+                    if ($role !== NULL && ($result = $this->roleDFSAllPrivileges($role, $resource, $privilege)) !== NULL) {
+                        return $result;
+                    }
+
+                    // Look for rule on 'allRoles' pseudo-parent
+                    if (($rules = $this->getRules($resource, NULL)) !== NULL) {
+                        foreach ($rules['byPrivilegeId'] as $privilege => $rule) {
+                            if (($ruleTypeOnePrivilege = $this->getRuleType($resource, NULL, $privilege)) !== self::TYPE_ALLOW) {
+                                return false;
+                            }
+                        }
+                        if (($ruleTypeAllPrivileges = $this->getRuleType($resource, NULL, NULL)) !== NULL) {
+                            return $ruleTypeAllPrivileges === self::TYPE_ALLOW;
+                        }
+                    }
+
+                    // Try next Resource
+                    $resource = $this->resources[$resource->getResourceId()]['parent'];
+                }
+            } else {
+                $this->isAllowedPrivilege = $privilege;
+                // Query on one privilege, loop terminates at 'allResources' pseudo-parent                
+                while (true) {
+                    // Depth-first search on $role if it is not 'allRoles' pseudo-parent
+                    if ($role !== NULL && ($result = $this->roleDFSOnePrivilege($role, $resource, $privilege)) !== NULL) {
+                        return $result;
+                    }
+
+                    // Look for rule on 'allRoles' pseudo-parent
+                    if (($ruleType = $this->getRuleType($resource, NULL, $privilege)) !== NULL) {
+                        return $ruleType === self::TYPE_ALLOW;
+                    } else if (($ruleTypeAllPrivileges = $this->getRuleType($resource, NULL, NULL)) !== NULL) {
+                        $result = $ruleTypeAllPrivileges === self::TYPE_ALLOW;
+                        if ($result || $resource === NULL) {
+                            return $result;
+                        }
+                    }
+
+                    // Try next Resource
+                    $resource = $this->resources[$resource->getResourceId()]['parent'];
+                }
+            }
+        }
+        
+        /**
+         * {@inheritdoc}
+         */
+        protected function roleDFSVisitAllPrivileges(RoleInterface $role, ResourceInterface $resource = NULL, &$dfs = NULL)
+        {
+            if ($dfs === NULL) {
+                throw new Exception\RuntimeException('$dfs parameter may not be null');
+            }
+
+            if (($rules = $this->getRules($resource, $role)) !== NULL) {
+                foreach ($rules['byPrivilegeId'] as $privilege => $rule) {
+                    if (($ruleTypeOnePrivilege = $this->getRuleType($resource, $role, $privilege)) !== self::TYPE_ALLOW) {
+                        return false;
+                    }
+                }
+                if (($ruleTypeAllPrivileges = $this->getRuleType($resource, $role, NULL)) !== NULL) {
+                    return $ruleTypeAllPrivileges === self::TYPE_ALLOW;
+                }
+            }
+
+            $dfs['visited'][$role->getRoleId()] = true;
+            foreach ($this->getRoleRegistry()->getParents($role) as $roleParent) {
+                $dfs['stack'][] = $roleParent;
+            }
+
+            return;
+        }
     }

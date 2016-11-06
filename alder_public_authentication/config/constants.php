@@ -21,14 +21,30 @@
     define("DEFAULT_VAL", "CHANGE");
     // Define miscellaneous constances.
     define("USER_SESSION", "alis");
-
-    // Define canonical action names.
-    define("AUTHENTICATE", "authenticate");
-    define("LICENSE", "license");
-    define("USER", "user");
-    define("USERLICENSE", "user_license");
     
     // Define password strictness consts.
     define("PASSWORD_STRICTNESS_NORMAL", "normal");
     define("PASSWORD_STRICTNESS_HIGH", "high");
     define("PASSWORD_STRICTNESS_STRICT", "strict");
+
+    /* ACL Constants. */
+    // Role strings
+    define("GUEST", "guest");
+    define("REGISTERED", "registered");
+    define("MODERATOR", "moderator");
+    define("ADMIN", "admin");
+    define("SUPER_ADMIN", "super_admin");
+    // Resource strings
+    define("AUTHENTICATE", "authenticate");
+    define("LICENSE", "license");
+    define("LICENSE_TEXT", "license_text");
+    define("LICENSE_LICENSE_TEXT_MAP", "license_license_text_map");
+    define("USER", "user");
+    define("USER_LICENSE_MAP", "user_license_map");
+    // Privilege strings
+    define("GET", "get");
+    define("POST", "create");
+    define("PUT", "replace");
+    define("PATCH", "update");
+    define("DELETE", "delete");
+    define("OPTIONS", "options");

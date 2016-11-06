@@ -81,4 +81,17 @@
             
             return $cookie;
         }
+        
+        function canonicalise_action_class_path($classpath)
+        {
+            $classpathParts = explode("\\", get_class($this));
+            $classname = end($classpathParts);
+            
+            $resourceName = str_replace("Action", "", $classname);
+            
+            $separatedByUnderscores = preg_replace("/\B([A-Z])/", "_$1", $resourceName);
+            $uppercased = strtoupper($separatedByUnderscores);
+            
+            return constant($uppercased);
+        }
     }

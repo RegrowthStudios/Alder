@@ -81,7 +81,7 @@
          * Processes a request for the options related to the route path of the request.
          */
         protected function options() {
-            $action = constant(strtoupper(str_replace("Action", "", end(explode("\\", get_class($this))))));
+            $action = canonicalise_action_class_path(get_class($this));
 
             if ($action === NULL) {
                 $this->response = $this->response->withStatus(405, "Method Not Allowed");

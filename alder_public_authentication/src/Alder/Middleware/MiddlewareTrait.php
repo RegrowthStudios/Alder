@@ -49,6 +49,6 @@
             
             $result = $this->request->getAttribute($parameterHandle, $param);
             
-            return $result ?? $default;
+            return is_null($result) ? $default : $result;
         }
     }

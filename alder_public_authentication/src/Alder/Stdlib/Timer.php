@@ -27,14 +27,14 @@
         /**
          * Starts the timer.
          */
-        public function start() {
+        public function start() : void {
             $this->startTime = microtime(true);
         }
         
         /**
          * Stops the timer.
          */
-        public function stop() {
+        public function stop() : void {
             $this->duration += microtime(true) - $this->startTime;
         }
         
@@ -43,7 +43,7 @@
          *
          * @return float
          */
-        public function getDuration() {
+        public function getDuration() : float {
             return $this->duration;
         }
     }

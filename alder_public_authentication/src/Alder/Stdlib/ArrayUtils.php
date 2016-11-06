@@ -21,7 +21,7 @@
          *
          * @return bool If the item to search for exists in the given array.
          */
-        public static function inArrayRecursive($needle, $haystack, $strict = false) {
+        public static function inArrayRecursive(string $needle, array $haystack, bool $strict = false) : bool {
             foreach ($haystack as $item) {
                 if (($strict ? $item === $needle : $item == $needle)
                     || (is_array($item)
@@ -42,7 +42,7 @@
          *
          * @return bool True if the array key to search for exists.
          */
-        public static function arrayKeyExistsRecursive($key, $array) {
+        public static function arrayKeyExistsRecursive(string $key, array $array) : bool {
             foreach ($array as $k => $v) {
                 if (($k === $key) || (is_array($v) && static::arrayKeyExistsRecursive($key, $v))) {
                     return true;
@@ -59,7 +59,7 @@
          *
          * @return bool True on success, false on failure.
          */
-        public static function recursiveAsort(array& $array) {
+        public static function recursiveAsort(array& $array) : bool {
             foreach ($array as & $value) {
                 if (is_array($value)) {
                     static::recursiveAsort($value);
@@ -76,7 +76,7 @@
          *
          * @return bool True on success, false on failure.
          */
-        public static function recursiveKsort(array& $array) {
+        public static function recursiveKsort(array& $array) : bool {
             foreach ($array as & $value) {
                 if (is_array($value)) {
                     static::recursiveKsort($value);
@@ -97,7 +97,7 @@
          *
          * @throws \InvalidArgumentException If the data was in a form not castable into an array accessible form.
          */
-        public static function validateArrayLike($data, $class = null, $arrayOnly = false) {
+        public static function validateArrayLike($data, string $class = null, bool $arrayOnly = false) {
             if (is_array($data)) {
                 return $data;
             }
@@ -135,7 +135,7 @@
          *
          * @return array The resulting array of XOR operation.
          */
-        public static function xorArrays($array1, $array2) {
+        public static function xorArrays(array $array1, array $array2) : array {
             return array_merge(array_diff($array1, $array2), array_diff($array2, $array1));
         }
     }

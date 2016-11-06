@@ -17,7 +17,7 @@
          *
          * @return string The resulting string from the data given.
          */
-        public static function convertToString($data) {
+        public static function convertToString($data) : string {
             $string = "_";
             switch (gettype($data)) {
                 case "string":
@@ -61,7 +61,7 @@
          *
          * @return bool True if $haystack ends with $needle, false otherwise.
          */
-        public static function endsWith($haystack, $needle) {
+        public static function endsWith(string $haystack, string $needle) : bool {
             $haystackLength = strlen($haystack);
             $needleLength = strlen($needle);
             if ($haystackLength < $needleLength) {

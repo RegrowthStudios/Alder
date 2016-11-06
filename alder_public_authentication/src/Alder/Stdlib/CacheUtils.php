@@ -23,11 +23,7 @@
          *
          * @throws \InvalidArgumentException If $location is not a string.
          */
-        public static function generateCacheAddress($location, ...$specifics) {
-            if (!is_string($location)) {
-                throw new \InvalidArgumentException("The location provided must be a string.");
-            }
-            
+        public static function generateCacheAddress(string $location, ...$specifics) : string {
             $cacheName = $location;
             
             foreach ($specifics as $specific) {

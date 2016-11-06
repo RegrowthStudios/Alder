@@ -17,7 +17,7 @@
          *
          * @return \Alder\Token\Token The built token.
          */
-        public function getToken() {
+        public function getToken() : Token {
             $payload = [$this->encoder->base64UrlEncode($this->encoder->jsonEncode($this->headers)),
                         $this->encoder->base64UrlEncode($this->encoder->jsonEncode($this->claims))];
             

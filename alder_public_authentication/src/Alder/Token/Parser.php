@@ -14,7 +14,7 @@
         /**
          * {@inheritdoc}
          */
-        public function parse($jwt) {
+        public function parse($jwt) : Token {
             $data = $this->splitJwt($jwt);
             $header = $this->parseHeader($data[0]);
             $claims = $this->parseClaims($data[1]);

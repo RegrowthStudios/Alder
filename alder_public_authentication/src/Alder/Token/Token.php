@@ -7,6 +7,7 @@
     
     use Lcobucci\JWT\Token as LcobucciToken;
     use Lcobucci\JWT\Signer\Key;
+    use Lcobucci\JWT\ValidationData;
     
     /**
      * Wrapper for Lcobucci's Token class.
@@ -67,7 +68,7 @@
          *
          * @throws \InvalidArgumentException If data related to signing of token is invalid.
          */
-        public function validate($data = []) {
+        public function validate($data = []) : int {
             // If state of token is already known, just send previous result.
             if (!is_null($this->state)) {
                 return $this->state;

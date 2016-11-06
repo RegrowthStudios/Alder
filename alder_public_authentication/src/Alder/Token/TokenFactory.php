@@ -56,7 +56,7 @@
          *                                   private claims are in invalid form.
          * @throws \DomainException If the token's lifetime is not specified.
          */
-        public static function create(array $data) {
+        public static function create(array $data) : Token {
             // Grab application config.
             $config = Container::get()->get("config")["alder"];
             // Acquire private key or fail.

@@ -20,7 +20,7 @@
          *
          * @return bool|string Hashed password, or false on failure.
          */
-        public static function hashPassword($password) {
+        public static function hashPassword(string $password) {
             return password_hash($password, PASSWORD_DEFAULT, ["cost" => Container::get()
                                                                                   ->get("config")["alder"]["public_authentication"]["password"]["hashing_strength"]]);
         }
@@ -33,7 +33,7 @@
          *
          * @return bool True if password is valid, false otherwise.
          */
-        public static function verifyPassword($password, $hash) {
+        public static function verifyPassword(string $password, string $hash) : bool {
             return password_verify($password, $hash);
         }
         
@@ -44,7 +44,7 @@
          *
          * @return bool True if password needs rehashing, false otherwise.
          */
-        public static function passwordNeedsRehash($hash) {
+        public static function passwordNeedsRehash(string $hash) : bool {
             return password_needs_rehash($hash, PASSWORD_DEFAULT, ["cost" => Container::get()
                                                                                       ->get("config")["alder"]["public_authentication"]["password"]["hashing_strength"]]);
         }

@@ -23,7 +23,7 @@
          *
          * @return bool True if valid, false otherwise.
          */
-        public static function validateUsername($username, ErrorStack& $errors) {
+        public static function validateUsername(string $username, ErrorStack& $errors) : bool {
             return (self::isUsername($username, $errors) && self::isUniqueUsername($username, $errors));
         }
         
@@ -36,7 +36,7 @@
          *
          * @return bool True if valid, false otherwise.
          */
-        public static function validateEmail($email, ErrorStack& $errors) {
+        public static function validateEmail(string $email, ErrorStack& $errors) : bool {
             return (self::isEmail($email, $errors) && self::isUniqueEmail($email, $errors));
         }
         
@@ -48,7 +48,7 @@
          *
          * @return bool True if password is sufficiently strong, false otherwise.
          */
-        public static function validatePassword($password, ErrorStack& $errors) {
+        public static function validatePassword(string $password, ErrorStack& $errors) : bool {
             $passwordConfig = Container::get()->get("config")["alder"]["public_authentication"]["password"];
             
             if ($passwordConfig["max_length"] > 0 && $passwordConfig["min_length"] > $passwordConfig["max_length"]) {
@@ -106,7 +106,7 @@
          *
          * @return bool True if valid format, false otherwise.
          */
-        public static function isUsername($username, ErrorStack& $errors) {
+        public static function isUsername(string $username, ErrorStack& $errors) : bool {
             $usernameConfig = Container::get()->get("config")["alder"]["public_authentication"]["username"];
             $usernameLength = strlen($username);
             
@@ -138,7 +138,7 @@
          *
          * @return bool True if valid format, false otherwise.
          */
-        public static function isEmail($email, ErrorStack& $errors) {
+        public static function isEmail(string $email, ErrorStack& $errors) : bool {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors->push(103030301);
                 
@@ -156,7 +156,7 @@
          *
          * @return bool True if unique, false otherwise.
          */
-        public static function isUniqueUsername($username, ErrorStack& $errors) {
+        public static function isUniqueUsername(string $username, ErrorStack& $errors) : bool {
             if (Container::get()->get("AlderTableCache")->fetchTable("User")->isUsernameUnique($username)) {
                 $errors->push(103030401);
                 
@@ -174,7 +174,7 @@
          *
          * @return bool True if unique, false otherwise.
          */
-        public static function isUniqueEmail($email, ErrorStack& $errors) {
+        public static function isUniqueEmail(string $email, ErrorStack& $errors) : bool {
             if (Container::get()->get("AlderTableCache")->fetchTable("User")->isEmailUnique($email)) {
                 $errors->push(103030501);
                 

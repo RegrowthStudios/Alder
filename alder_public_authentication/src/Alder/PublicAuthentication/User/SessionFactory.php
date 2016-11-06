@@ -4,6 +4,7 @@
     
     use Alder\Container;
     use Alder\Error\Stack as ErrorStack;
+    use Alder\Token\Token;
     use Alder\Token\TokenFactory;
     
     /**
@@ -23,9 +24,9 @@
          * @param array              $data            The data of the user to create the token for.
          * @param bool               $extendedSession Whether the token should be for an extended session.
          *
-         * @return \Alder\Token\Token|bool The created token, or false if the token could not be created.
+         * @return \Alder\Token\Token|null The created token, or false if the token could not be created.
          */
-        public static function create($id, ErrorStack& $errors, array $data = [], $extendedSession = false) {
+        public static function create(int $id, ErrorStack& $errors, array $data = [], $extendedSession = false) : ?Token {
             $container = Container::get();
             
             if (!(isset($data["username"]) && isset($data["primary_email_local"])
@@ -35,7 +36,7 @@
             ) {
                 $user = $container->get("AlderTableCache")->fetchTable("User")->getById($id);
                 if (!$user) {
-                    return false;
+                    return null;
                 }
                 $data = array_merge($user->toArray(), $data);
             }
@@ -61,7 +62,7 @@
             if (!$token) {
                 $errors->push(103020101);
                 
-                return false;
+                return null;
             }
             
             return build_cookie(USER_SESSION, (string) $token, $token->getClaim("exp"), $config["domain"], "/",

@@ -28,7 +28,8 @@
          *
          * @return \Psr\Http\Message\ResponseInterface The response produced.
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) : ResponseInterface {
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
+                                 callable $next = null) : ResponseInterface {
             return $next($request, $response);
         }
     }

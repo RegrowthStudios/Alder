@@ -17,13 +17,13 @@
          * Filepath to configuration for the default Frequency array.
          */
         protected const DEFAULT_FREQ_FILEPATH = CONFIG_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
-                                      . "frequency.default.php";
+                                                . "frequency.default.php";
         
         /**
          * Filepath to cache for the custom Frequency array.
          */
         protected const CUSTOM_FREQ_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
-                                     . "frequency.cache";
+                                               . "frequency.cache";
         
         public static function create() : Container {
             return parent::create(self::DEFAULT_FREQ_FILEPATH, self::CUSTOM_FREQ_FILEPATH);

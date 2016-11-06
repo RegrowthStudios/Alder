@@ -3,7 +3,7 @@
     namespace Alder\Db;
     
     use Alder\Db\Table\AbstractTable;
-
+    
     class TableCache
     {
         /**

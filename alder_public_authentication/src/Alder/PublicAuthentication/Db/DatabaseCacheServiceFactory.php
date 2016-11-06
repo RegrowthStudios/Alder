@@ -3,7 +3,7 @@
     namespace Alder\PublicAuthentication\Db;
     
     use Interop\Container\ContainerInterface;
-
+    
     use Zend\Cache\Storage\StorageInterface;
     use Zend\Cache\StorageFactory;
     use Zend\Cache\Storage\Plugin;

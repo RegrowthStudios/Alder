@@ -245,7 +245,8 @@
          *
          * @return bool
          */
-        protected function createUserFromData(array $data, UserTable& $userTable, ErrorContainer& $errorContainer) : bool {
+        protected function createUserFromData(array $data, UserTable& $userTable,
+                                              ErrorContainer& $errorContainer) : bool {
             if (!$this->validateUserData($data, $errorContainer)) {
                 return false;
             }
@@ -281,7 +282,8 @@
          *
          * @return bool True on success, false on failure.
          */
-        protected function replaceUserFromData(array $data, UserTable& $userTable, ErrorContainer& $errorContainer) : bool {
+        protected function replaceUserFromData(array $data, UserTable& $userTable,
+                                               ErrorContainer& $errorContainer) : bool {
             return false;
         }
     }

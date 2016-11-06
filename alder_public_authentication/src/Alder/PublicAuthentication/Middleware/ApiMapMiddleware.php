@@ -28,7 +28,8 @@
          *
          * @return \Psr\Http\Message\ResponseInterface The response produced.
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) : ResponseInterface {
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
+                                 callable $next = null) : ResponseInterface {
             // If request method is OPTIONS and the path is empty, then treat request as a ping.
             $path = $request->getUri()->getPath();
             if ($request->getMethod() === "OPTIONS"

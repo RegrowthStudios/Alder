@@ -26,7 +26,8 @@
          *
          * @return \Alder\Token\Token|null The created token, or false if the token could not be created.
          */
-        public static function create(int $id, ErrorStack& $errors, array $data = [], $extendedSession = false) : ?Token {
+        public static function create(int $id, ErrorStack& $errors, array $data = [],
+                                      $extendedSession = false) : ?Token {
             $container = Container::get();
             
             if (!(isset($data["username"]) && isset($data["primary_email_local"])

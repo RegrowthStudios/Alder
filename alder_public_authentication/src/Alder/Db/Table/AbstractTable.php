@@ -5,7 +5,7 @@
     use Alder\Container;
     use Alder\Db\Table\AbstractTableInterface;
     use Alder\Stdlib\CacheUtils;
-
+    
     use Psr\Http\Message\ResponseInterface;
     use Zend\Db\Adapter\Adapter;
     use Zend\Db\Adapter\Driver\IbmDb2\Result;
@@ -122,7 +122,8 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getByColumnWithValue(string $column, $value, array $columnsToFetch = null, bool $forceDbFetch = false) : ResultSet {
+        public function getByColumnWithValue(string $column, $value, array $columnsToFetch = null,
+                                             bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect([$column => $value], $value, "get_by_$column", $columnsToFetch, $forceDbFetch);
         }
         
@@ -158,7 +159,8 @@
          *
          * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
-        public function getByUniqueKey(string $column, $value, array $columnsToFetch = null, bool $forceDbFetch = false) {
+        public function getByUniqueKey(string $column, $value, array $columnsToFetch = null,
+                                       bool $forceDbFetch = false) {
             return $this->getByColumnWithValue($column, $value, $columnsToFetch, $forceDbFetch)->current();
         }
         

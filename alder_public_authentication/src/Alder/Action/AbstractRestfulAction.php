@@ -124,7 +124,8 @@
          *
          * @return NULL|\Psr\Http\Message\ResponseInterface
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) : ?ResponseInterface {
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
+                                 callable $next = null) : ?ResponseInterface {
             $this->request = $request;
             $this->response = $response;
             

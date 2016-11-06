@@ -37,7 +37,7 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function get($data) {
+        protected function get($data) : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
@@ -46,7 +46,7 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function create($data) {
+        protected function create($data) : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
@@ -55,7 +55,7 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function update($data) {
+        protected function update($data) : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
@@ -64,7 +64,7 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function replace($data) {
+        protected function replace($data) : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
@@ -73,14 +73,14 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function delete($data) {
+        protected function delete($data) : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
         /**
          * Processes a request for the options related to the route path of the request.
          */
-        protected function options() {
+        protected function options() : void {
             $action = canonicalise_action_class_path(get_class($this));
             
             if ($action === null) {
@@ -106,7 +106,7 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function head($data) {
+        protected function head($data) : void {
             $this->get($data);
             
             $bodySize = $this->response->getBody()->getSize();
@@ -124,26 +124,26 @@
          *
          * @return NULL|\Psr\Http\Message\ResponseInterface
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) {
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) : ?ResponseInterface {
             $this->request = $request;
             $this->response = $response;
             
             $method = strtoupper($this->request->getMethod());
             switch ($method) {
                 case "GET":
-                    $this->get(Json::decode($this->getParameter("data")));
+                    $this->get(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
                     break;
                 case "POST":
-                    $this->create(Json::decode($this->getParameter("data")));
+                    $this->create(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
                     break;
                 case "PATCH":
-                    $this->update(Json::decode($this->getParameter("data")));
+                    $this->update(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
                     break;
                 case "PUT":
-                    $this->replace(Json::decode($this->getParameter("data")));
+                    $this->replace(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
                     break;
                 case "DELETE":
-                    $this->delete(Json::decode($this->getParameter("data")));
+                    $this->delete(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
                     break;
                 case "OPTIONS":
                     $this->options();

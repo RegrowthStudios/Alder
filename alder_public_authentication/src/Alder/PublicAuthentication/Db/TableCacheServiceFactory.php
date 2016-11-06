@@ -22,7 +22,7 @@
          *
          * @return \Alder\Db\TableCache The table cache.
          */
-        public function __invoke(ContainerInterface $container) {
+        public function __invoke(ContainerInterface $container) : TableCache {
             return new TableCache("Alder\\PublicAuthentication\\Db\\Table\\");
         }
     }

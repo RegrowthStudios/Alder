@@ -3,7 +3,8 @@
     namespace Alder\PublicAuthentication\Db;
     
     use Interop\Container\ContainerInterface;
-    
+
+    use Zend\Cache\Storage\StorageInterface;
     use Zend\Cache\StorageFactory;
     use Zend\Cache\Storage\Plugin;
     
@@ -24,7 +25,7 @@
          *
          * @return \Zend\Cache\Storage\StorageInterface The caching object for database entries.
          */
-        public function __invoke(ContainerInterface $container) {
+        public function __invoke(ContainerInterface $container) : StorageInterface {
             $cacheConfig = $container->get("config")["alder"]["db"]["cache"];
             
             $cache = StorageFactory::factory(["adapter" => $cacheConfig["adapter"],

@@ -1,5 +1,5 @@
 <?php
-
+    
     /**
      * Return the environment state to run Alder in.
      * Possible options are:

@@ -1,5 +1,5 @@
 <?php
-
+    
     use Zend\Permissions\Acl\Acl;
     use Zend\Permissions\Acl\Resource\GenericResource as Resource;
     use Zend\Permissions\Acl\Role\GenericRole as Role;
@@ -10,7 +10,8 @@
     
     $acl->addRole(new Role(GUEST));
     $acl->addRole(new Role(REGISTERED));
-    $acl->addRole(new Role(MODERATOR), REGISTERED); // Moderator has no extra actions performable beyond a regular member in authentication service.
+    $acl->addRole(new Role(MODERATOR),
+                  REGISTERED); // Moderator has no extra actions performable beyond a regular member in authentication service.
     $acl->addRole(new Role(ADMIN));
     $acl->addRole(new Role(SUPER_ADMIN));
     
@@ -24,15 +25,15 @@
     //$acl->addResource(new Resource(USER_LICENSE_MAP));
     
     // Allow access to all endpoints' OPTIONS and GET requests.
-    $acl->allow(NULL, NULL, [ GET, OPTIONS ]);
+    $acl->allow(null, null, [GET, OPTIONS]);
     
     // Allow admins and super admins to create, delete, modify and replace resources.
-    $acl->allow([ ADMIN, SUPER_ADMIN ], NULL, [ CREATE, DELETE, REPLACE, UPDATE ]);
+    $acl->allow([ADMIN, SUPER_ADMIN], null, [CREATE, DELETE, REPLACE, UPDATE]);
     
     // Allow guests, in addition to admins and super admins, access to create users and user sessions.
-    $acl->allow([ GUEST ], [ USER, AUTHENTICATE ], [ CREATE ]);
+    $acl->allow([GUEST], [USER, AUTHENTICATE], [CREATE]);
     
     // Allow registered to delete and modify users (themselves).
-    $acl->allow([ REGISTERED ], [ USER ], [ DELETE, UPDATE ]);
+    $acl->allow([REGISTERED], [USER], [DELETE, UPDATE]);
     
     return $acl;

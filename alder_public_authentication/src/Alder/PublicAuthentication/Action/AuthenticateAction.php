@@ -42,10 +42,10 @@
          */
         protected function create($data) : void {
             // Get data passed in through request.
-            $password = $data["password"] ?: null;
-            $username = $data["username"] ?: null;
-            $email = $data["email"] ?: null;
-            $extended = $data["extended"] ?: false;
+            $password = $data["password"] ?? null;
+            $username = $data["username"] ?? null;
+            $email = $data["email"] ?? null;
+            $extended = $data["extended"] ?? false;
             
             // Get error container.
             $errorStack = new ErrorStack();

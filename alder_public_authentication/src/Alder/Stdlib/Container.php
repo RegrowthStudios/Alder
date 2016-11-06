@@ -23,7 +23,7 @@
          *
          * @return self The container instance.
          */
-        public static function create(string $defaultPath, string $cachePath) {
+        public static function create(string $defaultPath, string $cachePath) : Container {
             if (!isset(self::$instance)) {
                 self::$instance = new self($defaultPath, $cachePath);
             }

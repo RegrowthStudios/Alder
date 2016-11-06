@@ -19,7 +19,7 @@
     class FrequencyAssertion implements AssertionInterface
     {
         public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null,
-                               $privilege = null) {
+                               $privilege = null) : bool {
             // Define a unique string for this combination of role, resource and privilege.
             $ruleUID = (string) $role . (string) $resource . ($privilege ?: "");
             

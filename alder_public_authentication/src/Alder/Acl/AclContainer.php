@@ -26,7 +26,7 @@
          */
         const CUSTOM_ACL_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR . "acl.cache";
         
-        public static function create() {
+        public static function create() : Container {
             return parent::create(self::DEFAULT_ACL_FILEPATH, self::CUSTOM_ACL_FILEPATH);
         }
     }

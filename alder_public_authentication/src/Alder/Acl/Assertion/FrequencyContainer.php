@@ -25,7 +25,7 @@
         const CUSTOM_FREQ_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
                                      . "frequency.cache";
         
-        public static function create() {
+        public static function create() : Container {
             return parent::create(self::DEFAULT_FREQ_FILEPATH, self::CUSTOM_FREQ_FILEPATH);
         }
     }

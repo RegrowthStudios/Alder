@@ -49,7 +49,7 @@
      *     <VALUE>           ->  "john.smith42"
      */
     return [
-        AUTH => [
+        AUTHENTICATE => [
             "allow" => "POST,OPTIONS",
             "body" => [
                 "OPTIONS" => $defaultOptionsDetails,
@@ -110,7 +110,7 @@
         USER => [
 
         ],
-        USER_LICENSE => [
+        USER_LICENSE_MAP => [
 
         ]
     ];

@@ -5,8 +5,7 @@
     use Alder\Action\AbstractRestfulAction;
     use Alder\Container;
     use Alder\Error\Container as ErrorContainer;
-    use Alder\Db\Row\User as UserRow;
-    use Alder\Db\Table\User as UserTable;
+    use Alder\PublicAuthentication\Db\Table\User;
     use Alder\PublicAuthentication\User\Security;
     use Alder\PublicAuthentication\User\Validation;
     
@@ -26,7 +25,7 @@
         // TODO(Matthew): ETags, conditionals etc. in headers. HANDLE THEM!
         // TODO(Matthew): Requestee authentication.
         
-        protected function get($data) {
+        protected function get($data) : void {
             /**
              * @var \Alder\Db\Table\User $userTable
              */
@@ -70,7 +69,7 @@
         }
         
         // TODO(Matthew): Redo: need separate error stack per resource as well as provide URL of each created resource.
-        protected function create($data) {
+        protected function create($data) : void {
             $errorContainer = ErrorContainer::getInstance();
             
             if (!is_array($data)) {
@@ -127,11 +126,11 @@
             $this->response = new JsonResponse(["errors" => $errorContainer->retrieveErrors()], 400);
         }
         
-        public function update($data) {
+        public function update($data) : void {
             //TODO(Matthew): Research patching in HTTP/1.1 specification.
         }
         
-        public function replace($data) {
+        public function replace($data) : void {
             $errorContainer = ErrorContainer::getInstance();
             
             if (!is_array($data)) {
@@ -182,7 +181,7 @@
          *
          * @return bool
          */
-        protected function getUserFromData($identifier, array &$result, UserTable $userTable) {
+        protected function getUserFromData($identifier, array &$result, User $userTable) : bool {
             if (is_numeric($identifier)) {
                 $user = $userTable->getById($identifier);
                 if ($user) {
@@ -215,7 +214,7 @@
             }
         }
         
-        protected function validateUserData($data, ErrorContainer& $errorContainer) {
+        protected function validateUserData($data, ErrorContainer& $errorContainer) : bool {
             if (!isset($data["username"])) {
                 $errorContainer->addError(101030901);
             }
@@ -246,7 +245,7 @@
          *
          * @return bool
          */
-        protected function createUserFromData(array $data, UserTable& $userTable, ErrorContainer& $errorContainer) {
+        protected function createUserFromData(array $data, UserTable& $userTable, ErrorContainer& $errorContainer) : bool {
             if (!$this->validateUserData($data, $errorContainer)) {
                 return false;
             }
@@ -282,7 +281,7 @@
          *
          * @return bool True on success, false on failure.
          */
-        protected function replaceUserFromData(array $data, UserTable& $userTable, ErrorContainer& $errorContainer) {
+        protected function replaceUserFromData(array $data, UserTable& $userTable, ErrorContainer& $errorContainer) : bool {
             return false;
         }
     }

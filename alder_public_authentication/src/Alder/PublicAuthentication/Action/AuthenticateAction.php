@@ -40,12 +40,12 @@
          *
          * @param mixed $data Data from request.
          */
-        protected function create($data) {
+        protected function create($data) : void {
             // Get data passed in through request.
-            $password = isset($data["password"]) ? $data["password"] : null;
-            $username = isset($data["username"]) ? $data["username"] : null;
-            $email = isset($data["email"]) ? $data["email"] : null;
-            $extended = isset($data["extended"]) ? $data["extended"] : false;
+            $password = $data["password"] ?: null;
+            $username = $data["username"] ?: null;
+            $email = $data["email"] ?: null;
+            $extended = $data["extended"] ?: false;
             
             // Get error container.
             $errorStack = new ErrorStack();

@@ -1,7 +1,7 @@
 <?php
-
+    
     namespace Alder\Token;
-
+    
     use Alder\Container;
     use Alder\Token\Token;
     use Alder\Token\Builder;
@@ -12,10 +12,10 @@
     
     /**
      * Factory for creating Token objects.
-     * 
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     *
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class TokenFactory
     {
@@ -51,12 +51,12 @@
          * @param array|\Traversable|\ArrayAccess $data The data to create the token from.
          *
          * @return \Alder\Token\Token The resulting token.
-         * 
-         * @throws \InvalidArgumentException If $data is of invalid type, or if signing method is invalid, or if private claims are in invalid form.
+         *
+         * @throws \InvalidArgumentException If $data is of invalid type, or if signing method is invalid, or if
+         *                                   private claims are in invalid form.
          * @throws \DomainException If the token's lifetime is not specified.
          */
-        public static function create(array $data)
-        {
+        public static function create(array $data) : Token {
             // Grab application config.
             $config = Container::get()->get("config")["alder"];
             // Acquire private key or fail.
@@ -72,7 +72,7 @@
             if (isset($data["signMethod"])) {
                 $signMethod = $data["signMethod"];
             }
-            if (Token::SIGNERS[$signMethod] == NULL) {
+            if (Token::SIGNERS[$signMethod] == null) {
                 throw new \InvalidArgumentException("The sign method provided via data or application config is an invalid method.");
             }
             // Fail if no lifetime specified for token.
@@ -86,12 +86,17 @@
             // Construct token and registered claims.
             $time = time();
             $domain = $config["domain"];
-            $token = (new Builder())->setIssuer(     isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : $domain)
-                                    ->setAudience(   isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : $domain)
-                                    ->setIssuedAt(   isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
-                                    ->setExpiration( isset($registeredClaims["iat"]) ? $registeredClaims["iat"] + $data["tokenLifetime"] : $time + $data["tokenLifetime"])
-                                    ->setNotBefore(  isset($registeredClaims["nbf"]) ? $registeredClaims["nbf"] : $time)
-                                    ->setId(        (isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12, Rand::ALPHANUMERIC, true)), true);
+            $token = (new Builder())->setIssuer(isset($registeredClaims["iss"]) ? $registeredClaims["iss"] : $domain)
+                                    ->setAudience(isset($registeredClaims["aud"]) ? $registeredClaims["aud"] : $domain)
+                                    ->setIssuedAt(isset($registeredClaims["iat"]) ? $registeredClaims["iat"] : $time)
+                                    ->setExpiration(isset($registeredClaims["iat"]) ? $registeredClaims["iat"]
+                                                                                      + $data["tokenLifetime"] : $time
+                                                                                                                 + $data["tokenLifetime"])
+                                    ->setNotBefore(isset($registeredClaims["nbf"]) ? $registeredClaims["nbf"] : $time)
+                                    ->setId((isset($registeredClaims["jti"]) ? $registeredClaims["jti"] : Rand::getString(12,
+                                                                                                                          Rand::ALPHANUMERIC,
+                                                                                                                          true)),
+                                        true);
             // Set subject if specified.
             if (isset($registeredClaims["sub"])) {
                 $token->setSubject($registeredClaims["sub"]);
@@ -112,7 +117,7 @@
             }
             // Create private key object if signing method is asymmetric, otherwise use private key string.
             $key = $privateKey;
-            $passphrase = NULL;
+            $passphrase = null;
             if (Token::SIGNERS[$signMethod]["asymmetric"]) {
                 $defaultPrivateKeyPassphrase = $config["public_authentication"]["token"]["private_key_passphrase"];
                 if ($defaultPrivateKeyPassphrase !== DEFAULT_VAL) {
@@ -127,6 +132,7 @@
             $signerClassName = Token::SIGNERS[$signMethod]["class"];
             $signer = new $signerClassName();
             $token->sign($signer, $key);
+            
             // Return JWT object.
             return $token->getToken();
         }

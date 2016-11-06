@@ -1,16 +1,16 @@
 <?php
-
+    
     namespace Alder\PublicAuthentication\Db\Row;
-
+    
     use Alder\Db\Row\AbstractRow;
     use Alder\PublicAuthentication\Db\Table\UserLicenseMapAudit as UserLicenseMapAuditTable;
-
+    
     /**
      * Representation of a row in the table of user license map audits.
      *
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class UserLicenseMapAudit extends AbstractRow
     {
@@ -27,7 +27,7 @@
          * editor_action              |  ENUM(...)      |       |       |       |  The action taken by the editor.
          * last_etag                  |  VARCHAR(15)    |       |  Yes  |       |  The ETag of the map in its last instance.
          */
-
+        
         /**
          * The name of the table.
          *
@@ -37,23 +37,22 @@
         
         /**
          * The columns of the unique keys of the table.
-         * 
+         *
          * @var array
          */
-        protected static $uniqueKeyColumns = NULL;
+        protected static $uniqueKeyColumns = null;
         
         /**
          * The columns of the primary key of the table.
-         * 
+         *
          * @var array
          */
-        protected static $primaryKeyColumns = NULL;
+        protected static $primaryKeyColumns = null;
         
         /**
          * Prepare the row.
          */
-        public function __construct()
-        {
+        public function __construct() {
             parent::__construct(static::$table);
         }
     }

@@ -1,18 +1,19 @@
 <?php
     
     namespace Alder\PublicAuthentication\Db;
-
+    
     use Interop\Container\ContainerInterface;
-
+    
+    use Zend\Cache\Storage\StorageInterface;
     use Zend\Cache\StorageFactory;
     use Zend\Cache\Storage\Plugin;
     
     /**
      * Factory for creating database cache services.
-     * 
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     *
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class DatabaseCacheServiceFactory
     {
@@ -24,22 +25,16 @@
          *
          * @return \Zend\Cache\Storage\StorageInterface The caching object for database entries.
          */
-        public function __invoke(ContainerInterface $container) {
+        public function __invoke(ContainerInterface $container) : StorageInterface {
             $cacheConfig = $container->get("config")["alder"]["db"]["cache"];
             
-            $cache = StorageFactory::factory([
-                "adapter" => $cacheConfig["adapter"],
-                "options" => [
-                    "ttl" => $cacheConfig["time_to_live"],
-                ],
-                "namespace" => $cacheConfig["namespace"]
-            ]);
+            $cache = StorageFactory::factory(["adapter" => $cacheConfig["adapter"],
+                                              "options" => ["ttl" => $cacheConfig["time_to_live"],],
+                                              "namespace" => $cacheConfig["namespace"]]);
             $pluginsConfig = $cacheConfig["plugins"];
-            $pluginOptions = new Plugin\PluginOptions([
-                "ClearingFactor" => $pluginsConfig["clear_expired"]["clearing_factor"],
-                "ExitOnAbort" => $pluginsConfig["ignore_user_abort"]["exit_on_abort"],
-                "OptimizingFactor" => $pluginsConfig["optimise"]["optimising_factor"],
-            ]);
+            $pluginOptions = new Plugin\PluginOptions(["ClearingFactor" => $pluginsConfig["clear_expired"]["clearing_factor"],
+                                                       "ExitOnAbort" => $pluginsConfig["ignore_user_abort"]["exit_on_abort"],
+                                                       "OptimizingFactor" => $pluginsConfig["optimise"]["optimising_factor"],]);
             
             $clearExpired = new Plugin\ClearExpiredByFactor();
             $clearExpired->setOptions($pluginOptions);
@@ -55,7 +50,7 @@
             
             $serialiser = new Plugin\Serializer();
             $cache->addPlugin($serialiser);
-
+            
             return $cache;
         }
     }

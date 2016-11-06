@@ -1,17 +1,17 @@
 <?php
-
+    
     namespace Alder\PublicAuthentication\Db;
-
+    
     use Alder\Db\TableCache;
-
+    
     use Interop\Container\ContainerInterface;
-
+    
     /**
      * Factory for creating table cache services.
      *
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class TableCacheServiceFactory
     {
@@ -22,7 +22,7 @@
          *
          * @return \Alder\Db\TableCache The table cache.
          */
-        public function __invoke(ContainerInterface $container) {
+        public function __invoke(ContainerInterface $container) : TableCache {
             return new TableCache("Alder\\PublicAuthentication\\Db\\Table\\");
         }
     }

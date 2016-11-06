@@ -1,11 +1,11 @@
 <?php
-
-/*
- * All Rights Reserved.
- * 
- * Copyright (c) 2016, Regrowth Studios Ltd.
- */
-
+    
+    /*
+     * All Rights Reserved.
+     *
+     * Copyright (c) 2016, Regrowth Studios Ltd.
+     */
+    
     namespace Alder;
     
     use Alder\Container;
@@ -16,7 +16,7 @@
     use Zend\Expressive\Application;
     use Zend\Log\Logger;
     use Zend\Log\Writer\Stream as WriteStream;
-
+    
     // Delegate static file requests back to the PHP built-in webserver
     if (php_sapi_name() === 'cli-server'
         && is_file(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
@@ -53,14 +53,14 @@
         // Create a config container.
         /** @var \Interop\Container\ContainerInterface $container */
         $container = require file_build_path(CONFIG_DIRECTORY, "container.php");
-
+        
         // Set up the container holder.
         Container::set($container);
         
         // Initialise application.
         /** @var \Zend\Expressive\Application $app */
         $app = $container->get(Application::class);
-
+        
         $request = ServerRequestFactory::fromGlobals();
         //$request = $request->withMethod("POST")
         //    ->withUri($request->getUri()->withPath("/auth"))
@@ -73,17 +73,11 @@
             
             // Create timing file if it doesn't exist, then write contents of request and processing.
             $timingFileHandle = file_build_path(LOGS_DIRECTORY, "timings.json");
-            $data = NULL;
+            $data = null;
             if (is_file($timingFileHandle)) {
                 $data = json_decode(file_get_contents($timingFileHandle), true);
             } else {
-                $data = [
-                    "time" => [],
-                    "uri" => [],
-                    "query" => [],
-                    "post" => [],
-                    "headers" => []
-                ];
+                $data = ["time" => [], "uri" => [], "query" => [], "post" => [], "headers" => []];
             }
             $data["time"][] = $timer->getDuration();
             $data["uri"][] = $request->getUri()->getPath();
@@ -94,10 +88,8 @@
         }
     } catch (Exception $ex) {
         // Log error if a critical exception occurred.
-        error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL
-                . "Error Code: " . $ex->getCode() . PHP_EOL
-                . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL
-                . "Error Message: " . $ex->getMessage() . PHP_EOL
-                . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString());
+        error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL . "Error Code: " . $ex->getCode() . PHP_EOL
+                  . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL . "Error Message: "
+                  . $ex->getMessage() . PHP_EOL . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString());
         exit();
     }

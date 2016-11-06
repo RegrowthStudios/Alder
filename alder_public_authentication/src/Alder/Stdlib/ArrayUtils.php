@@ -1,13 +1,14 @@
 <?php
     namespace Alder\Stdlib;
+    
     use Zend\Stdlib\ArrayUtils as ZendArrayUtils;
     
     /**
      * Holds functions for checking the existence of keys and values in arrays.
-     * 
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     *
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class ArrayUtils extends ZendArrayUtils
     {
@@ -20,13 +21,16 @@
          *
          * @return bool If the item to search for exists in the given array.
          */
-        public static function inArrayRecursive($needle, $haystack, $strict = false) 
-        {
+        public static function inArrayRecursive(string $needle, array $haystack, bool $strict = false) : bool {
             foreach ($haystack as $item) {
-                if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && static::inArrayRecursive($needle, $item, $strict))) {
+                if (($strict ? $item === $needle : $item == $needle)
+                    || (is_array($item)
+                        && static::inArrayRecursive($needle, $item, $strict))
+                ) {
                     return true;
                 }
             }
+            
             return false;
         }
         
@@ -38,69 +42,69 @@
          *
          * @return bool True if the array key to search for exists.
          */
-        public static function arrayKeyExistsRecursive($key, $array)
-        {
+        public static function arrayKeyExistsRecursive(string $key, array $array) : bool {
             foreach ($array as $k => $v) {
                 if (($k === $key) || (is_array($v) && static::arrayKeyExistsRecursive($key, $v))) {
                     return true;
                 }
             }
+            
             return false;
         }
         
         /**
          * Recursively asorts the given array.
-         * 
+         *
          * @param array $array The array to be sorted.
-         * 
+         *
          * @return bool True on success, false on failure.
          */
-        public static function recursiveAsort(array& $array)
-        {
+        public static function recursiveAsort(array& $array) : bool {
             foreach ($array as & $value) {
                 if (is_array($value)) {
                     static::recursiveAsort($value);
                 }
             }
+            
             return asort($array);
         }
         
         /**
          * Recursively ksorts the given array.
-         * 
+         *
          * @param array $array The array to be sorted.
-         * 
+         *
          * @return bool True on success, false on failure.
          */
-        public static function recursiveKsort(array& $array)
-        {
+        public static function recursiveKsort(array& $array) : bool {
             foreach ($array as & $value) {
                 if (is_array($value)) {
                     static::recursiveKsort($value);
                 }
             }
+            
             return ksort($array);
         }
         
         /**
          * Checks data is array-like, and returns as an array-accessible type.
-         * 
-         * @param mixed $data The data to be validated.
-         * @param string $class The class of the caller for constructing exception message.
-         * @param bool $arrayOnly Whether the data should be able to be transformed into an array.
-         * 
+         *
+         * @param mixed  $data      The data to be validated.
+         * @param string $class     The class of the caller for constructing exception message.
+         * @param bool   $arrayOnly Whether the data should be able to be transformed into an array.
+         *
          * @return array|\ArrayAccess The resulting data cast into an array accessible form.
-         * 
+         *
          * @throws \InvalidArgumentException If the data was in a form not castable into an array accessible form.
          */
-        public static function validateArrayLike($data, $class = NULL, $arrayOnly = false)
-        {
+        public static function validateArrayLike($data, string $class = null, bool $arrayOnly = false) {
             if (is_array($data)) {
                 return $data;
             }
             
             if ($data instanceof \Traversable) {
                 $data = ArrayUtils::iteratorToArray($data);
+                
                 return $data;
             }
             
@@ -115,7 +119,8 @@
                 if (is_null($class)) {
                     $class = get_called_class();
                 }
-                throw new \InvalidArgumentException($class . " expected an array, or object that implemens \Traversable or \ArrayAccess.");
+                throw new \InvalidArgumentException($class
+                                                    . " expected an array, or object that implemens \Traversable or \ArrayAccess.");
             }
             
             return $data;
@@ -124,17 +129,13 @@
         // TODO(Matthew): Create and use custom array_diff that handles objects better.
         /**
          * Performs an XOR operation on two arrays.
-         * 
+         *
          * @param array $array1 The first array to act on.
          * @param array $array2 The second array to act on.
-         * 
+         *
          * @return array The resulting array of XOR operation.
          */
-        public static function xorArrays($array1, $array2)
-        {
-            return array_merge(
-                array_diff($array1, $array2),
-                array_diff($array2, $array1)
-            );
+        public static function xorArrays(array $array1, array $array2) : array {
+            return array_merge(array_diff($array1, $array2), array_diff($array2, $array1));
         }
     }

@@ -37,13 +37,13 @@
          *
          * @return \Psr\Http\Message\ResponseInterface The resulting response of the middleware execution.
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) {
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) : ResponseInterface {
             $this->request = $request;
             $this->response = $response;
             
             $cookieParams = $this->request->getCookieParams();
             $sessionTokenString = $this->getParameter(USER_SESSION,
-                                                      isset($cookieParams[USER_SESSION]) ? $cookieParams[USER_SESSION] : null);
+                                                      $cookieParams[USER_SESSION] ?: null);
             
             if (!$sessionTokenString) {
                 $this->request = $this->request->withAttribute("visitor", ["isLoggedIn" => false]);

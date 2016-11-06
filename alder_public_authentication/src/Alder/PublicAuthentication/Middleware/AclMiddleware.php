@@ -20,7 +20,7 @@
      */
     class AclMiddleware implements MiddlewareInterface
     {
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) {
+        public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) : ResponseInterface {
             $acl = AclContainer::create()->get();
             
             // TODO(Matthew): Determine visitor's role.

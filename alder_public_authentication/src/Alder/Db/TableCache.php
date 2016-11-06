@@ -2,6 +2,8 @@
     
     namespace Alder\Db;
     
+    use Alder\Db\Table\AbstractTable;
+
     class TableCache
     {
         /**
@@ -23,7 +25,7 @@
          *
          * @param string $namespace The default namespace for the tables.
          */
-        public function __construct($namespace) {
+        public function __construct(string $namespace) {
             $this->namespace = $namespace;
         }
         
@@ -32,7 +34,7 @@
          *
          * @param string $namespace The default namespace to be set.
          */
-        public function setDefaultNamespace($namespace) {
+        public function setDefaultNamespace(string $namespace) {
             $this->namespace = $namespace;
         }
         
@@ -41,7 +43,7 @@
          *
          * @return string The default namespace currently set.
          */
-        public function getDefaultNamespace() {
+        public function getDefaultNamespace() : string {
             return $this->namespace;
         }
         
@@ -55,7 +57,7 @@
          *
          * @throws \InvalidArgumentException If no table exists with the given name.
          */
-        public function fetchTable($tableName, $namespace = null) {
+        public function fetchTable(string $tableName, string $namespace = null) : AbstractTable {
             if (!isset($this->tables[$tableName])) {
                 $classPath = ($namespace ? $namespace : $this->namespace) . $tableName;
                 if (!class_exists($classPath)) {

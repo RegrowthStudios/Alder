@@ -5,9 +5,12 @@
     use Alder\Container;
     use Alder\Db\Table\AbstractTableInterface;
     use Alder\Stdlib\CacheUtils;
-    
+
+    use Psr\Http\Message\ResponseInterface;
     use Zend\Db\Adapter\Adapter;
+    use Zend\Db\Adapter\Driver\IbmDb2\Result;
     use Zend\Db\Metadata\MetadataInterface;
+    use Zend\Db\ResultSet\ResultSet;
     use Zend\Db\TableGateway\AbstractTableGateway;
     use Zend\Db\TableGateway\Feature\FeatureSet;
     use Zend\Db\TableGateway\Feature\MetadataFeature;
@@ -33,7 +36,7 @@
          * @param \Zend\Db\RowGateway\RowGatewayInterface|NULL $row     The row object to construct with the results of
          *                                                              queries.
          */
-        protected function __construct($table, array $columns = null, RowGatewayInterface $row = null) {
+        protected function __construct(string $table, array $columns = null, RowGatewayInterface $row = null) {
             $container = Container::get();
             
             // Prefix table.
@@ -74,8 +77,8 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of results from the selection.
          */
-        protected function getBySelect($select, $cacheWhere, $cacheExtra, array $columnsToFetch = null,
-                                       $forceDbFetch = false) {
+        protected function getBySelect($select, $cacheWhere, string $cacheExtra, array $columnsToFetch = null,
+                                       bool $forceDbFetch = false) : ResultSet {
             // Generate the location in cache for the appropriate data.
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":" . $cacheExtra, $cacheWhere,
                                                               $columnsToFetch);
@@ -119,7 +122,7 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getByColumnWithValue($column, $value, array $columnsToFetch = null, $forceDbFetch = false) {
+        public function getByColumnWithValue(string $column, $value, array $columnsToFetch = null, bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect([$column => $value], $value, "get_by_$column", $columnsToFetch, $forceDbFetch);
         }
         
@@ -136,7 +139,7 @@
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
         public function getByMultipleColumnsWithValues(array $columns, array $values, array $columnsToFetch = null,
-                                                       $forceDbFetch = false) {
+                                                       bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect(array_combine($columns, $values), $values,
                                       "get_by" . array_reduce($columns, function ($carry, $item) {
                                           return $carry . "_" . $item;
@@ -155,7 +158,7 @@
          *
          * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
-        public function getByUniqueKey($column, $value, array $columnsToFetch = null, $forceDbFetch = false) {
+        public function getByUniqueKey(string $column, $value, array $columnsToFetch = null, bool $forceDbFetch = false) {
             return $this->getByColumnWithValue($column, $value, $columnsToFetch, $forceDbFetch)->current();
         }
         
@@ -172,7 +175,7 @@
          * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
          */
         public function getByCompositeUniqueKey(array $columns, array $values, array $columnsToFetch = null,
-                                                $forceDbFetch = false) {
+                                                bool $forceDbFetch = false) {
             return $this->getByMultipleColumnsWithValues($columns, $values, $columnsToFetch, $forceDbFetch)->current();
         }
         
@@ -189,8 +192,8 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getByColumnWithValueBetween($column, $valueMin, $valueMax, array $columnsToFetch = null,
-                                                    $forceDbFetch = false) {
+        public function getByColumnWithValueBetween(string $column, $valueMin, $valueMax, array $columnsToFetch = null,
+                                                    bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect(function (Select $select) use ($column, $valueMin, $valueMax) {
                 $select->where->between($column, $valueMin, $valueMax);
             }, strval($valueMin) . "_" . strval($valueMax), "get_between_$column", $columnsToFetch, $forceDbFetch);
@@ -208,8 +211,8 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getByColumnWithValueGreaterThanOrEqualTo($column, $value, array $columnsToFetch = null,
-                                                                 $forceDbFetch = false) {
+        public function getByColumnWithValueGreaterThanOrEqualTo(string $column, $value, array $columnsToFetch = null,
+                                                                 bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect(function (Select $select) use ($column, $value) {
                 $select->where->greaterThanOrEqualTo($column, $value);
             }, $value, "get_greater_than_or_equal_to_$column", $columnsToFetch, $forceDbFetch);
@@ -227,8 +230,8 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getByColumnWithValueLessThanOrEqualTo($column, $value, array $columnsToFetch = null,
-                                                              $forceDbFetch = false) {
+        public function getByColumnWithValueLessThanOrEqualTo(string $column, $value, array $columnsToFetch = null,
+                                                              bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect(function (Select $select) use ($column, $value) {
                 $select->where->lessThanOrEqualTo($column, $value);
             }, $value, "get_less_than_or_equal_to_$column", $columnsToFetch, $forceDbFetch);
@@ -246,8 +249,8 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getByColumnWithValueInCollection($column, $valueCollection, array $columnsToFetch = null,
-                                                         $forceDbFetch = false) {
+        public function getByColumnWithValueInCollection(string $column, $valueCollection, array $columnsToFetch = null,
+                                                         bool $forceDbFetch = false) : ResultSet {
             return $this->getBySelect(function (Select $select) use ($column, $valueCollection) {
                 $select->where->in($column, $valueCollection);
             }, $valueCollection, "get_in_collection_$column", $columnsToFetch, $forceDbFetch);
@@ -335,7 +338,7 @@
          *
          * @return \Zend\Db\ResultSet\ResultSet The set of fetched items.
          */
-        public function getAll(array $columnsToFetch = null, $forceDbFetch = false) {
+        public function getAll(array $columnsToFetch = null, bool $forceDbFetch = false) : ResultSet {
             // Generate the location in cache for fetch_all data.
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":get_all", $columnsToFetch);
             

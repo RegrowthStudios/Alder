@@ -19,12 +19,12 @@
          *
          * @throws \InvalidArgumentException if data provided is not an array.
          */
-        public function exchangeArray($data);
+        public function exchangeArray(iterable $data) : array;
         
         /**
          * Returns the data in this row instance in array form.
          *
          * @return array The data in this row instance.
          */
-        public function toArray();
+        public function toArray() : array;
     }

@@ -24,9 +24,9 @@
          * Gets the columns of the unique keys of the table.
          * Acquires them from metadata if not already available.
          *
-         * @return array
+         * @return array|NULL
          */
-        protected static function getUniqueKeyColumns() {
+        protected static function getUniqueKeyColumns() : ?array {
             if (!static::$uniqueKeyColumns) {
                 self::fetchMetadata();
             }
@@ -38,9 +38,9 @@
          * Gets the columns of the primary key of the table.
          * Acquires them from metadata if not already available.
          *
-         * @return array
+         * @return array|NULL
          */
-        protected static function getPrimaryKeyColumns() {
+        protected static function getPrimaryKeyColumns() : ?array {
             if (!static::$primaryKeyColumns) {
                 self::fetchMetadata();
             }
@@ -51,7 +51,7 @@
         /**
          * Fetches the metadata for unique and primary keys.
          */
-        protected static function fetchMetadata() {
+        protected static function fetchMetadata() : void {
             // Acquire the metadata for the table.
             /**
              * @var \Zend\Db\Metadata\Object\TableObject $metadata
@@ -75,7 +75,7 @@
             }
             
             // Set unique key columns.
-            static::$uniqueKeyColumns = empty($uniqueKeyColumns) ? null : $uniqueKeyColumns;
+            static::$uniqueKeyColumns = $uniqueKeyColumns ?: null;
         }
         
         /**
@@ -90,7 +90,7 @@
          *
          * @param string $table The table in which the row resides.
          */
-        protected function __construct($table) {
+        protected function __construct(string $table) {
             $container = Container::get();
             
             // Prefix table.
@@ -114,7 +114,7 @@
          *
          * @throws \Exception Thrown if not all necessary primary key data was provided.
          */
-        public function exists() {
+        public function exists() : bool {
             if ($this->rowExistsInDatabase()) {
                 return true;
             }
@@ -134,7 +134,7 @@
          *
          * @throws \Exception Thrown if not all necessary primary key data was provided.
          */
-        protected function existsInDatabase() {
+        protected function existsInDatabase() : bool {
             $where = [];
             
             foreach ($this->primaryKeyColumn as $pkColumn) {

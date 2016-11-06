@@ -1,5 +1,5 @@
 <?php
-
+    
     namespace Alder\Token;
     
     use Alder\Token\Token;
@@ -17,13 +17,10 @@
          *
          * @return \Alder\Token\Token The built token.
          */
-        public function getToken()
-        {
-            $payload = [
-                $this->encoder->base64UrlEncode($this->encoder->jsonEncode($this->headers)),
-                $this->encoder->base64UrlEncode($this->encoder->jsonEncode($this->claims))
-            ];
-
+        public function getToken() {
+            $payload = [$this->encoder->base64UrlEncode($this->encoder->jsonEncode($this->headers)),
+                        $this->encoder->base64UrlEncode($this->encoder->jsonEncode($this->claims))];
+            
             if ($this->signature !== null) {
                 $payload[] = $this->encoder->base64UrlEncode($this->signature);
             }

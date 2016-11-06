@@ -1,16 +1,16 @@
 <?php
-
+    
     namespace Alder\PublicAuthentication\Db\Row;
-
+    
     use Alder\Db\Row\AbstractRow;
     use Alder\PublicAuthentication\Db\Table\UserLicenseMap as UserLicenseMapTable;
-
+    
     /**
      * Representation of a row in the table of user license map.
      *
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class UserLicenseMap extends AbstractRow
     {
@@ -23,7 +23,7 @@
          * creation_timestamp         |  VARCHAR(11)    |       |       |       |  The timestamp of the creation of the user.
          * license_quantity           |  INT(3)         |       |       |       |  The number of the license the associated user holds.
          */
-
+        
         /**
          * The name of the table.
          *
@@ -33,23 +33,22 @@
         
         /**
          * The columns of the unique keys of the table.
-         * 
+         *
          * @var array
          */
-        protected static $uniqueKeyColumns = NULL;
+        protected static $uniqueKeyColumns = null;
         
         /**
          * The columns of the primary key of the table.
-         * 
+         *
          * @var array
          */
-        protected static $primaryKeyColumns = NULL;
+        protected static $primaryKeyColumns = null;
         
         /**
          * Prepare the row.
          */
-        public function __construct()
-        {
+        public function __construct() {
             parent::__construct(static::$table);
         }
     }

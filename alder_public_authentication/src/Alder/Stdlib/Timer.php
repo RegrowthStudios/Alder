@@ -3,10 +3,10 @@
     
     /**
      * Simple timer implmentation.
-     * 
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     *
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class Timer
     {
@@ -27,26 +27,23 @@
         /**
          * Starts the timer.
          */
-        public function start()
-        {
+        public function start() {
             $this->startTime = microtime(true);
         }
         
         /**
          * Stops the timer.
          */
-        public function stop()
-        {
+        public function stop() {
             $this->duration += microtime(true) - $this->startTime;
         }
         
         /**
          * Returns duration the timer ran for.
-         * 
+         *
          * @return float
          */
-        public function getDuration()
-        {
+        public function getDuration() {
             return $this->duration;
         }
     }

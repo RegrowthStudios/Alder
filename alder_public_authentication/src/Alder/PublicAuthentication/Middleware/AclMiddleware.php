@@ -14,9 +14,9 @@
      * The API map middleware for Alder's public authentication service.
      * Provides the API map of the service on request.
      *
-     * @author Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
-     * @since 0.1.0
+     * @since     0.1.0
      */
     class AclMiddleware implements MiddlewareInterface
     {
@@ -34,7 +34,7 @@
                 return new JsonResponse([], 500);
             }
             $canonicalAction = canonicalise_action_class_path($action);
-    
+            
             $canonicalMethod = constant(strtoupper($request->getMethod()));
             
             if (!$acl->isAllowed($visitorRole, $canonicalAction, $canonicalMethod)) {

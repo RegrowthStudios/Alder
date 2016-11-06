@@ -23,8 +23,8 @@
          *
          * @param int|string $code The error code to be added.
          */
-        public function push($code) {
-            $this->errorCodes[] = $code;
+        public function push($code) : void {
+            $this->errorCodes[] = (int) $code;
         }
         
         /**
@@ -32,7 +32,7 @@
          *
          * @return int|NULL The error code popped off, or NULL if the array is empty.
          */
-        public function pop() {
+        public function pop() : ?int {
             return array_pop($this->errorCodes);
         }
         
@@ -41,7 +41,7 @@
          *
          * @return int|NULL The error code shifted off, or NULL if the array is empty.
          */
-        public function shift() {
+        public function shift() : ?int {
             return array_shift($this->errorCodes);
         }
         
@@ -52,7 +52,7 @@
          *
          * @return array The error messages keyed by their respective error codes.
          */
-        public function retrieve($clear = true) {
+        public function retrieve(bool $clear = true) : array {
             $result = [];
             foreach ($this->errorCodes as $code) {
                 $result[$code] = Error::retrieveString($code);
@@ -69,14 +69,14 @@
          *
          * @return bool True if error codes on stack, false otherwise.
          */
-        public function notEmpty() {
+        public function notEmpty() : bool {
             return !empty($this->errorCodes);
         }
         
         /**
          * Clears all errors stored in the container.
          */
-        public function clear() {
+        public function clear() : void {
             $this->errorCodes = [];
         }
         
@@ -84,23 +84,23 @@
         
         protected $position = 0;
         
-        public function rewind() {
+        public function rewind() : void {
             $this->position = 0;
         }
         
-        public function current() {
+        public function current() : int {
             return $this->errorCodes[$this->position];
         }
         
-        public function key() {
+        public function key() : int {
             return $this->position;
         }
         
-        public function next() {
+        public function next() : void {
             ++$this->position;
         }
         
-        public function valid() {
+        public function valid() : bool {
             return isset($this->errorCodes[$this->position]);
         }
     }

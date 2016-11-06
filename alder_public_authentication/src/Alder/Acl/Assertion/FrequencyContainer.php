@@ -16,13 +16,13 @@
         /**
          * Filepath to configuration for the default Frequency array.
          */
-        const DEFAULT_FREQ_FILEPATH = CONFIG_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
+        protected const DEFAULT_FREQ_FILEPATH = CONFIG_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
                                       . "frequency.default.php";
         
         /**
          * Filepath to cache for the custom Frequency array.
          */
-        const CUSTOM_FREQ_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
+        protected const CUSTOM_FREQ_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
                                      . "frequency.cache";
         
         public static function create() : Container {

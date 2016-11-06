@@ -18,13 +18,13 @@
         /**
          * Filepath to configuration for the default ACL object.
          */
-        const DEFAULT_ACL_FILEPATH = CONFIG_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
+        protected const DEFAULT_ACL_FILEPATH = CONFIG_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
                                      . "acl.default.php";
         
         /**
          * Filepath to cache for the custom ACL object.
          */
-        const CUSTOM_ACL_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR . "acl.cache";
+        protected const CUSTOM_ACL_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR . "acl.cache";
         
         public static function create() : Container {
             return parent::create(self::DEFAULT_ACL_FILEPATH, self::CUSTOM_ACL_FILEPATH);

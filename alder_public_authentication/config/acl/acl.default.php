@@ -14,7 +14,7 @@
     $acl->addRole(new Role(ADMIN));
     $acl->addRole(new Role(SUPER_ADMIN));
     
-    $acl->addResource(new Resource(AUTHENTICATION));
+    $acl->addResource(new Resource(AUTHENTICATE));
     $acl->addResource(new Resource(LICENSE));
     $acl->addResource(new Resource(LICENSE_TEXT));
     $acl->addResource(new Resource(USER));
@@ -30,7 +30,7 @@
     $acl->allow([ ADMIN, SUPER_ADMIN ], NULL, [ CREATE, DELETE, REPLACE, UPDATE ]);
     
     // Allow guests, in addition to admins and super admins, access to create users and user sessions.
-    $acl->allow([ GUEST ], [ USER, AUTHENTICATION ], [ CREATE ]);
+    $acl->allow([ GUEST ], [ USER, AUTHENTICATE ], [ CREATE ]);
     
     // Allow registered to delete and modify users (themselves).
     $acl->allow([ REGISTERED ], [ USER ], [ DELETE, UPDATE ]);

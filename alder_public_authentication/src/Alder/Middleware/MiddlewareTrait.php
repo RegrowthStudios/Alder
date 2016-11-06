@@ -34,7 +34,7 @@
          *
          * @return string The parameter fetched.
          */
-        protected function getParameter($parameterHandle, $default = null) {
+        protected function getParameter(string $parameterHandle, $default = null) : string {
             $param = null;
             
             $params = $this->request->getQueryParams();
@@ -49,6 +49,6 @@
             
             $result = $this->request->getAttribute($parameterHandle, $param);
             
-            return is_null($result) ? $default : $result;
+            return $result ?? $default;
         }
     }

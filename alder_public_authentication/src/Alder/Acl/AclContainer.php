@@ -2,7 +2,7 @@
 
     namespace Alder\Acl;
     
-    use Alder\Stdlib\Container as StdContainer;
+    use Alder\Stdlib\Container;
 
     use Zend\Permissions\Acl\Acl;
 
@@ -13,7 +13,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since 0.1.0
      */
-    class Container extends StdContainer
+    class AclContainer extends Container
     {
         /**
          * Filepath to configuration for the default ACL object.

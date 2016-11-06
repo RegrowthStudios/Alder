@@ -115,7 +115,7 @@
         /**
          * @return int
          */
-        public function key() : integer {
+        public function key() : int {
             return $this->currIndex;
         }
         

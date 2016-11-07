@@ -41,55 +41,93 @@
                                  callable $next = null) : ResponseInterface {
             $this->request = $request;
             $this->response = $response;
-            
-            $cookieParams = $this->request->getCookieParams();
-            $sessionTokenString = $this->getParameter(USER_SESSION, $cookieParams[USER_SESSION] ?: null);
-            
-            if (!$sessionTokenString) {
-                $this->request = $this->request->withAttribute("visitor", ["isLoggedIn" => false]);
+    
+            $visitorDetails = $this->fetchClientSideSessionInfo();
+    
+            $visitorDetails = array_merge(
+                $visitorDetails,
+                $this->fetchServerSideSessionInfo($visitorDetails)
+            );
                 
-                return $next($this->request, $this->response);
+            $this->request = $this->request->withAttribute("visitor", $visitorDetails);
+            
+            return $next($this->request, $this->response);
+        }
+    
+        /**
+         * Fetches client-side session info stored in the user session JWT.
+         *
+         * @return array
+         */
+        protected function fetchClientSideSessionInfo() : array {
+            // Get cookies from client.
+            $cookieParams = $this->request->getCookieParams();
+            // Get session token string first from parameters of request, second from cookies.
+            $sessionTokenString = $this->getParameter(USER_SESSION, $cookieParams[USER_SESSION] ?? null);
+    
+            // If the session token string is empty or null, set the visitory as not logged in.
+            if (!$sessionTokenString) {
+                return ["is_logged_in" => false];
             }
-            
+    
+            // Construct a session token from the string obtained.
             $sessionToken = (new Parser())->parse($sessionTokenString);
-            
-            $time = time();
+    
+            // Validate the session token.
             $result = $sessionToken->validate(["validators" => ["sub" => "user"]]);
-            
+    
+            // If the token is not valid, set the visitor as not logged in.
             if ($result !== Token::VALID) {
                 // TODO(Matthew): Consider the following:
                 // Not valid, treat as just not logged in or forbid access?
                 // For now treating as not logged in - can just remove invalid tokens for second request after all.
                 // Maybe log details for suspicious behaviour metric.
-                $this->request = $this->request->withAttribute("visitor", ["isLoggedIn" => false]);
+                return ["is_logged_in" => false];
             } else {
+                // Fetch app config.
                 $config = Container::get()->get("config")["alder"];
-                
-                // Get application-specific claims of current token.
+        
+                // Get app-specific claims of current token.
                 $appClaims = Json::decode($sessionToken->getClaim($config["domain"]), Json::TYPE_ARRAY);
-                
+    
                 // If token is nearly expired, renew it.
-                if ($sessionToken->getClaim("exp") - $time
+                if ($sessionToken->getClaim("exp") - time()
                     <= $config["security"]["refresh_sessions_with_expiry_within"]
                 ) {
-                    $errors = new ErrorStack();
-                    
-                    // Generate new token.
-                    $newCookie = SessionFactory::create($appClaims["id"], $errors, $appClaims,
-                                                        $appClaims["extended_session"]);
-                    
-                    if ($errors->notEmpty()) {
-                        // Warn internally if new token could not be generated, but proceed - user may log in again if current token expires.
-                        trigger_error("Failed to create replacement token for existing session.", E_USER_WARNING);
-                    } else {
-                        $this->response = $this->response->withAddedHeader("Set-Cookie", $newCookie);
-                    }
+                    $this->regenerateSessionToken($appClaims);
                 }
-                
-                $this->request = $this->request->withAttribute("visitor",
-                                                               array_merge(["isLoggedIn" => true], $appClaims));
+        
+                return array_merge(["is_logged_in" => true], $appClaims);
             }
+        }
+    
+        /**
+         * Regenerates the session token of the visitor.
+         *
+         * @param array $appClaims
+         */
+        protected function regenerateSessionToken(array $appClaims) : void {
+            $errors = new ErrorStack();
+    
+            // Generate new token.
+            $newCookie = SessionFactory::create($appClaims["id"], $errors, $appClaims,
+                                                $appClaims["extended_session"]);
+    
+            if ($errors->notEmpty()) {
+                // Warn internally if new token could not be generated, but proceed - user may log in again if current token expires.
+                trigger_error("Failed to create replacement token for existing session.", E_USER_WARNING);
+            } else {
+                $this->response = $this->response->withAddedHeader("Set-Cookie", $newCookie);
+            }
+        }
+        
+        protected function fetchServerSideSessionInfo(array $visitorDetails) : array {
+            $sessionCache = Container::get()->get("AlderSessionCache");
             
-            return $next($this->request, $this->response);
+            if (!$visitorDetails["is_logged_in"]) {
+                // TODO(Matthew): Think some more about this whole implementation. Would be nice to have a
+                // unified method to get and set visitor information both server-side and client-side and
+                // also "save" said data. (I.e. regenerate session token/update cache).
+            }
         }
     }

@@ -18,7 +18,7 @@
                     "charset" => "utf8", // The charset to use in communicating with database.
                 ],
                 "cache" => [ /* Cache Settings */
-                    "namespace" => "alder_cache", // Namespace in which all application data is cached.
+                    "namespace" => "alder_db_cache", // Namespace in which all application data is cached.
                     "time_to_live" => 1800/*30 Mins*/, // How long does the data live for in cache?
                     "adapter" => "filesystem", // Name of the type of cache to use.
                     "plugins" => [ /* Cache Plugin Details */
@@ -66,6 +66,18 @@
                 "session" => [ /* Session Settings */
                     "duration" => 43200/*12 Hours*/, // How long should a standard length log-in session last.
                     "duration_extended" => 2592000/*~1 Month*/, // How long should an extended log-in session last.
+                    "cache" => [ /* Session Cache Settings */
+                        "namespace" => "alder_session_cache", // Namespace in which all session data is cached.
+                        "time_to_live" => 1800/*30 Mins*/, // How long does the data live for in cache?
+                        "adapter" => "redis", // Name of the type of cache to use.
+                        "server" => "/path/to/sock.sock", // Server address. Either socket path, or associative array of host, port and timeout.
+                        "password" => null, // The password of the redis server, if there is one. NULL indicates no password.
+                        "plugins" => [ /* Cache Plugin Details */
+                            "ignore_user_abort" =>  [ /* User Abort Plugin */
+                                "exit_on_abort" => false, // Whether the cache script should be aborted on user closing connection with server.
+                            ]
+                        ],
+                    ]
                 ],
                 "token" => [ /* Token Settings */
                     "private_key" => DEFAULT_VAL, // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.

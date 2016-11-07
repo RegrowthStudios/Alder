@@ -24,8 +24,9 @@
                     $adapter = $container->get(\Zend\Db\Adapter\Adapter::class);
                     return \Zend\Db\Metadata\Source\Factory::createSourceFromAdapter($adapter);
                 },
-                "AlderDbCache" => Alder\PublicAuthentication\Db\DatabaseCacheServiceFactory::class,
-                "AlderTableCache" => Alder\PublicAuthentication\Db\TableCacheServiceFactory::class
+                "AlderDbCache" => Alder\PublicAuthentication\Cache\DatabaseCacheServiceFactory::class,
+                "AlderTableCache" => Alder\PublicAuthentication\Cache\TableCacheServiceFactory::class,
+                "AlderSessionCache" => \Alder\PublicAuthentication\Cache\SessionCacheServiceFactory::class
             ],
         ],
     ];

@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Cache;
+    namespace Alder\Cache;
     
     use Interop\Container\ContainerInterface;
     
@@ -9,7 +9,7 @@
     use Zend\Cache\Storage\Plugin;
     
     /**
-     * Factory for creating database cache services.
+     * Factory for creating the session cache service of the application.
      *
      * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
@@ -17,9 +17,8 @@
      */
     class SessionCacheServiceFactory
     {
-        // TODO(Matthew): Allow greater configurability for different cache services per database, or even table.
         /**
-         * Creates a database cache service in the container.
+         * Creates a session cache service from the container.
          *
          * @param \Interop\Container\ContainerInterface $container The container for the application instance.
          *
@@ -29,9 +28,9 @@
             $cacheConfig = $container->get("config")["alder"]["public_authentication"]["session"]["cache"];
             
             $options = [
-                "adapter" => $cacheConfig["adapter"],
-                "options" => [
-                    "ttl" => $cacheConfig["time_to_live"],
+                "adapter"   => $cacheConfig["adapter"],
+                "options"   => [
+                    "ttl"    => $cacheConfig["time_to_live"],
                     "server" => $cacheConfig["server"]
                 ],
                 "namespace" => $cacheConfig["namespace"]
@@ -42,24 +41,13 @@
             
             $cache = StorageFactory::factory($options);
             $pluginsConfig = $cacheConfig["plugins"];
-            $pluginOptions = new Plugin\PluginOptions(["ClearingFactor" => $pluginsConfig["clear_expired"]["clearing_factor"],
-                                                       "ExitOnAbort" => $pluginsConfig["ignore_user_abort"]["exit_on_abort"],
-                                                       "OptimizingFactor" => $pluginsConfig["optimise"]["optimising_factor"],]);
-            
-            $clearExpired = new Plugin\ClearExpiredByFactor();
-            $clearExpired->setOptions($pluginOptions);
-            $cache->addPlugin($clearExpired);
+            $pluginOptions = new Plugin\PluginOptions([
+                                                          "ExitOnAbort" => $pluginsConfig["ignore_user_abort"]["exit_on_abort"],
+                                                      ]);
             
             $ignoreUserAbort = new Plugin\IgnoreUserAbort();
             $ignoreUserAbort->setOptions($pluginOptions);
             $cache->addPlugin($ignoreUserAbort);
-            
-            $optimise = new Plugin\OptimizeByFactor();
-            $optimise->setOptions($pluginOptions);
-            $cache->addPlugin($optimise);
-            
-            $serialiser = new Plugin\Serializer();
-            $cache->addPlugin($serialiser);
             
             return $cache;
         }

@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Cache;
+    namespace Alder\Cache;
     
     use Interop\Container\ContainerInterface;
     

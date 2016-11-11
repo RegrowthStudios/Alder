@@ -6,8 +6,8 @@
     use Alder\Error\Stack as ErrorStack;
     use Alder\Middleware\MiddlewareTrait;
     use Alder\PublicAuthentication\User\SessionFactory;
-    use Alder\PublicAuthentication\Visitor\Cookie;
-    use Alder\PublicAuthentication\Visitor\CookieInterface;
+    use Alder\PublicAuthentication\Visitor\Cookie\Cookie;
+    use Alder\PublicAuthentication\Visitor\Cookie\CookieInterface;
     use Alder\Token\Parser;
     use Alder\Token\Token;
     
@@ -32,7 +32,7 @@
             $this->response = $response;
             
             // By default, fetch user session cookie.
-            $this->fetchCookie(USER_SESSION);
+            //$this->fetchCookie(USER_SESSION);
         }
         
         protected $data = [
@@ -44,8 +44,9 @@
             ]
         ];
         
-        public function fetchCookie(string $key, array $validators = [], array $default = null,
-                                    array $namespaces = ["alder"], bool $refresh = true, int $when = null, CookieInterface $cookiePrototype = NULL) {
+        public function fetchCookie(string $key, CookieInterface& $cookie, array $validators = [],
+                                    array $default = null, array $namespaces = ["alder"], bool $refresh = true,
+                                    int $when = null) {
             if (isset($this->data["client"][$key])) {
                 return $this->data["client"][$key];
             }
@@ -88,10 +89,9 @@
                     $this->regenerateToken($appClaims);
                 }
                 
-                // TODO(Matthew): Use prototype and construct cookie object.
                 // TODO(Matthew): Should we be also returning registered claims?
                 // Return and cache the app-specific claims of the token.
-                return $this->data["client"][$key] = $appClaims;
+                $this->data["client"][$key] = $cookie->initialise($appClaims);
             }
         }
         
@@ -112,7 +112,8 @@
             $errors = new ErrorStack();
             
             // Generate new token.
-            $newCookie = SessionFactory::create($appClaims["id"], $errors, $appClaims, $appClaims["extended_session"] ?? false);
+            $newCookie = SessionFactory::create($appClaims["id"], $errors, $appClaims,
+                                                $appClaims["extended_session"] ?? false);
             
             if ($errors->notEmpty()) {
                 // Warn internally if new token could not be generated, but proceed - user may log in again if current token expires.

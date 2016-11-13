@@ -38,7 +38,7 @@
         /**
          * {@inheritdoc}
          */
-        public function initialise(array $data) : ?CookieInterface {
+        public function initialise(array $data = []) : ?CookieInterface {
             if ($this->initialised) {
                 return null;
             }

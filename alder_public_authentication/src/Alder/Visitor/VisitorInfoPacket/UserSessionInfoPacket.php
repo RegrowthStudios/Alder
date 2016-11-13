@@ -13,6 +13,12 @@
      */
     class UserSessionCookie extends Cookie
     {
+        /**
+         * Determines if the visitor is logged in or not.
+         *
+         * @return bool
+         */
         public function isLoggedIn() : bool {
+            return $this->offsetExists("id");
         }
     }

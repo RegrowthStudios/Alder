@@ -19,7 +19,7 @@
          * @return \Alder\PublicAuthentication\Visitor\Cookie\CookieInterface|null Returns self if initialised, null if
          *                                                                  already initialised.
          */
-        public function initialise(array $data) : ?CookieInterface;
+        public function initialise(array $data = []) : ?CookieInterface;
         
         /**
          * Determines in the cookie has been modified in any way.
@@ -27,4 +27,6 @@
          * @return bool True if the cookie's data has been changed, once otherwise.
          */
         public function hasChanged() : bool;
+        
+        public function save() : bool;
     }

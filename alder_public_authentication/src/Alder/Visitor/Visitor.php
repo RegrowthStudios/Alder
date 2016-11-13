@@ -31,24 +31,23 @@
             $this->request = $request;
             $this->response = $response;
             
+            $sources = Container::get()->get("config")["session_sources"];
+            foreach ($sources as $name => $source) {
+                
+            }
+            
             // By default, fetch user session cookie.
             //$this->fetchCookie(USER_SESSION);
         }
         
-        protected $data = [
-            "server" => [
-            
-            ],
-            "client" => [
-            
-            ]
-        ];
+        protected $data = [];
         
-        public function fetchCookie(string $key, CookieInterface& $cookie, array $validators = [],
-                                    array $default = null, array $namespaces = ["alder"], bool $refresh = true,
-                                    int $when = null) {
-            if (isset($this->data["client"][$key])) {
-                return $this->data["client"][$key];
+        protected function acquireCookie(string $key, CookieInterface& $cookie, array $validators = [],
+                                    callable $noTokenCallback = null, callable $invalidTokenCallback = null, array $namespaces = ["alder"], bool $refresh = true,
+                                    int $when = null) : void {
+            if (isset($this->data[$key])) {
+                $cookie = $this->data[$key];
+                return;
             }
             
             // Get cookies from client.
@@ -58,7 +57,11 @@
             
             // If the session token string is empty or null, set the visitory as not logged in.
             if (!$tokenString) {
-                return $default;
+                $this->data[$key] = $cookie->initialise();
+                if ($noTokenCallback) {
+                    $noTokenCallback();
+                }
+                return;
             }
             
             // Construct a token from the token string obtained.
@@ -73,7 +76,11 @@
                 // Not valid, treat as just not logged in or forbid access?
                 // For now treating as not logged in - can just remove invalid tokens for second request after all.
                 // Maybe log details for suspicious behaviour metric.
-                return $default;
+                $this->data[$key] = $cookie->initialise();
+                if ($invalidTokenCallback) {
+                    $invalidTokenCallback();
+                }
+                return;
             } else {
                 // Get app-specific claims of current token.
                 $appClaims = [];
@@ -91,13 +98,21 @@
                 
                 // TODO(Matthew): Should we be also returning registered claims?
                 // Return and cache the app-specific claims of the token.
-                $this->data["client"][$key] = $cookie->initialise($appClaims);
+                $this->data[$key] = $cookie->initialise($appClaims);
             }
         }
         
-        public function fetchServerSideInfo(string $key) {
+        protected function acquireServerSideInfo(string $key) {
             if (isset($data[$key])) {
                 return $data[$key];
+            }
+        }
+        
+        public function saveModified() : bool {
+            foreach($this->data as $datum) {
+                if ($datum->hasChanged()) {
+                    $datum->save();
+                }
             }
         }
         

@@ -1,8 +1,6 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Visitor\Cookie;
-    
-    use Alder\PublicAuthentication\Visitor\Cookie\Cookie;
+    namespace Alder\Visitor\VisitorInfoPacket;
     
     /**
      * Provides a wrapper for the log-in session cookie of a user.
@@ -11,7 +9,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class UserSessionCookie extends Cookie
+    class UserSessionInfoPacket extends VisitorInfoPacket
     {
         /**
          * Determines if the visitor is logged in or not.

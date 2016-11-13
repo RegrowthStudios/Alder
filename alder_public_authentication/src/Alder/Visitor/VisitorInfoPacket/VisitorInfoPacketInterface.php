@@ -1,25 +1,25 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Visitor\Cookie;
+    namespace Alder\Visitor\VisitorInfoPacket;
     
     /**
-     * Provides an interface for the basic cookie data wrapper.
+     * Provides an interface for visitor information wrappers.
      *
      * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    interface CookieInterface extends \ArrayAccess
+    interface VisitorInfoPacketInterface extends \ArrayAccess
     {
         /**
          * Initialises the cookie, populating it with the data provided.
          *
          * @param array $data The data to initialise the cookie with.
          *
-         * @return \Alder\PublicAuthentication\Visitor\Cookie\CookieInterface|null Returns self if initialised, null if
+         * @return \Alder\Visitor\VisitorInfoPacket\VisitorInfoPacketInterface|null Returns self if initialised, null if
          *                                                                  already initialised.
          */
-        public function initialise(array $data = []) : ?CookieInterface;
+        public function initialise(array $data = []) : ?VisitorInfoPacketInterface;
         
         /**
          * Determines in the cookie has been modified in any way.

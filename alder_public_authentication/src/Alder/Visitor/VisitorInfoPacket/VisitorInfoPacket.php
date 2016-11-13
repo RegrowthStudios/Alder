@@ -1,18 +1,16 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Visitor\Cookie;
-    
-    use Alder\PublicAuthentication\Visitor\Cookie\CookieInterface;
+    namespace Alder\Visitor\VisitorInfoPacket;
     
     /**
-     * Provides a basic wrapper for cookie data fetched. Extend this and add procedures then use the new class as a
-     * prototype when fetching the related cookie.
+     * Provides a basic wrapper for visitor information fetched from a particular source. Extend this and add procedures then use the new class as a
+     * prototype when fetching the related information.
      *
      * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class Cookie implements CookieInterface
+    class VisitorInfoPacket implements VisitorInfoPacketInterface
     {
         /**
          * Flag of whether this cookie has been initialised or not.
@@ -38,7 +36,7 @@
         /**
          * {@inheritdoc}
          */
-        public function initialise(array $data = []) : ?CookieInterface {
+        public function initialise(array $data = []) : ?VisitorInfoPacketInterface {
             if ($this->initialised) {
                 return null;
             }

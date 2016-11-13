@@ -2,9 +2,9 @@
     return [
         "session_sources" => [
             USER_SESSION => [
-                "prototype" => \Alder\PublicAuthentication\Visitor\Cookie\UserSessionCookie::class,
+                "type" => \Alder\Visitor\Visitor::COOKIE,
+                "info_packet_classpath" => \Alder\Visitor\VisitorInfoPacket\UserSessionInfoPacket::class,
                 "validators" => ["sub" => "user"],
-                // TODO(Matthew): Think about how to handle defaults performantly.
             ]
         ]
     ];

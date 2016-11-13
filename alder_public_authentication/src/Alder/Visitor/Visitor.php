@@ -1,13 +1,13 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Visitor;
+    namespace Alder\Visitor;
     
     use Alder\Container;
     use Alder\Error\Stack as ErrorStack;
     use Alder\Middleware\MiddlewareTrait;
     use Alder\PublicAuthentication\User\SessionFactory;
-    use Alder\PublicAuthentication\Visitor\Cookie\Cookie;
-    use Alder\PublicAuthentication\Visitor\Cookie\CookieInterface;
+    use Alder\Visitor\VisitorInfoPacket\VisitorInfoPacket;
+    use Alder\Visitor\VisitorInfoPacket\VisitorInfoPacketInterface;
     use Alder\Token\Parser;
     use Alder\Token\Token;
     
@@ -27,29 +27,71 @@
     {
         use MiddlewareTrait;
         
+        public const COOKIE = "cookie";
+        
+        public const SERVER_CACHE = "server_cache";
+        
         public function __construct(ServerRequestInterface $request, ResponseInterface $response) {
             $this->request = $request;
             $this->response = $response;
             
+            // Acquire visitor session data from configured sources.
             $sources = Container::get()->get("config")["session_sources"];
             foreach ($sources as $name => $source) {
-                
+                if (!isset($source["type"])) {
+                    continue;
+                }
+                // Determine if a particular visitor info packet class should be used.
+                if (class_exists($classpath = ($source["info_packet_classpath"] ?? ""))) {
+                    $infoPacket = new $classpath();
+                } else {
+                    $infoPacket = new VisitorInfoPacket();
+                }
+                // Call the appropriate acquisition procedure.
+                if ($source["type"] === self::COOKIE) {
+                    $this->acquireCookie(
+                        $name,
+                        $infoPacket,
+                        $source["validators"] ?? [],
+                        $source["noTokenCallback"] ?? null,
+                        $source["invalidTokenCallback"] ?? null,
+                        $source["namespaces"] ?? ["alder"],
+                        $source["refresh"] ?? true,
+                        $source["when"] ?? null
+                    );
+                } else {
+                    if ($source["type"] === self::SERVER_CACHE) {
+                        $this->acquireServerSideCache(
+                            $name,
+                            $infoPacket/*$source["validators"] ?? [],
+                        $source["noTokenCallback"] ?? null,
+                        $source["invalidTokenCallback"] ?? null,
+                        $source["namespaces"] ?? ["alder"],
+                        $source["refresh"] ?? true,
+                        $source["when"] ?? null*/
+                        );
+                    }
+                }
             }
-            
-            // By default, fetch user session cookie.
-            //$this->fetchCookie(USER_SESSION);
         }
         
         protected $data = [];
         
-        protected function acquireCookie(string $key, CookieInterface& $cookie, array $validators = [],
-                                    callable $noTokenCallback = null, callable $invalidTokenCallback = null, array $namespaces = ["alder"], bool $refresh = true,
-                                    int $when = null) : void {
-            if (isset($this->data[$key])) {
-                $cookie = $this->data[$key];
-                return;
+        public function fetch(string $key) : ?VisitorInfoPacketInterface {
+            return $this->data[$key] ?? null;
+        }
+        
+        public function saveModified() : bool {
+            foreach ($this->data as $datum) {
+                if ($datum->hasChanged()) {
+                    $datum->save();
+                }
             }
-            
+        }
+        
+        protected function acquireCookie(string $key, VisitorInfoPacketInterface $cookie, array $validators,
+                                         callable $noTokenCallback, callable $invalidTokenCallback, array $namespaces,
+                                         bool $refresh, int $when) : void {
             // Get cookies from client.
             $cookieParams = $this->request->getCookieParams();
             // Get token string first from parameters of request, second from cookies.
@@ -61,6 +103,7 @@
                 if ($noTokenCallback) {
                     $noTokenCallback();
                 }
+                
                 return;
             }
             
@@ -80,40 +123,32 @@
                 if ($invalidTokenCallback) {
                     $invalidTokenCallback();
                 }
+                
                 return;
             } else {
                 // Get app-specific claims of current token.
                 $appClaims = [];
                 foreach ($namespaces as $namespace) {
-                    $appClaims[$namespace] = array_merge($appClaims,
-                                                         Json::decode($token->getClaim($namespace), Json::TYPE_ARRAY));
+                    $appClaims[$namespace] = array_merge(
+                        $appClaims,
+                        Json::decode($token->getClaim($namespace), Json::TYPE_ARRAY)
+                    );
                 }
                 
                 // If token is nearly expired, renew it.
-                $defaultWhen = Container::get()
-                                        ->get("config")["alder"]["security"]["refresh_sessions_with_expiry_within"];
+                $defaultWhen = Container::get()->get(
+                        "config"
+                    )["alder"]["security"]["refresh_sessions_with_expiry_within"];
                 if ($refresh && $token->getClaim("exp") - time() <= $when ?? $defaultWhen) {
                     $this->regenerateToken($appClaims);
                 }
                 
-                // TODO(Matthew): Should we be also returning registered claims?
                 // Return and cache the app-specific claims of the token.
                 $this->data[$key] = $cookie->initialise($appClaims);
             }
         }
         
-        protected function acquireServerSideInfo(string $key) {
-            if (isset($data[$key])) {
-                return $data[$key];
-            }
-        }
-        
-        public function saveModified() : bool {
-            foreach($this->data as $datum) {
-                if ($datum->hasChanged()) {
-                    $datum->save();
-                }
-            }
+        protected function acquireServerSideCache(string $key, VisitorInfoPacketInterface $cache) {
         }
         
         // TODO(Matthew): This makes no sense if we're allowing multiple cookies that might need regenerating.
@@ -127,14 +162,18 @@
             $errors = new ErrorStack();
             
             // Generate new token.
-            $newCookie = SessionFactory::create($appClaims["id"], $errors, $appClaims,
-                                                $appClaims["extended_session"] ?? false);
+            $newCookie = SessionFactory::create(
+                $appClaims["id"],
+                $errors,
+                $appClaims,
+                $appClaims["extended_session"] ?? false
+            );
             
             if ($errors->notEmpty()) {
                 // Warn internally if new token could not be generated, but proceed - user may log in again if current token expires.
                 trigger_error("Failed to create replacement token for existing session.", E_USER_WARNING);
             } else {
-                $this->response = $this->response->withAddedHeader("Set-Cookie", $newCookie);
+                $this->response = $this->response->withAddedHeader("Set-VisitorInfoPacket", $newCookie);
             }
         }
     }

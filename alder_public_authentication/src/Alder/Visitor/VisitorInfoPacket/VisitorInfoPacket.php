@@ -18,6 +18,13 @@
          * @var bool
          */
         protected $initialised = false;
+    
+        /**
+         * Stores the metadata of the source of this info packet.
+         *
+         * @var array
+         */
+        protected $metadata;
         
         /**
          * Stores the original data of the cookie.
@@ -36,10 +43,12 @@
         /**
          * {@inheritdoc}
          */
-        public function initialise(array $data = []) : ?VisitorInfoPacketInterface {
+        public function initialise(array $metadata = [], array $data = []) : ?VisitorInfoPacketInterface {
             if ($this->initialised) {
                 return null;
             }
+            
+            $this->metadata = $metadata;
             
             $this->data = $data;
             $this->originalData = $data;
@@ -47,6 +56,8 @@
             
             return $this;
         }
+        
+        public function save
         
         /**
          * {@inheritdoc}

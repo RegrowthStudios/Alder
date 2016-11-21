@@ -55,7 +55,7 @@
                         $source["validators"] ?? [],
                         $source["noTokenCallback"] ?? null,
                         $source["invalidTokenCallback"] ?? null,
-                        $source["namespaces"] ?? ["alder"],
+                        $source["namespaces"] ?? ["ald"],
                         $source["refresh"] ?? true,
                         $source["when"] ?? null
                     );
@@ -82,16 +82,23 @@
         }
         
         public function saveModified() : bool {
+            $test = true;
             foreach ($this->data as $datum) {
                 if ($datum->hasChanged()) {
-                    $datum->save();
+                    $test = $datum->save() && $test;
                 }
             }
+            return $test;
         }
         
         protected function acquireCookie(string $key, VisitorInfoPacketInterface $cookie, array $validators,
                                          callable $noTokenCallback, callable $invalidTokenCallback, array $namespaces,
                                          bool $refresh, int $when) : void {
+            $metadata = [
+                "name" => $key,
+                "type" => self::COOKIE
+            ];
+            
             // Get cookies from client.
             $cookieParams = $this->request->getCookieParams();
             // Get token string first from parameters of request, second from cookies.
@@ -99,11 +106,10 @@
             
             // If the session token string is empty or null, set the visitory as not logged in.
             if (!$tokenString) {
-                $this->data[$key] = $cookie->initialise();
+                $this->data[$key] = $cookie->initialise($metadata);
                 if ($noTokenCallback) {
                     $noTokenCallback();
                 }
-                
                 return;
             }
             
@@ -119,32 +125,37 @@
                 // Not valid, treat as just not logged in or forbid access?
                 // For now treating as not logged in - can just remove invalid tokens for second request after all.
                 // Maybe log details for suspicious behaviour metric.
-                $this->data[$key] = $cookie->initialise();
+                $this->data[$key] = $cookie->initialise($metadata);
                 if ($invalidTokenCallback) {
                     $invalidTokenCallback();
                 }
-                
                 return;
             } else {
                 // Get app-specific claims of current token.
                 $appClaims = [];
                 foreach ($namespaces as $namespace) {
-                    $appClaims[$namespace] = array_merge(
-                        $appClaims,
-                        Json::decode($token->getClaim($namespace), Json::TYPE_ARRAY)
-                    );
+                    $appClaims[$namespace] = Json::decode($token->getClaim($namespace), Json::TYPE_ARRAY);
                 }
                 
-                // If token is nearly expired, renew it.
-                $defaultWhen = Container::get()->get(
-                        "config"
-                    )["alder"]["security"]["refresh_sessions_with_expiry_within"];
-                if ($refresh && $token->getClaim("exp") - time() <= $when ?? $defaultWhen) {
-                    $this->regenerateToken($appClaims);
-                }
+                /* Need to figure out how to comply with OAuth protocol (refresh session token only at refresh endpoint with a provided refresh token) while still allowing updating of token. */
+                $metadata["jti"] = $token->getClaim("jti");
+                $metadata["iss"] = $token->getClaim("iss");
+                $metadata["sub"] = $token->getClaim("sub");
+                $metadata["aud"] = $token->getClaim("aud");
+                $metadata["iat"] = $token->getClaim("iat");
+                $metadata["nbf"] = $token->getClaim("nbf");
+                $metadata["exp"] = $token->getClaim("exp");
+                //
+                //// If token is nearly expired, renew it.
+                //$defaultWhen = Container::get()->get(
+                //        "config"
+                //    )["alder"]["security"]["refresh_sessions_with_expiry_within"];
+                //if ($refresh && $token->getClaim("exp") - time() <= $when ?? $defaultWhen) {
+                //    $this->regenerateToken($appClaims);
+                //}
                 
                 // Return and cache the app-specific claims of the token.
-                $this->data[$key] = $cookie->initialise($appClaims);
+                $this->data[$key] = $cookie->initialise($metadata, $appClaims);
             }
         }
         

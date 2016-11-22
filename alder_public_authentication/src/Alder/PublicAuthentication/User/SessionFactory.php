@@ -35,7 +35,7 @@
                   && isset($data["license_keys"])
                   && isset($data["employee_flag"]))
             ) {
-                $user = $container->get("AlderTableCache")->fetchTable("User")->getById($id);
+                $user = $container->get("alder_pa_table_cache")->fetchTable("User")->getById($id);
                 if (!$user) {
                     return null;
                 }

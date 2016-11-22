@@ -157,7 +157,7 @@
          * @return bool True if unique, false otherwise.
          */
         public static function isUniqueUsername(string $username, ErrorStack& $errors) : bool {
-            if (DiContainer::get()->get("AlderTableCache")->fetchTable("User")->isUsernameUnique($username)) {
+            if (DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User")->isUsernameUnique($username)) {
                 $errors->push(103030401);
                 
                 return true;
@@ -175,7 +175,7 @@
          * @return bool True if unique, false otherwise.
          */
         public static function isUniqueEmail(string $email, ErrorStack& $errors) : bool {
-            if (DiContainer::get()->get("AlderTableCache")->fetchTable("User")->isEmailUnique($email)) {
+            if (DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User")->isEmailUnique($email)) {
                 $errors->push(103030501);
                 
                 return true;

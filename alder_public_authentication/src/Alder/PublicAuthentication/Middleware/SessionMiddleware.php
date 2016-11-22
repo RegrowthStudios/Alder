@@ -122,7 +122,7 @@
         }
         
         protected function fetchServerSideSessionInfo(array $visitorDetails) : array {
-            $sessionCache = DiContainer::get()->get("AlderSessionCache");
+            $sessionCache = DiContainer::get()->get("alder_pa_session_cache");
             
             if (!$visitorDetails["is_logged_in"]) {
                 // TODO(Matthew): Think some more about this whole implementation. Would be nice to have a

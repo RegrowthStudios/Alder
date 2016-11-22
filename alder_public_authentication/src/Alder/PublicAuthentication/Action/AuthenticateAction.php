@@ -81,7 +81,7 @@
             /**
              * @var \Alder\PublicAuthentication\Db\Table\User $userTable
              */
-            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User");
             
             // Acquire the user authenticating from the database.
             /**

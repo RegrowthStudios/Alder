@@ -29,7 +29,7 @@
             /**
              * @var \Alder\Db\Table\User $userTable
              */
-            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User");
             
             $result = [];
             $missingContent = [];
@@ -82,7 +82,7 @@
             /**
              * @var \Alder\Db\Table\User $userTable
              */
-            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User");
             
             $successes = 0;
             $failures = ["unnamed" => 0, "named" => []];
@@ -143,7 +143,7 @@
             /**
              * @var \Alder\Db\Table\User $userTable
              */
-            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User");
             
             if (!is_array($data[0])) {
                 if (!$this->replaceUserFromData($data, $userTable, $errorContainer)) {

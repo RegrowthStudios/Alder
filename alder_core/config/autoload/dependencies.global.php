@@ -22,6 +22,9 @@
                     $adapter = $container->get(\Zend\Db\Adapter\Adapter::class);
                     return \Zend\Db\Metadata\Source\Factory::createSourceFromAdapter($adapter);
                 },
+                "alder_db_cache" => function(\Interop\Container\ContainerInterface $container) {
+                    return \Alder\Cache\DatabaseCacheServiceFactory::create();
+                }
             ],
         ],
     ];

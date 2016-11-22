@@ -83,7 +83,7 @@
             $container = DiContainer::get();
             
             // Grab the database cache.
-            $dbCache = $container->get("AlderDbCache");
+            $dbCache = $container->get("alder_db_cache");
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;
@@ -344,7 +344,7 @@
             $container = DiContainer::get();
             
             // Grab the database cache.
-            $dbCache = $container->get("AlderDbCache");
+            $dbCache = $container->get("alder_db_cache");
             
             // Fetch from cache if appropriate.
             $cacheFetchSuccess = false;

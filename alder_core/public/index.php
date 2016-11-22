@@ -22,7 +22,7 @@
         return false;
     }
     
-    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "global" . DIRECTORY_SEPARATOR . "global.php";
     require_once file_build_path(dirname(__DIR__), "config", "constants.php");
     
     // Bootstrap application.
@@ -53,7 +53,7 @@
         $container = require file_build_path(CONFIG_DIRECTORY, "container.php");
         
         // Set up the container holder.
-        Container::set($container);
+        DiContainer::set($container);
         
         // Initialise application.
         /** @var \Zend\Expressive\Application $app */

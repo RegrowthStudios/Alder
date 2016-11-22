@@ -5,6 +5,7 @@ vendor/
 test_results/
 cache/
 temp/
+build/
 .idea/
 composer.lock
 build_template.zip

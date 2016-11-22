@@ -23,7 +23,9 @@
     }
     
     require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "global" . DIRECTORY_SEPARATOR . "global.php";
-    require_once file_build_path(dirname(__DIR__), "config", "constants.php");
+    foreach (glob(file_build_path(dirname(__DIR__), "config", "constants", "*.php")) as $filename) {
+        require_once $filename;
+    }
     
     // Bootstrap application.
     try {

@@ -42,7 +42,3 @@ if [ -d VENDOR-PATCH ]; then
     cp -r -f VENDOR-PATCH/. vendor/
     echo
 fi
-
-echo "Creating build template..."
-tar -cvzf build_template.tar.gz vendor/ 1>/dev/null
-exit 0

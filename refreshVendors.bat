@@ -35,37 +35,5 @@ CALL COMPOSER install
 ECHO Optimising autoloader...
 CALL COMPOSER dump-autoload --optimize
 
-ECHO Patching vendors.
+ECHO Patching vendors...
 ROBOCOPY /S "%~dp0VENDOR-PATCH" "%~dp0vendor"
-
-ECHO Copying vendors to build template zip...
-WHERE 7Z >nul 2>nul
-IF %ERRORLEVEL% EQU 0 ( GOTO 7Z_METHOD )
-WHERE WZZIP >nul 2>nul
-IF %ERRORLEVEL% EQU 0 ( GOTO WZZIP_METHOD )
-WHERE ZIP >nul 2>nul
-IF %ERRORLEVEL% EQU 0 ( GOTO ZIP_METHOD )
-
-ECHO No zipping utility was found for building, please add one to your environment variable 'PATH'.
-PAUSE
-EXIT /B 1
-
-:ZIP_METHOD
-ECHO Creating build template...
-ECHO NOT YET IMPLEMENTED FOR ZIP!
-PAUSE
-EXIT /B 99
-
-:7Z_METHOD
-ECHO Creating new build template...
-DEL build_template.zip
-7Z u -y -r -tzip build_template.zip "vendor\*.php"
-ECHO Created build template!
-PAUSE
-EXIT /B 0
-
-:WZZIP_METHOD
-ECHO Creating build template...
-ECHO NOT YET IMPLEMENTED FOR WINZIP!
-PAUSE
-EXIT /B 99

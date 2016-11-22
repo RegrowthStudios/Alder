@@ -2,7 +2,7 @@
     
     namespace Alder\PublicAuthentication\User;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Stack as ErrorStack;
     use Alder\Token\Token;
     use Alder\Token\TokenFactory;
@@ -28,14 +28,14 @@
          */
         public static function create(int $id, ErrorStack& $errors, array $data = [],
                                       $extendedSession = false) : ?Token {
-            $container = Container::get();
+            $container = DiContainer::get();
             
             if (!(isset($data["username"]) && isset($data["primary_email_local"])
                   && isset($data["primary_email_domain"])
                   && isset($data["license_keys"])
                   && isset($data["employee_flag"]))
             ) {
-                $user = $container->get("AlderTableCache")->fetchTable("User")->getById($id);
+                $user = $container->get("alder_pa_table_cache")->fetchTable("User")->getById($id);
                 if (!$user) {
                     return null;
                 }

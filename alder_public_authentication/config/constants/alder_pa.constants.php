@@ -1,0 +1,3 @@
+<?php
+    
+    define("PUBLIC_AUTHENTICATION_SRC_DIRECTORY", ALDER_SRC_DIRECTORY . DIRECTORY_SEPARATOR . "PublicAuthentication");

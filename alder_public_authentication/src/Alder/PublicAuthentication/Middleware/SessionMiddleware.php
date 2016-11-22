@@ -2,7 +2,7 @@
     
     namespace Alder\PublicAuthentication\Middleware;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Stack as ErrorStack;
     use Alder\Middleware\MiddlewareTrait;
     use Alder\PublicAuthentication\User\SessionFactory;
@@ -85,7 +85,7 @@
                 return ["is_logged_in" => false];
             } else {
                 // Fetch app config.
-                $config = Container::get()->get("config")["alder"];
+                $config = DiContainer::get()->get("config")["alder"];
         
                 // Get app-specific claims of current token.
                 $appClaims = Json::decode($sessionToken->getClaim($config["domain"]), Json::TYPE_ARRAY);
@@ -122,7 +122,7 @@
         }
         
         protected function fetchServerSideSessionInfo(array $visitorDetails) : array {
-            $sessionCache = Container::get()->get("AlderSessionCache");
+            $sessionCache = DiContainer::get()->get("AlderSessionCache");
             
             if (!$visitorDetails["is_logged_in"]) {
                 // TODO(Matthew): Think some more about this whole implementation. Would be nice to have a

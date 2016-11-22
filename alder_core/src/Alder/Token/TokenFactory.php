@@ -2,7 +2,7 @@
     
     namespace Alder\Token;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     
     use Lcobucci\JWT\Signer\Key;
     
@@ -56,7 +56,7 @@
          */
         public static function create(array $data) : Token {
             // Grab application config.
-            $config = Container::get()->get("config")["alder"];
+            $config = DiContainer::get()->get("config")["alder"];
             // Acquire private key or fail.
             $privateKey = $config["public_authentication"]["token"]["private_key"];
             if (isset($data["key"])) {

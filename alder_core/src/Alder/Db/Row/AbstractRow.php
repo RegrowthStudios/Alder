@@ -1,7 +1,7 @@
 <?php
     namespace Alder\Db\Row;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     
     use Zend\Db\Adapter\Adapter;
     use Zend\Db\Metadata\MetadataInterface;
@@ -55,7 +55,7 @@
             /**
              * @var \Zend\Db\Metadata\Object\TableObject $metadata
              */
-            $metadata = Container::get()->get(MetadataInterface::class)->getTable(static::$table);
+            $metadata = DiContainer::get()->get(MetadataInterface::class)->getTable(static::$table);
             
             $uniqueKeyColumns = [];
             
@@ -90,7 +90,7 @@
          * @param string $table The table in which the row resides.
          */
         protected function __construct(string $table) {
-            $container = Container::get();
+            $container = DiContainer::get();
             
             // Prefix table.
             $this->table = $container->get("config")["alder"]["db"]["table_prefix"] . $table;

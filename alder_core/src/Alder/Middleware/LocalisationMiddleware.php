@@ -2,7 +2,7 @@
     
     namespace Alder\Middleware;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +22,7 @@
     {
         public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
                                  callable $next = null) : ResponseInterface {
-            $config = Container::get()->get("config");
+            $config = DiContainer::get()->get("config");
             
             $locale = $request->getAttribute("locale", $config["default_locale"]);
             

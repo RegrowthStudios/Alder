@@ -2,7 +2,7 @@
     
     namespace Alder\Cache;
     
-    use Alder\Container;
+    use Alder\DiContainer;
         
     use Zend\Cache\Storage\StorageInterface;
     use Zend\Cache\StorageFactory;
@@ -26,7 +26,7 @@
          * @return \Zend\Cache\Storage\StorageInterface The caching object for database entries.
          */
         public static function create(string $module = null, string $library = null) : StorageInterface {
-            $container = Container::get();
+            $container = DiContainer::get();
     
             if (!$module) {
                 $cacheConfig = $container->get("config")[($library ?: "alder")]["session"]["cache"];

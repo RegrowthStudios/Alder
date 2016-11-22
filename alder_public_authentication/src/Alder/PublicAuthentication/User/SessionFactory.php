@@ -2,7 +2,7 @@
     
     namespace Alder\PublicAuthentication\User;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Stack as ErrorStack;
     use Alder\Token\Token;
     use Alder\Token\TokenFactory;
@@ -28,7 +28,7 @@
          */
         public static function create(int $id, ErrorStack& $errors, array $data = [],
                                       $extendedSession = false) : ?Token {
-            $container = Container::get();
+            $container = DiContainer::get();
             
             if (!(isset($data["username"]) && isset($data["primary_email_local"])
                   && isset($data["primary_email_domain"])

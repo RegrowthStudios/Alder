@@ -3,7 +3,7 @@
     namespace Alder\PublicAuthentication\Action;
     
     use Alder\Action\AbstractRestfulAction;
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Container as ErrorContainer;
     use Alder\PublicAuthentication\Db\Table\User;
     use Alder\PublicAuthentication\User\Security;
@@ -29,7 +29,7 @@
             /**
              * @var \Alder\Db\Table\User $userTable
              */
-            $userTable = Container::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
             
             $result = [];
             $missingContent = [];
@@ -82,7 +82,7 @@
             /**
              * @var \Alder\Db\Table\User $userTable
              */
-            $userTable = Container::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
             
             $successes = 0;
             $failures = ["unnamed" => 0, "named" => []];
@@ -143,7 +143,7 @@
             /**
              * @var \Alder\Db\Table\User $userTable
              */
-            $userTable = Container::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
             
             if (!is_array($data[0])) {
                 if (!$this->replaceUserFromData($data, $userTable, $errorContainer)) {

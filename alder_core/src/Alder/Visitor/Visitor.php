@@ -2,7 +2,7 @@
     
     namespace Alder\Visitor;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Stack as ErrorStack;
     use Alder\Middleware\MiddlewareTrait;
     use Alder\PublicAuthentication\User\SessionFactory;
@@ -36,7 +36,7 @@
             $this->response = $response;
             
             // Acquire visitor session data from configured sources.
-            $sources = Container::get()->get("config")["session_sources"];
+            $sources = DiContainer::get()->get("config")["session_sources"];
             foreach ($sources as $name => $source) {
                 if (!isset($source["type"])) {
                     continue;

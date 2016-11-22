@@ -2,7 +2,7 @@
     
     namespace Alder\Db\Table;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Stdlib\CacheUtils;
     
     use Zend\Db\Adapter\Adapter;
@@ -34,7 +34,7 @@
          *                                                              queries.
          */
         protected function __construct(string $table, array $columns = null, RowGatewayInterface $row = null) {
-            $container = Container::get();
+            $container = DiContainer::get();
             
             // Prefix table.
             $this->table = $container->get("config")["alder"]["db"]["table_prefix"] . $table;
@@ -80,7 +80,7 @@
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":" . $cacheExtra, $cacheWhere,
                                                               $columnsToFetch);
             
-            $container = Container::get();
+            $container = DiContainer::get();
             
             // Grab the database cache.
             $dbCache = $container->get("AlderDbCache");
@@ -341,7 +341,7 @@
             // Generate the location in cache for fetch_all data.
             $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":get_all", $columnsToFetch);
             
-            $container = Container::get();
+            $container = DiContainer::get();
             
             // Grab the database cache.
             $dbCache = $container->get("AlderDbCache");

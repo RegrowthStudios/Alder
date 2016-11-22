@@ -3,7 +3,7 @@
     namespace Alder\PublicAuthentication\Action;
     
     use Alder\Action\AbstractRestfulAction;
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Error;
     use Alder\Error\Stack as ErrorStack;
     use Alder\PublicAuthentication\User\SessionFactory;
@@ -81,7 +81,7 @@
             /**
              * @var \Alder\PublicAuthentication\Db\Table\User $userTable
              */
-            $userTable = Container::get()->get("AlderTableCache")->fetchTable("User");
+            $userTable = DiContainer::get()->get("AlderTableCache")->fetchTable("User");
             
             // Acquire the user authenticating from the database.
             /**

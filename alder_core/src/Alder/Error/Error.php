@@ -2,7 +2,7 @@
     
     namespace Alder\Error;
     
-    use Alder\Container as DiContainer;
+    use Alder\DiContainer;
     
     /**
      * Provides function for retrieving error strings.

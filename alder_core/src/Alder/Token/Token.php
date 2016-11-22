@@ -2,7 +2,7 @@
     
     namespace Alder\Token;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Stdlib\ArrayUtils;
     
     use Lcobucci\JWT\Token as LcobucciToken;
@@ -76,7 +76,7 @@
             // Validate provided data.
             $verifiedData = ArrayUtils::validateArrayLike($data, get_class($this));
             // Grab application config.
-            $config = Container::get()->get("config")["alder"];
+            $config = DiContainer::get()->get("config")["alder"];
             // Acquire signing method or fail.
             $signMethod = $config["public_authentication"]["token"]["hash_algorithm"];
             if (isset($verifiedData["signMethod"])) {

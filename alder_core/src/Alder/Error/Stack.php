@@ -1,9 +1,7 @@
 <?php
     
     namespace Alder\Error;
-    
-    use Alder\Error\Error;
-    
+        
     /**
      * Stores errors in order of addition.
      *

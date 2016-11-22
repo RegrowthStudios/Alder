@@ -1,4 +1,5 @@
 <?php
+    
     namespace Alder\Stdlib;
     
     use Zend\Math\Rand as ZendRand;

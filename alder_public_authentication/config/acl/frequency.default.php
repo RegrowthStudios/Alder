@@ -1,5 +1,6 @@
 <?php
 
+    // TODO(Matthew): Move this to an appropriate location in ACL namespace.
     class Frequency
     {
         public $max_count;

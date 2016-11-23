@@ -22,11 +22,15 @@
         return false;
     }
     
-    // Require global scripts.
+    // Require core global script.
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
+    // Require component-specific global scripts.
     foreach (glob(dirname(__DIR__) . DIRECTORY_SEPARATOR . "global" . DIRECTORY_SEPARATOR . "*.php") as $filename) {
         require_once $filename;
     }
-    // Require constants definition files.
+    // Require core constants definitions file.
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "constants.php";
+    // Require component-specific constants definition files.
     foreach (glob(file_build_path(dirname(__DIR__), "config", "constants", "*.php")) as $filename) {
         require_once $filename;
     }

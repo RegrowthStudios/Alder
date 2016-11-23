@@ -57,6 +57,7 @@ echo "Copying over third-party libraries..."
 cp -r vendor/. "${tmp_build_dir}/vendor"
 
 echo "Copying over core library..."
+cp alder_core/global.php "${tmp_build_dir}/global.php" 2>/dev/null
 cp alder_core/phpunit.xml "${tmp_build_dir}/phpunit.xml" 2>/dev/null
 cp -r alder_core/config/. "${tmp_build_dir}/config" 2>/dev/null
 cp -r alder_core/global/. "${tmp_build_dir}/global" 2>/dev/null

@@ -62,7 +62,7 @@ cp -r alder_core/config/. "${tmp_build_dir}/config" 2>/dev/null
 cp -r alder_core/global/. "${tmp_build_dir}/global" 2>/dev/null
 cp -r alder_core/public/. "${tmp_build_dir}/public" 2>/dev/null
 cp -r alder_core/src/. "${tmp_build_dir}/src" 2>/dev/null
-cp -r alder_core/tests/. "${tmp_build_dir}/src" 2>/dev/null
+cp -r alder_core/tests/. "${tmp_build_dir}/tests" 2>/dev/null
 
 for v in "$@"
 do

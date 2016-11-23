@@ -10,13 +10,24 @@
     beStrictAboutTestSize="true"
     beStrictAboutTestsThatDoNotTestAnything="true"
     beStrictAboutTodoAnnotatedTests="true"
-    forceCoversAnnotation="true">
+    forceCoversAnnotation="true"
+    stopOnError="false"
+    stopOnFailure="false"
+    stopOnIncomplete="false"
+    stopOnSkipped="false"
+    stopOnRisky="false">
     <testsuites>
         <testsuite name="Alder Public Authentication Unit Tests">
             <directory>tests/Alder/unit</directory>
+            <exclude>
+                <directory>vendors</directory>
+            </exclude>
         </testsuite>
         <testsuite name="Alder Public Authentication Integration Tests">
             <directory>tests/Alder/functional</directory>
+            <exclude>
+                <directory>vendors</directory>
+            </exclude>
         </testsuite>
     </testsuites>
     <filter>

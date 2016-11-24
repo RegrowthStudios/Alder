@@ -80,6 +80,7 @@ done
 echo
 echo "Running tests for build..."
 ./runTests.sh $tmp_build_dir $test_results_dir
+echo "Tests complete."
 
 echo
 echo "Creating build archive..."

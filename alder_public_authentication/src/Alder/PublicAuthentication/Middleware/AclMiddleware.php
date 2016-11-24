@@ -27,7 +27,7 @@
             // TODO(Matthew): Determine visitor's role.
             $visitorRole = "";
             
-            $action = $request->getAttribute("Zend\Expressive\Router\RouteResult")->getMatchedMiddleware();
+            $action = $request->getAttribute("Zend\\Expressive\\Router\\RouteResult")->getMatchedMiddleware();
             if (!$action) {
                 // Huh?
                 // TODO(Matthew): Consider how this could be reached.

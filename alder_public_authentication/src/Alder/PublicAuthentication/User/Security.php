@@ -2,7 +2,7 @@
     
     namespace Alder\PublicAuthentication\User;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     
     /**
      * Provides utility functions for processing security details of the user.
@@ -21,7 +21,7 @@
          * @return bool|string Hashed password, or false on failure.
          */
         public static function hashPassword(string $password) {
-            return password_hash($password, PASSWORD_DEFAULT, ["cost" => Container::get()
+            return password_hash($password, PASSWORD_DEFAULT, ["cost" => DiContainer::get()
                                                                                   ->get("config")["alder"]["public_authentication"]["password"]["hashing_strength"]]);
         }
         
@@ -45,7 +45,7 @@
          * @return bool True if password needs rehashing, false otherwise.
          */
         public static function passwordNeedsRehash(string $hash) : bool {
-            return password_needs_rehash($hash, PASSWORD_DEFAULT, ["cost" => Container::get()
+            return password_needs_rehash($hash, PASSWORD_DEFAULT, ["cost" => DiContainer::get()
                                                                                       ->get("config")["alder"]["public_authentication"]["password"]["hashing_strength"]]);
         }
     }

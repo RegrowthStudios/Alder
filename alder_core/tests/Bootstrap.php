@@ -1,8 +1,8 @@
 <?php
     namespace AlderTest;
     
-    error_reporting(E_ALL | E_STRICT);
-
+    error_reporting(E_ALL);
+    
     // Require core global script.
     require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "global.php";
     // Require component-specific global scripts.

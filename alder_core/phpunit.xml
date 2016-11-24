@@ -33,8 +33,5 @@
               <directory>vendor</directory>
           </exclude>
         </whitelist>
-        <blacklist>
-
-        </blacklist>
     </filter>
 </phpunit>

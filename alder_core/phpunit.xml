@@ -15,7 +15,8 @@
     stopOnFailure="false"
     stopOnIncomplete="false"
     stopOnSkipped="false"
-    stopOnRisky="false">
+    stopOnRisky="false"
+    convertWarningsToExceptions="false">
     <testsuites>
         <testsuite name="Alder Public Authentication Unit Tests">
             <directory>tests/Alder/unit</directory>

@@ -2,7 +2,7 @@
     
     namespace Alder\PublicAuthentication\User;
     
-    use Alder\Container;
+    use Alder\DiContainer;
     use Alder\Error\Stack as ErrorStack;
     
     /**
@@ -49,7 +49,7 @@
          * @return bool True if password is sufficiently strong, false otherwise.
          */
         public static function validatePassword(string $password, ErrorStack& $errors) : bool {
-            $passwordConfig = Container::get()->get("config")["alder"]["public_authentication"]["password"];
+            $passwordConfig = DiContainer::get()->get("config")["alder"]["public_authentication"]["password"];
             
             if ($passwordConfig["max_length"] > 0 && $passwordConfig["min_length"] > $passwordConfig["max_length"]) {
                 // Cheeky way to ensure a return of false if there is a failure, but also get 100% code coverage.
@@ -107,7 +107,7 @@
          * @return bool True if valid format, false otherwise.
          */
         public static function isUsername(string $username, ErrorStack& $errors) : bool {
-            $usernameConfig = Container::get()->get("config")["alder"]["public_authentication"]["username"];
+            $usernameConfig = DiContainer::get()->get("config")["alder"]["public_authentication"]["username"];
             $usernameLength = strlen($username);
             
             $result = true;
@@ -157,7 +157,7 @@
          * @return bool True if unique, false otherwise.
          */
         public static function isUniqueUsername(string $username, ErrorStack& $errors) : bool {
-            if (Container::get()->get("AlderTableCache")->fetchTable("User")->isUsernameUnique($username)) {
+            if (DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User")->isUsernameUnique($username)) {
                 $errors->push(103030401);
                 
                 return true;
@@ -175,7 +175,7 @@
          * @return bool True if unique, false otherwise.
          */
         public static function isUniqueEmail(string $email, ErrorStack& $errors) : bool {
-            if (Container::get()->get("AlderTableCache")->fetchTable("User")->isEmailUnique($email)) {
+            if (DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User")->isEmailUnique($email)) {
                 $errors->push(103030501);
                 
                 return true;

@@ -50,3 +50,6 @@
     define("PATCH", "update");
     define("DELETE", "delete");
     define("OPTIONS", "options");
+    
+    /* DB Contants */
+    define("MYSQL_INT_MAX", 4294967295);

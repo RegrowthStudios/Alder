@@ -96,8 +96,5 @@
         }
     } catch (\Exception $ex) {
         // Log error if a critical exception occurred.
-        error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL . "Error Code: " . $ex->getCode() . PHP_EOL
-                  . "Error Location: " . $ex->getFile() . " : " . $ex->getLine() . PHP_EOL . "Error Message: "
-                  . $ex->getMessage() . PHP_EOL . "Stack Trace: " . PHP_EOL . $ex->getTraceAsString());
-        exit();
+        critical_error($ex);
     }

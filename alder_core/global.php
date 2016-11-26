@@ -62,3 +62,18 @@
         
         return constant($uppercased);
     }
+    
+    /**
+     * Handles a critical error. Typical handling method during bootstrapping.
+     *
+     * @param \Exception $exception The exception that led to the critical error.
+     * @param bool $exit Whether to exit the program. Defaults to TRUE.
+     */
+    function critical_error(\Exception $exception, bool $exit = true) : void {
+        error_log("/////  CRITICAL ERROR  \\\\\\\\\\" . PHP_EOL
+                  . "Error Code: " . $exception->getCode() . PHP_EOL
+                  . "Error Location: " . $exception->getFile() . " : " . $exception->getLine() . PHP_EOL
+                  . "Error Message: " . $exception->getMessage() . PHP_EOL
+                  . "Stack Trace: " . PHP_EOL . $exception->getTraceAsString());
+        if ($exit) exit();
+    }

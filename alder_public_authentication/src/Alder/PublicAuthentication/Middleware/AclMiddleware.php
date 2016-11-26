@@ -34,9 +34,9 @@
                 // For now just erroring with server failure.
                 return new JsonResponse([], 500);
             }
-            $canonicalAction = canonicalise_action_class_path($action);
             
-            $canonicalMethod = constant(strtoupper($request->getMethod()));
+            $canonicalAction = canonicalise_action($action);
+            $canonicalMethod = canonicalise_method($request->getMethod());
             
             if (!$acl->isAllowed($visitorRole, $canonicalAction, $canonicalMethod)) {
                 return new JsonResponse([], 403); // TODO(Matthew): Provide greater context in response.

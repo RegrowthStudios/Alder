@@ -25,6 +25,8 @@
         // TODO(Matthew): OPTIONS
         
         // TODO(Matthew): Either here or at earlier middleware, reject repeated requests from same source for same resource/action.
+        // TODO(Matthew): Determine if the current password meets current password policy and, if not, require a change of password before authentication.
+        //                This should work with multiple rows, as new password policy would require new password row.
         /**
          * Authenticate a user with provided details, and generate a user session token
          * on successful authentication.

@@ -26,6 +26,23 @@
         protected $response;
         
         /**
+         * Determines if a parameter with the handle passed in was provided in the request.
+         *
+         * @param string $parameterHandle The handle of the parameter to be fetched.
+         *
+         * @return bool True if the parameter exists, false otherwise.
+         */
+        protected function hasParameter($parameterHandle) {
+            $queryParams = $this->request->getQueryParams();
+            $parsedBody = $this->request->getParsedBody();
+            $attributes = $this->request->getAttributes();
+
+            return isset($queryParams[$parameterHandle])
+                || isset($parsedBody[$parameterHandle])
+                || isset($attributes[$parameterHandle]);
+        }
+
+        /**
          * Fetches the named parameter from the route matching first, and if nothing is found in the route, from
          * the parsed body if method type is POST, else from the query string. Returns NULL if nothing is found.
          *
@@ -50,5 +67,19 @@
             $result = $this->request->getAttribute($parameterHandle, $param);
             
             return is_null($result) ? $default : $result;
+        }
+        
+        /**
+         * Returns all parameters of the request.
+         * 
+         * @return array The parameters of the request.
+         */
+        protected function getParameters() {
+            $queryParams = $this->request->getQueryParams();
+            $parsedBody = (array) $this->request->getParsedBody();
+            $attributes = $this->request->getAttributes();
+            
+            // TODO(Matthew): Consider alternative merging strategies.
+            return array_merge($queryParams, $parsedBody, $attributes);
         }
     }

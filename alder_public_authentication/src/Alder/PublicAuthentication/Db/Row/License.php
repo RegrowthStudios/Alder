@@ -22,7 +22,9 @@
          * creation_timestamp         |  VARCHAR(11)    |       |       |       |  The timestamp of the creation of the license.
          * name                       |  VARCHAR(50)    |       |       |       |  The name of the license.
          * description                |  VARCHAR(512)   |       |       |       |  The description of the license.
-         * product_id                 |  INT(11)        |       |       |       |  The associated product ID.
+         * legal_text                 |  MEDIUMTEXT     |       |       |       |  The license legal text.
+         * plain_text                 |  MEDIUMTEXT     |       |       |       |  The license plain text.
+         * product_id                 |  INT(11)        |       |  Yes  |       |  The associated product ID.
          * simultaneous_usage_count   |  TINYINT(1)     |       |       |       |  The number of simultaneous usages that may be made of the license.
          */
         

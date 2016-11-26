@@ -26,7 +26,7 @@
         use MiddlewareTrait;
         
         protected $metadata;
-                
+        
         // TODO(Matthew): Add more details on how these functions may satisfy the related RFCs.
         /**
          * Processes a request to acquire a specific resource.
@@ -77,23 +77,17 @@
          * Processes a request for the options related to the route path of the request.
          */
         protected function options() : void {
-            $action = canonicalise_action_class_path(get_class($this));
-            
-            if ($action === null) {
-                $this->response = $this->response->withStatus(405, "Method Not Allowed");
-                
-                return;
-            }
+            $canonicalAction = canonicalise_action(get_class($this));
             
             $apiMap = ApiMapFactory::create();
             
-            if (!isset($metadata["module"]) && !isset($apiMap[$metadata["module"]][$action])) {
+            if (!isset($metadata["module"]) || !isset($apiMap[$metadata["module"]][$canonicalAction])) {
                 $this->response = $this->response->withStatus(405, "Method Not Allowed");
                 
                 return;
             }
             
-            $actionMap = $apiMap[$metadata["module"]][$action];
+            $actionMap = $apiMap[$metadata["module"]][$canonicalAction];
             $this->response = (new JsonResponse($actionMap["body"]))->withHeader("Allow", $actionMap["allow"]);
         }
         
@@ -158,7 +152,7 @@
             
             return $this->response;
         }
-    
+        
         /**
          * Prepares the action with necessary metadata about itself.
          *

@@ -2,14 +2,14 @@
     
     // Define a bunch of directory constants.
     define("APP_DIRECTORY", dirname(__DIR__));
-    define("SRC_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "src");
-    define("VENDOR_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "vendor");
-    define("CONFIG_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "config");
-    define("API_MAP_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "apimap");
-    define("LOGS_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "logs");
-    define("TEMP_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "temp");
-    define("CACHE_DIRECTORY", APP_DIRECTORY . DIRECTORY_SEPARATOR . "cache");
-    define("ALDER_SRC_DIRECTORY", SRC_DIRECTORY . DIRECTORY_SEPARATOR . "Alder");
+    define("SRC_DIRECTORY", file_build_path(APP_DIRECTORY, "src"));
+    define("VENDOR_DIRECTORY", file_build_path(APP_DIRECTORY, "vendor"));
+    define("CONFIG_DIRECTORY", file_build_path(APP_DIRECTORY, "config"));
+    define("API_MAP_DIRECTORY", file_build_path(APP_DIRECTORY, "apimap"));
+    define("LOGS_DIRECTORY", file_build_path(APP_DIRECTORY, "logs"));
+    define("TEMP_DIRECTORY", file_build_path(APP_DIRECTORY, "temp"));
+    define("CACHE_DIRECTORY", file_build_path(APP_DIRECTORY, "cache"));
+    define("ALDER_SRC_DIRECTORY", file_build_path(SRC_DIRECTORY, "Alder"));
     
     // Define possible ENV states.
     define("PRODUCTION", "production");
@@ -17,7 +17,7 @@
     define("DEVELOPMENT", "development");
     // Define ENV - the environment state (development or production).
     // ENV state stored in a PHP file to get around Nginx not supporting setting environment variables a la Apache.
-    define("ENV", require CONFIG_DIRECTORY . "/env.state.php");
+    define("ENV", require file_build_path(CONFIG_DIRECTORY, "env.state.php"));
     
     // Define value to set config values to that MUST be overridden by a given installation.
     define("DEFAULT_VAL", "CHANGE");
@@ -29,6 +29,7 @@
     define("PASSWORD_STRICTNESS_HIGH", "high");
     define("PASSWORD_STRICTNESS_STRICT", "strict");
     
+    // TODO(Matthew): Roles should not be hardcoded. Initialise ACL during installation with default roles...
     /* ACL Constants. */
     // Role strings
     define("GUEST", "guest");

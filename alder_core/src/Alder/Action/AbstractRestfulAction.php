@@ -30,46 +30,36 @@
         // TODO(Matthew): Add more details on how these functions may satisfy the related RFCs.
         /**
          * Processes a request to acquire a specific resource.
-         *
-         * @param mixed $data Data from request.
          */
-        protected function get($data) : void {
+        protected function get() : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
         /**
          * Processes a request to create a new resource.
-         *
-         * @param mixed $data Data from request.
          */
-        protected function create($data) : void {
+        protected function create() : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
         /**
          * Processes a request to update a specific resource.
-         *
-         * @param mixed $data Data from request.
          */
-        protected function update($data) : void {
+        protected function update() : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
         /**
          * Processes a request to replace a specific resource.
-         *
-         * @param mixed $data Data from request.
          */
-        protected function replace($data) : void {
+        protected function replace() : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
         /**
          * Processes a request to delete a specific resource.
-         *
-         * @param mixed $data Data from request.
          */
-        protected function delete($data) : void {
+        protected function delete() : void {
             $this->response = $this->response->withStatus(405, "Method Not Allowed");
         }
         
@@ -93,11 +83,9 @@
         
         /**
          * Processes a HEAD request to a specific resource.
-         *
-         * @param mixed $data Data from request.
          */
-        protected function head($data) : void {
-            $this->get($data);
+        protected function head() : void {
+            $this->get();
             
             $bodySize = $this->response->getBody()->getSize();
             $this->response = $this->response->withBody(new Stream(""))->withHeader("Content-Length", $bodySize);
@@ -122,30 +110,31 @@
             $method = strtoupper($this->request->getMethod());
             switch ($method) {
                 case "GET":
-                    $this->get(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
+                    $this->get();
                     break;
                 case "POST":
-                    $this->create(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
+                    $this->create();
                     break;
                 case "PATCH":
-                    $this->update(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
+                    $this->update();
                     break;
                 case "PUT":
-                    $this->replace(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
+                    $this->replace();
                     break;
                 case "DELETE":
-                    $this->delete(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
+                    $this->delete();
                     break;
                 case "OPTIONS":
                     $this->options();
                     break;
                 case "HEAD":
-                    $this->head(Json::decode($this->getParameter("data"), Json::TYPE_ARRAY));
+                    $this->head();
                     break;
                 default:
                     $this->response = $this->response->withStatus(405);
             }
             
+            // if ($next && $this->response === $response) {
             if ($next) {
                 return $next($this->request, $this->response);
             }

@@ -11,9 +11,10 @@
     use Zend\Stratigility\MiddlewareInterface;
     
     /**
-     * The localisation middleware for Alder's public authentication service.
+     * The localisation middleware for providing a translation service to the application.
      * Determines the localisation of the request, if none or an invalid locale
-     * is provided, then the configured default locale is used.
+     * is provided, then the configured default locale is used. A fallback locale may also
+     * be configured.
      *
      * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved

@@ -27,6 +27,10 @@
                 },
                 "alder_language_cache" => function (\Interop\Container\ContainerInterface $container) {
                     return \Alder\Cache\CacheServiceFactory::create("language");
+                },
+                "token_signer" => function(\Interop\Container\ContainerInterface $container) {
+                    $signMethod = $container->get("config")["alder"]["token"]["sign_method"];
+                    return new $signMethod();
                 }
             ],
         ],

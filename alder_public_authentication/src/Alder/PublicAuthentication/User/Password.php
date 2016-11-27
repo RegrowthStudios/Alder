@@ -5,13 +5,13 @@
     use Alder\DiContainer;
     
     /**
-     * Provides utility functions for processing security details of the user.
+     * Provides utility functions for hashing, verifying and
      *
      * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class Security
+    class Password
     {
         /**
          * Hashes the given password.
@@ -20,7 +20,7 @@
          *
          * @return bool|string Hashed password, or false on failure.
          */
-        public static function hashPassword(string $password) {
+        public static function hash(string $password) {
             return password_hash($password, PASSWORD_DEFAULT, ["cost" => DiContainer::get()
                                                                                   ->get("config")["alder"]["public_authentication"]["password"]["hashing_strength"]]);
         }
@@ -33,7 +33,7 @@
          *
          * @return bool True if password is valid, false otherwise.
          */
-        public static function verifyPassword(string $password, string $hash) : bool {
+        public static function verify(string $password, string $hash) : bool {
             return password_verify($password, $hash);
         }
         
@@ -44,7 +44,7 @@
          *
          * @return bool True if password needs rehashing, false otherwise.
          */
-        public static function passwordNeedsRehash(string $hash) : bool {
+        public static function needsRehash(string $hash) : bool {
             return password_needs_rehash($hash, PASSWORD_DEFAULT, ["cost" => DiContainer::get()
                                                                                       ->get("config")["alder"]["public_authentication"]["password"]["hashing_strength"]]);
         }

@@ -46,6 +46,7 @@
                 "middleware" => [
                     \Alder\Middleware\ApiMapMiddleware::class,
                     \Alder\Middleware\LocalisationMiddleware::class,
+                    \Alder\Middleware\SessionMiddleware::class,
                     \Zend\Expressive\Helper\ServerUrlMiddleware::class,
                 ],
                 "priority" => PHP_INT_MAX,

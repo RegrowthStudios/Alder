@@ -31,7 +31,7 @@
                     "min_length" => 8, // Minimum length of passwords.
                     "max_length" => 48, // Maximum length of passwords.
                 ],
-                "session" => [ /* Session Settings */
+                "user_session" => [ /* Session Settings */
                     "duration" => 43200/*12 Hours*/, // How long should a standard length log-in session last.
                     "duration_extended" => 2592000/*~1 Month*/, // How long should an extended log-in session last.
                     "cache" => [ /* Session Cache Settings */
@@ -56,11 +56,19 @@
                         ]
                     ]
                 ],
-                "token" => [ /* Token Settings */
-                    "private_key" => DEFAULT_VAL, // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private RSA key file.
-                    "private_key_passphrase" => DEFAULT_VAL, // The passphrase for the private key, if it exists.
-                    "public_key" => DEFAULT_VAL, // The key used for verifying JWTs IF an asymmetric hash algorithm is specified. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the public RSA key file.
-                    "hash_algorithm" => "HS256", // The hashing algorithm used for the signing of JWTs. Allowed values: HS256, HS384, HS512, RS256, RS384, RS512. HS values are Hmac symmetric key methods, RS values are asymmetric RSA public/private key methods.
+                "client_auth_code" => [ /* Client Authorisation Code Settings */
+                    "duration" => 7200/*2 Hours*/, // How long should an authorisation code last?
+                    // TODO(Matthew): Double check but no auth code state needed on server, right?
+                    //"cache" => [ /* Client Authorisation Code Cache Settings */
+                    //    "namespace" => "alder_client_auth_cache", // Namespace in which all client auth code data is cached.
+                    //    "time_to_live" => 7260/*2 Hours 1 Minute */,
+                    //]
+                ],
+                "client_access_token" => [ /* Client Access Token Settings */
+                    "duration" => 7200/*2 Hours*/, // How long should an authorisation code last?
+                ],
+                "user_access_token" => [ /* User Access Token Settings */
+                    "duration" => 7200/*2 Hours*/, // How long should an authorisation code last?
                 ]
             ]
         ]

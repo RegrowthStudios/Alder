@@ -14,7 +14,7 @@
      * @copyright 2016, Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @since     0.1.0
      */
-    class SessionFactory
+    class SessionTokenFactory
     {
         /**
          * Construct a session token for the
@@ -26,7 +26,7 @@
          *
          * @return \Alder\Token\Token|null The created token, or false if the token could not be created.
          */
-        public static function create(int $id, ErrorStack& $errors, array $data = [],
+        public static function create(int $id, ErrorStack & $errors, array $data = [],
                                       $extendedSession = false) : ?Token {
             $container = DiContainer::get();
             
@@ -50,14 +50,20 @@
                 $sessionLength = $config["public_authentication"]["session"]["duration_extended"];
             }
             
-            $token = TokenFactory::create(["tokenLifetime" => $sessionLength, "registeredClaims" => ["sub" => "user"],
-                                           "applicationPayload" => ["id" => $id, "username" => $data["username"],
-                                                                    "primary_email" => $data["primary_email_local"]
-                                                                                       . "@"
-                                                                                       . $data["primary_email_domain"],
-                                                                    "license_keys" => $data["license_keys"],
-                                                                    "employee_flag" => $data["employee_flag"],
-                                                                    "extended_session" => $extendedSession]]);
+            $token = TokenFactory::create(
+                [
+                    "tokenLifetime"      => $sessionLength,
+                    "registeredClaims"   => ["sub" => "user"],
+                    "applicationPayload" => [
+                        "id"               => $id,
+                        "username"         => $data["username"],
+                        "primary_email"    => $data["primary_email_local"] . "@" . $data["primary_email_domain"],
+                        "license_keys"     => $data["license_keys"],
+                        "employee_flag"    => $data["employee_flag"],
+                        "extended_session" => $extendedSession
+                    ]
+                ]
+            );
             
             // If token failed to be generated, fail.
             if (!$token) {
@@ -66,8 +72,14 @@
                 return null;
             }
             
-            return build_cookie(USER_SESSION, (string) $token, $token->getClaim("exp"), $config["domain"], "/",
-                                $config["security"]["cookies_over_https_only"],
-                                $config["security"]["acces_cookies_via_http_only"]);
+            return build_cookie(
+                USER_SESSION,
+                (string) $token,
+                $token->getClaim("exp"),
+                $config["domain"],
+                "/",
+                $config["security"]["cookies_over_https_only"],
+                $config["security"]["acces_cookies_via_http_only"]
+            );
         }
     }

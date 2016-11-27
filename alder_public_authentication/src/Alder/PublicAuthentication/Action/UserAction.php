@@ -36,9 +36,13 @@
             
             if (!is_array($data)) {
                 if (!$this->getUserFromData($data, $result, $userTable)) {
-                    $this->response = new JsonResponse(["errors" => [101030101 => ErrorContainer::getInstance()
-                                                                                                ->retrieveErrorString(101030101)]],
-                                                       400);
+                    $this->response = new JsonResponse(
+                        [
+                            "errors" => [
+                                101030101 => ErrorContainer::getInstance()->retrieveErrorString(101030101)
+                            ]
+                        ], 400
+                    );
                     
                     return;
                 }
@@ -49,9 +53,13 @@
                     }
                 }
                 if (empty($result)) {
-                    $this->response = new JsonResponse(["errors" => [101030101 => ErrorContainer::getInstance()
-                                                                                                ->retrieveErrorString(101030101)]],
-                                                       400);
+                    $this->response = new JsonResponse(
+                        [
+                            "errors" => [
+                                101030101 => ErrorContainer::getInstance()->retrieveErrorString(101030101)
+                            ]
+                        ], 400
+                    );
                     
                     return;
                 }
@@ -63,8 +71,18 @@
             if (empty($missingContent)) {
                 $this->response = new JsonResponse(["data" => $result], 200);
             } else {
-                $this->response = new JsonResponse([["status" => 200, "data" => $result],
-                                                    ["status" => 400, "data" => $missingContent]], 207);
+                $this->response = new JsonResponse(
+                    [
+                        [
+                            "status" => 200,
+                            "data"   => $result
+                        ],
+                        [
+                            "status" => 400,
+                            "data"   => $missingContent
+                        ]
+                    ], 207
+                );
             }
         }
         
@@ -73,8 +91,9 @@
             $errorContainer = ErrorContainer::getInstance();
             
             if (!is_array($data)) {
-                $this->response = new JsonResponse(["errors" => [101030201 => $errorContainer->retrieveErrorString(101030201)]],
-                                                   400);
+                $this->response = new JsonResponse(
+                    ["errors" => [101030201 => $errorContainer->retrieveErrorString(101030201)]], 400
+                );
                 
                 return;
             }
@@ -85,7 +104,10 @@
             $userTable = DiContainer::get()->get("alder_pa_table_cache")->fetchTable("User");
             
             $successes = 0;
-            $failures = ["unnamed" => 0, "named" => []];
+            $failures = [
+                "unnamed" => 0,
+                "named"   => []
+            ];
             
             if (!is_array($data[0])) {
                 if (!$this->createUserFromData($data, $userTable, $errorContainer)) {
@@ -97,8 +119,9 @@
             } else {
                 foreach ($data as $datum) {
                     if (!is_array($datum)) {
-                        $this->response = new JsonResponse(["errors" => $errorContainer->retrieveErrorString(101030203)],
-                                                           400);
+                        $this->response = new JsonResponse(
+                            ["errors" => $errorContainer->retrieveErrorString(101030203)], 400
+                        );
                         
                         return;
                     }
@@ -134,8 +157,9 @@
             $errorContainer = ErrorContainer::getInstance();
             
             if (!is_array($data)) {
-                $this->response = new JsonResponse(["errors" => [101030401 => $errorContainer->retrieveErrorString(101030401)]],
-                                                   400);
+                $this->response = new JsonResponse(
+                    ["errors" => [101030401 => $errorContainer->retrieveErrorString(101030401)]], 400
+                );
                 
                 return;
             }
@@ -155,8 +179,9 @@
             } else {
                 foreach ($data as $datum) {
                     if (!is_array($datum)) {
-                        $this->response = new JsonResponse(["errors" => $errorContainer->retrieveErrorString(101030403)],
-                                                           400);
+                        $this->response = new JsonResponse(
+                            ["errors" => $errorContainer->retrieveErrorString(101030403)], 400
+                        );
                         
                         return;
                     }
@@ -214,7 +239,7 @@
             }
         }
         
-        protected function validateUserData($data, ErrorContainer& $errorContainer) : bool {
+        protected function validateUserData($data, ErrorContainer & $errorContainer) : bool {
             if (!isset($data["username"])) {
                 $errorContainer->addError(101030901);
             }
@@ -245,8 +270,8 @@
          *
          * @return bool
          */
-        protected function createUserFromData(array $data, UserTable& $userTable,
-                                              ErrorContainer& $errorContainer) : bool {
+        protected function createUserFromData(array $data, UserTable & $userTable,
+                                              ErrorContainer & $errorContainer) : bool {
             if (!$this->validateUserData($data, $errorContainer)) {
                 return false;
             }
@@ -282,8 +307,8 @@
          *
          * @return bool True on success, false on failure.
          */
-        protected function replaceUserFromData(array $data, UserTable& $userTable,
-                                               ErrorContainer& $errorContainer) : bool {
+        protected function replaceUserFromData(array $data, UserTable & $userTable,
+                                               ErrorContainer & $errorContainer) : bool {
             return false;
         }
     }

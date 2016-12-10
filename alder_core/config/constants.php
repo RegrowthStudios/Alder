@@ -6,6 +6,7 @@
     define("VENDOR_DIRECTORY", file_build_path(APP_DIRECTORY, "vendor"));
     define("CONFIG_DIRECTORY", file_build_path(APP_DIRECTORY, "config"));
     define("API_MAP_DIRECTORY", file_build_path(APP_DIRECTORY, "apimap"));
+    define("LANGUAGE_DIRECTORY", file_build_path(APP_DIRECTORY, "language"));
     define("LOGS_DIRECTORY", file_build_path(APP_DIRECTORY, "logs"));
     define("TEMP_DIRECTORY", file_build_path(APP_DIRECTORY, "temp"));
     define("CACHE_DIRECTORY", file_build_path(APP_DIRECTORY, "cache"));

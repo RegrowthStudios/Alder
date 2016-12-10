@@ -24,10 +24,19 @@
                                  callable $next = null) : ResponseInterface {
             $config = DiContainer::get()->get("config");
             
-            $locale = $request->getAttribute("locale", $config["default_locale"]);
+            $locale = $request->getAttribute("locale", ($config["default_locale"] ?: \Locale::getDefault()));
             
-            // TODO(Matthew): Do language middleware separate or here?
-            \Locale::setDefault($locale);
+            $translator = Translator::factory([
+                "locale" => $locale,
+                "translation_file_patterns" => [
+                    [
+                        "type" => PhpArray::class,
+                        "base_dir" => LANGUAGE_DIRECTORY,
+                        "pattern" => file_build_path("%s", "")
+                    ]
+                ]
+            ]);
+            
             
             return $next($request, $response);
         }

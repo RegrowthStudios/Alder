@@ -2,6 +2,15 @@
     
     namespace Alder\I18n\Translator;
     
+    use Alder\I18n\Translator\Loader\LoaderInterface;
+    
+    /**
+     * Provides an interface for translator classes.
+     *
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
+     * @since     0.1.0
+     */
     interface TranslatorInterface
     {
         /**
@@ -20,8 +29,10 @@
          * Set the default locale of the translator.
          *
          * @param string $locale
+         *
+         * @return \Alder\I18n\Translator\TranslatorInterface
          */
-        public function setDefaultLocale(string $locale) : void;
+        public function setDefaultLocale(string $locale) : TranslatorInterface;
         
         /**
          * Returns the current fallback locale of the translator.
@@ -35,8 +46,19 @@
          * locales yielded no message.
          *
          * @param string $locale
+         *
+         * @return \Alder\I18n\Translator\TranslatorInterface
          */
-        public function setFallbackLocale(string $locale) : void;
+        public function setFallbackLocale(string $locale) : TranslatorInterface;
+        
+        /**
+         * Set the loader from which to load messages for translations.
+         *
+         * @param \Alder\I18n\Translator\Loader\LoaderInterface $loader
+         *
+         * @return \Alder\I18n\Translator\TranslatorInterface
+         */
+        public function setLoader(LoaderInterface $loader) : TranslatorInterface;
         
         /**
          * Gets the message with the specified label in the specified domain. The locale
@@ -49,9 +71,9 @@
          *
          * @return string|null The message retrieved or null if nothing found.
          */
-        public function translate(string $label, string $domain = self::DEFAULT_DOMAIN, string $locale = null) : ?string;
+        public function translate(string $label, string $domain = self::DEFAULT_DOMAIN,
+                                  string $locale = null) : ?string;
         
-        // TODO(Matthew): Allow passing in custom rules for plurality?
         /**
          * Similar to translate, but handles differentiating between singular and plural phrasing.
          * This is achieved by allowing an array of plural labels, where the numeric index of each
@@ -71,5 +93,6 @@
          *
          * @return null|string The message retrieved or null if nothing found.
          */
-        public function translatePlural(string $singularLabel, $pluralLabels, int $count, string $domain = self::DEFAULT_DOMAIN, string $locale = null) : ?string;
+        public function translatePlural(string $singularLabel, $pluralLabels, int $count,
+                                        string $domain = self::DEFAULT_DOMAIN, string $locale = null) : ?string;
     }

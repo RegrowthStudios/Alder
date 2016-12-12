@@ -56,6 +56,13 @@
         /**
          * {@inheritdoc}
          */
+        public function getLoader() : LoaderInterface {
+            return $this->loader;
+        }
+        
+        /**
+         * {@inheritdoc}
+         */
         public function setLoader(LoaderInterface $loader) : TranslatorInterface {
             $this->loader = $loader;
             

@@ -52,6 +52,13 @@
         public function setFallbackLocale(string $locale) : TranslatorInterface;
         
         /**
+         * Returns the current loader object for the translator.
+         *
+         * @return \Alder\I18n\Translator\Loader\LoaderInterface
+         */
+        public function getLoader() : LoaderInterface;
+        
+        /**
          * Set the loader from which to load messages for translations.
          *
          * @param \Alder\I18n\Translator\Loader\LoaderInterface $loader

@@ -7,6 +7,7 @@
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     
+    use Zend\I18n\Translator\Translator;
     use Zend\Stratigility\MiddlewareInterface;
     
     /**
@@ -22,12 +23,29 @@
     {
         public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
                                  callable $next = null) : ResponseInterface {
-            $config = DiContainer::get()->get("config");
+            /**
+             * @var \Zend\ServiceManager\ServiceManager $container
+             */
+            $container = DiContainer::get();
+            $config = $container->get("config")["alder"]["language"];
             
-            $locale = $request->getAttribute("locale", $config["default_locale"]);
+            $locale = $request->getAttribute("locale", ($config["default_locale"] ?: \Locale::getDefault()));
             
-            // TODO(Matthew): Do language middleware separate or here?
-            \Locale::setDefault($locale);
+            $languageSources = $config["language_sources"];
+            
+            $translator = Translator::factory([
+                "locale" => $locale,
+                "translation_file_patterns" => $languageSources["file_patterns"],
+                "translation_files" => $languageSources["files"],
+                "remote_translation" => $languageSources["remote_files"],
+                "cache" => $container->get("alder_language_cache")
+            ]);
+            
+            if ($config["fallback_locale"]) {
+                $translator->setFallbackLocale($config["fallback_locale"]);
+            }
+            
+            $container->setService("translator", $translator);
             
             return $next($request, $response);
         }

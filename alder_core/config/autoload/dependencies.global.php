@@ -23,10 +23,10 @@
                     return \Zend\Db\Metadata\Source\Factory::createSourceFromAdapter($adapter);
                 },
                 "alder_db_cache" => function (\Interop\Container\ContainerInterface $container) {
-                    return \Alder\Cache\DatabaseCacheServiceFactory::create();
+                    return \Alder\Cache\CacheServiceFactory::create("db");
                 },
                 "alder_language_cache" => function (\Interop\Container\ContainerInterface $container) {
-                    return \Zend\Cache\StorageFactory::factory($container->get("config")["alder"]["language"]["cache"]);
+                    return \Alder\Cache\CacheServiceFactory::create("language");
                 }
             ],
         ],

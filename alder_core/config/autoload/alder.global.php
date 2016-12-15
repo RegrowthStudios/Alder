@@ -3,6 +3,40 @@
     return [
         "alder" => [
             "app_name" => "Alder", // Title of the application.
+            "db" => [ /* Database Settings */
+                "adapter" => [ /* Db Adapter Settings */
+                   "driver" => "Pdo_Mysql", // The driver of the database. Values: "Mysqli", "Sqlsrv", "Pdo_Sqlite", "Pdo_Mysql",...
+                   "database" => "", // The name of the database for the Sycamore application.
+                   "hostname" => "localhost", // The host IP of the database.
+                   "port" => "3306", // The port over which to connect to the database.
+                   "username" => "", // The username with which to connect to the database.
+                   "password" => "", // The password with which to connect to the database.
+                   "charset" => "utf8", // The charset to use in communicating with database.
+                ],
+                "cache" => [ /* Database Cache Settings */
+                    "adapter" => [ /* Adapter Settings */
+                        "name" => "redis",
+                        "options" => [
+                            "ttl" => 1800/*30 Mins*/, // How long does data last in cache for?
+                            "namespace" => "alder_db", // Namespace of the cache items.
+                            "server" => "/path/to/sock.sock", // The server address of the cache. Can be either a URI, associative array or list as described at https://docs.zendframework.com/zend-cache/storage/adapter/#adapter-specific-options_4
+                            "password" => "", // The password of the Redis server.
+                            "database" => 0, // The database identifier of the cache on the Redis server.
+                        ]
+                    ],
+                    "plugins" => [ /* Plugin Settings */
+                        [
+                            "name" => "ignore_user_abort", // The name of the plugin.
+                            "options" => [ /* Ignore User Abort Options */
+                                "exit_on_abort" => false // Whether the cache script should exit on user aborting request.
+                            ],
+                            "priority" => 1 // The priority this plugin takes over other plugins applied to the cache object.
+                        ]
+                    ]
+                ],
+                "force_db_fetch" => false, // Whether to force DB fetches and skip the cache. This is NOT recommended outside of development.
+                "table_prefix" => "alder_", // The prefix to be added to all table names for the application.
+            ],
             "domain" => "example.com", // Domain of the application.
             // TODO(Matthew): Consider if all these security settings should be global.
             "security" => [ /* General Security Settings */

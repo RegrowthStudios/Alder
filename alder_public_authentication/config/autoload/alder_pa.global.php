@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * The specific configuration of the Alder Public Authentication application.
+     * The specific configuration of the Alder Public Authentication module.
      */
 
     return [
@@ -21,35 +21,6 @@
             //    ],
             //],
             "public_authentication" => [ /* Module-specific Settings */
-                "db" => [ /* Database Settings */
-                    "adapter" => [ /* Adapter Settings */
-                        "driver" => "Pdo_Mysql", // The driver of the database. Values: "Mysqli", "Sqlsrv", "Pdo_Sqlite", "Pdo_Mysql",...
-                        "database" => "", // The name of the database for the Sycamore application.
-                        "hostname" => "localhost", // The host IP of the database.
-                        "port" => "3306", // The port over which to connect to the database.
-                        "username" => "", // The username with which to connect to the database.
-                        "password" => "", // The password with which to connect to the database.
-                        "charset" => "utf8", // The charset to use in communicating with database.
-                    ],
-                    "cache" => [ /* Cache Settings */
-                        "namespace" => "alder_db_cache", // Namespace in which all application data is cached.
-                        "time_to_live" => 1800/*30 Mins*/, // How long does the data live for in cache?
-                        "adapter" => "filesystem", // Name of the type of cache to use.
-                        "plugins" => [ /* Cache Plugin Details */
-                            "clear_expired" => [ /* Cache Clearing Plugin */
-                                "clearing_factor" => 100, // The probability that the clearing function will be called on a caching operation (1/n, where n is the value here).
-                            ],
-                            "ignore_user_abort" =>  [ /* User Abort Plugin */
-                                "exit_on_abort" => false, // Whether the cache script should be aborted on user closing connection with server.
-                            ],
-                            "optimise" => [ /* Optimisation Plugin */
-                                "optimising_factor" => 100, // The probability that the optimisation function will be called on a caching operation (1/n, where n is the value here).
-                            ]
-                        ],
-                    ],
-                    "force_db_fetch" => false, // Whether to force DB fetches and skip the cache. This is NOT recommended outside of development.
-                    "table_prefix" => "", // The prefix to be added to all table names for the application.
-                ],
                 "username" => [ /* Username Settings */
                     "min_length" => 1, // Minimum length of usernames.
                     "max_length" => 32 // Maximum length of usernames.
@@ -64,16 +35,25 @@
                     "duration" => 43200/*12 Hours*/, // How long should a standard length log-in session last.
                     "duration_extended" => 2592000/*~1 Month*/, // How long should an extended log-in session last.
                     "cache" => [ /* Session Cache Settings */
-                        "namespace" => "alder_session_cache", // Namespace in which all session data is cached.
-                        "time_to_live" => 1800/*30 Mins*/, // How long does the data live for in cache?
-                        "adapter" => "redis", // Name of the type of cache to use.
-                        "server" => "/path/to/sock.sock", // Server address. Either socket path, or associative array of host, port and timeout.
-                        "password" => null, // The password of the redis server, if there is one. NULL indicates no password.
-                        "plugins" => [ /* Cache Plugin Details */
-                            "ignore_user_abort" =>  [ /* User Abort Plugin */
-                                "exit_on_abort" => false, // Whether the cache script should be aborted on user closing connection with server.
+                        "adapter" => [ /* Adapter Settings */
+                            "name" => "redis",
+                            "options" => [
+                                "ttl" => 1800/*30 Mins*/, // How long does data last in cache for?
+                                "namespace" => "alder_session", // Namespace of the cache items.
+                                "server" => "/path/to/sock.sock", // The server address of the cache. Can be either a URI, associative array or list as described at https://docs.zendframework.com/zend-cache/storage/adapter/#adapter-specific-options_4
+                                "password" => "", // The password of the Redis server.
+                                "database" => 0, // The database identifier of the cache on the Redis server.
                             ]
                         ],
+                        "plugins" => [ /* Plugin Settings */
+                            [
+                                "name" => "ignore_user_abort", // The name of the plugin.
+                                "options" => [ /* Ignore User Abort Options */
+                                    "exit_on_abort" => false // Whether the cache script should exit on user aborting request.
+                                ],
+                                "priority" => 1 // The priority this plugin takes over other plugins applied to the cache object.
+                            ]
+                        ]
                     ]
                 ],
                 "token" => [ /* Token Settings */

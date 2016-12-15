@@ -8,10 +8,10 @@
         "dependencies" => [
             "factories" => [
                 "alder_pa_table_cache" => function(\Interop\Container\ContainerInterface $container) {
-                    return \Alder\Cache\TableCacheServiceFactory::create("Alder\\PublicAuthentication\\Db\\Table\\");
+                    return new \Alder\Db\TableCache("Alder\\PublicAuthentication\\Db\\Table\\");
                 },
                 "alder_pa_session_cache" => function(\Interop\Container\ContainerInterface $container) {
-                    return \Alder\Cache\DatabaseCacheServiceFactory::create("public_authentication");
+                    return \Alder\Cache\CacheServiceFactory::create("session", "public_authentication");
                 }
             ],
         ],

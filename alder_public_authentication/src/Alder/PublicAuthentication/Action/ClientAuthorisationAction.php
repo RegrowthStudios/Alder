@@ -76,17 +76,16 @@
             $redirectUri = $this->getParameter("redirect_uri", null);
             
             // Fetch table cache.
+            /**
+             * @var \Alder\Db\TableCache $tableCache
+             */
             $tableCache = DiContainer::get()->get("alder_pa_table_cache");
             
             // Fetch client, fail if none match provided client ID.
             /**
-             * @var \Alder\PublicAuthentication\Db\Table\Client $clientTable
-             */
-            $clientTable = $tableCache->fetchTable("Client");
-            /**
              * @var \Alder\PublicAuthentication\Db\Row\Client $client
              */
-            $client = $clientTable->getByUniqueKey("client_id", (int) $clientId);
+            $client = $tableCache->fetchTable("Client")->getByPrimaryKey([(int) $clientId]);
             if (!$client) {
                 $this->response = new JsonResponse([
                     "for" => "end_user",

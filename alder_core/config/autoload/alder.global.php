@@ -76,12 +76,13 @@
                         ]
                     ]
                 ],
-                "language_sources" => [
+                "language_sources" => [ /* Language Source File Settings */
                     "file_patterns" => [ /* File patterns for language files to load from. */
                         [
                             "type" =>  \Zend\I18n\Translator\Loader\PhpArray::class,
                             "base_dir" => LANGUAGE_DIRECTORY,
-                            "pattern" => "%s.php"
+                            "pattern" => file_build_path("core", "%s.php"),
+                            "text_domain" => "core"
                         ]
                     ],
                     "files" => [ /* Specific language files to load. */ ],

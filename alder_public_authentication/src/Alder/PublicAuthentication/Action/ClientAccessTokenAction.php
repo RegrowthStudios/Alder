@@ -80,17 +80,16 @@
             $redirectUri = $this->getParameter("redirect_uri", null);
             
             // Fetch table cache.
+            /**
+             * @var \Alder\Db\TableCache $tableCache
+             */
             $tableCache = DiContainer::get()->get("alder_pa_table_cache");
             
             // Fetch client, fail if none match provided client ID.
             /**
-             * @var AbstractTable $clientTable
-             */
-            $clientTable = $tableCache->fetchTable("Client");
-            /**
              * @var \Alder\PublicAuthentication\Db\Row\Client $client
              */
-            $client = $clientTable->getByUniqueKey("client_id", (int) $clientId);
+            $client = $tableCache->fetchTable("Client")->getByPrimaryKey([(int) $clientId]);
             if (!$client) {
                 $this->response = new JsonResponse([
                     "error" => "invalid_request",
@@ -176,25 +175,16 @@
                     return;
                 }
                 
-                /**
-                 * @var AbstractTable $userTable
-                 */
-                $userTable = $tableCache->fetchTable("User");
-                
                 // Get passed in username (or email) and password.
                 $usernameOrEmail = $this->getParameter("username", null);
                 $password = $this->getParameter("password", null);
                 
                 // Get user (only ID and password hash) from provided username or email.
                 /**
-                 * @var \Alder\PublicAuthentication\Db\Row\User $user
+                 * @var \Alder\PublicAuthentication\Db\Table\User $userTable
                  */
-                $user = null;
-                if (filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL)) {
-                    $user = $userTable->getByCompositeUniqueKey(["primary_email_local", "primary_email_domain"], explode("@", $usernameOrEmail), ["id", "password_hash"]);
-                } else {
-                    $user = $userTable->getByUniqueKey("username", $usernameOrEmail. ["id", "password_hash"]);
-                }
+                $userTable = $tableCache->fetchTable("User");
+                $user = $userTable->getByUsernameOrEmail($usernameOrEmail);
                 
                 // If user was not found, fail.
                 if (!$user) {

@@ -199,6 +199,28 @@
         }
         
         /**
+         * Fetches the row matching the provided values of the primary key as stored in cache,
+         * if none are present in cache or $forceDbFetch is true, fetches from
+         * the database.
+         *
+         * @param array $values         The values to match records against.
+         * @param array $columnsToFetch The columns to fetch.
+         * @param bool  $forceDbFetch   Whether to force a db fetch.
+         *
+         * @return \Alder\Db\Row\AbstractRowInterface|\ArrayObject|NULL The fetched item, NULL if no matches found.
+         */
+        public function getByPrimaryKey(array $values, array $columnsToFetch = null,
+                                        bool $forceDbFetch = false) {
+            // TODO(Matthew): May not work, consider alternatives.
+            $primaryKey = $this->featureSet->getFeatureByClassName(MetadataFeature::class)->sharedData["metadata"]["primaryKey"];
+            if (is_array($primaryKey)) {
+                return $this->getByCompositeUniqueKey($primaryKey, $values, $columnsToFetch, $forceDbFetch);
+            } else {
+                return $this->getByUniqueKey($primaryKey, $values[0], $columnsToFetch, $forceDbFetch);
+            }
+        }
+        
+        /**
          * Fetches all rows between the provided key values as stored in cache,
          * if none are present in cache or $forceDbFetch is true, fetches from
          * the database.

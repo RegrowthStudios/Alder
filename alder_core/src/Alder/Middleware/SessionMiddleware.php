@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\PublicAuthentication\Middleware;
+    namespace Alder\Middleware;
     
     use Alder\DiContainer;
     use Alder\Error\Stack as ErrorStack;

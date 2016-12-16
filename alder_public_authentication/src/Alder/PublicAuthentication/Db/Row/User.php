@@ -4,6 +4,7 @@
     
     use Alder\Db\Row\AbstractRow;
     use Alder\PublicAuthentication\Db\Table\User as UserTable;
+    use Alder\PublicAuthentication\User\Password;
     
     /**
      * Representation of a row in the table of users.
@@ -52,5 +53,32 @@
          */
         public function __construct() {
             parent::__construct(self::$table);
+        }
+    
+        /**
+         * Determines if the provided password is valid for the user represented by this row. It will also
+         * update the hash of the password stored in the database if the password policy has changed since the
+         * last hash.
+         *
+         * @param string $password The password to validate.
+         *
+         * @return bool True if the password is valid, false otherwise.
+         * @throws \Exception Thrown if a row object has not been initialised before this function is called.
+         */
+        public function passwordValid(string $password) : bool {
+            // If the row isn't initialised or populated, row is being used wrong.
+            if (!$this->isInitialized || !isset($this->data["password_hash"]) || !isset($this->data["id"])) {
+                throw new \Exception("Row has not been initialised or populated, cannot verify a password for a null user.");
+            }
+            
+            // Verify password, if valid check if the password hash needs updating according to most current password policy.
+            if (Password::verify($password, $this->data["password_hash"])) {
+                if (Password::needsRehash($this->data["password_hash"])) {
+                    $this->data["password_hash"] = Password::hash($password);
+                    $this->save();
+                }
+                return true;
+            }
+            return false;
         }
     }

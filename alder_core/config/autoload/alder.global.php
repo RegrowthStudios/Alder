@@ -46,6 +46,12 @@
                 "enable_clickjacking_protection" => true, // If true, prevents clickjacking attacks by not allowing site to be rendered in iframe.
                 "refresh_sessions_with_expiry_within" => 1296000/*0.5 Months*/, // Refresh sessions that interact with the server where their expiry will occur within the specified time.
             ],
+            "token" => [ /* Default Token Settings */
+                         "private_key" => DEFAULT_VAL, // The key used for signing JWTs. Do NOT share. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the private key file.
+                         "private_key_passphrase" => DEFAULT_VAL, // The passphrase for the private key, if it exists.
+                         "public_key" => DEFAULT_VAL, // The key used for verifying JWTs IF an asymmetric hash algorithm is specified. In case of asymmetric hash algorithm, this should be the file URI ("file://...") to the public key file. MUST be the same as private_key value if a symmetric signing method is chosen.
+                         "sign_method" => \Lcobucci\JWT\Signer\Hmac\Sha384::class, // The algorithm used for the signing of JWTs. Allowed values: HS256, HS384, HS512, RS256, RS384, RS512. HS values are Hmac symmetric key methods, RS values are asymmetric RSA public/private key methods.
+            ],
             "language" => [ /* Language Settings */
                 "default_locale" => "en_GB", // The default locale of the application. (http://www.roseindia.net/tutorials/I18N/locales-list.shtml has a list of possible locales.)
                 "fallback_locale" => "en_GB", // The locale to fallback to if the specified or default locale are missing a requested message string. NULL indicates no fallback locale.

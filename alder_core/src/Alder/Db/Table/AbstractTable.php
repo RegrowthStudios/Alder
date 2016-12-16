@@ -6,6 +6,7 @@
     use Alder\Stdlib\CacheUtils;
     
     use Zend\Db\Adapter\Adapter;
+    use Zend\Db\Adapter\AdapterInterface;
     use Zend\Db\Metadata\MetadataInterface;
     use Zend\Db\ResultSet\ResultSet;
     use Zend\Db\TableGateway\AbstractTableGateway;
@@ -32,15 +33,21 @@
          * @param array                                        $columns The columns of the table represented.
          * @param \Zend\Db\RowGateway\RowGatewayInterface|NULL $row     The row object to construct with the results of
          *                                                              queries.
+         * @param \Zend\Db\Adapter\AdapterInterface            $adapter The adapter to use for te table.
          */
-        protected function __construct(string $table, array $columns = null, RowGatewayInterface $row = null) {
+        protected function __construct(string $table, array $columns = null, RowGatewayInterface $row = null,
+                                       AdapterInterface $adapter = null) {
             $container = DiContainer::get();
             
             // Prefix table.
             $this->table = $container->get("config")["alder"]["db"]["table_prefix"] . $table;
             
             // Acquire adapter from service container.
-            $this->adapter = $container->get(Adapter::class);
+            if (!$adapter) {
+                $this->adapter = $container->get(Adapter::class);
+            } else {
+                $this->adapter = $adapter;
+            }
             
             // Set columns if provided.
             if ($columns) {
@@ -77,8 +84,11 @@
         protected function getBySelect($select, $cacheWhere, string $cacheExtra, array $columnsToFetch = null,
                                        bool $forceDbFetch = false) : ResultSet {
             // Generate the location in cache for the appropriate data.
-            $cacheLocation = CacheUtils::generateCacheAddress($this->table . ":" . $cacheExtra, $cacheWhere,
-                                                              $columnsToFetch);
+            $cacheLocation = CacheUtils::generateCacheAddress(
+                $this->table . ":" . $cacheExtra,
+                $cacheWhere,
+                $columnsToFetch
+            );
             
             $container = DiContainer::get();
             
@@ -95,8 +105,9 @@
             // Fetch from db if cache fails or if db fetch is forced.
             // Else set final result from fetched cache item.
             if (!$cacheFetchSuccess) {
-                $select = $this->sql->select()->where($select)
-                                    ->columns($columnsToFetch ?: $this->columns ?: Select::SQL_STAR);
+                $select = $this->sql->select()->where($select)->columns(
+                        $columnsToFetch ?: $this->columns ?: [Select::SQL_STAR]
+                    );
                 $result = $this->selectWith($select);
                 $dbCache->setItem($cacheLocation, $result);
             } else {
@@ -138,10 +149,19 @@
          */
         public function getByMultipleColumnsWithValues(array $columns, array $values, array $columnsToFetch = null,
                                                        bool $forceDbFetch = false) : ResultSet {
-            return $this->getBySelect(array_combine($columns, $values), $values,
-                                      "get_by" . array_reduce($columns, function ($carry, $item) {
-                                          return $carry . "_" . $item;
-                                      }, ""), $columnsToFetch, $forceDbFetch);
+            return $this->getBySelect(
+                array_combine($columns, $values),
+                $values,
+                "get_by" . array_reduce(
+                    $columns,
+                    function ($carry, $item) {
+                        return $carry . "_" . $item;
+                    },
+                    ""
+                ),
+                $columnsToFetch,
+                $forceDbFetch
+            );
         }
         
         /**
@@ -193,9 +213,15 @@
          */
         public function getByColumnWithValueBetween(string $column, $valueMin, $valueMax, array $columnsToFetch = null,
                                                     bool $forceDbFetch = false) : ResultSet {
-            return $this->getBySelect(function (Select $select) use ($column, $valueMin, $valueMax) {
-                $select->where->between($column, $valueMin, $valueMax);
-            }, strval($valueMin) . "_" . strval($valueMax), "get_between_$column", $columnsToFetch, $forceDbFetch);
+            return $this->getBySelect(
+                function (Select $select) use ($column, $valueMin, $valueMax) {
+                    $select->where->between($column, $valueMin, $valueMax);
+                },
+                strval($valueMin) . "_" . strval($valueMax),
+                "get_between_$column",
+                $columnsToFetch,
+                $forceDbFetch
+            );
         }
         
         /**
@@ -212,9 +238,15 @@
          */
         public function getByColumnWithValueGreaterThanOrEqualTo(string $column, $value, array $columnsToFetch = null,
                                                                  bool $forceDbFetch = false) : ResultSet {
-            return $this->getBySelect(function (Select $select) use ($column, $value) {
-                $select->where->greaterThanOrEqualTo($column, $value);
-            }, $value, "get_greater_than_or_equal_to_$column", $columnsToFetch, $forceDbFetch);
+            return $this->getBySelect(
+                function (Select $select) use ($column, $value) {
+                    $select->where->greaterThanOrEqualTo($column, $value);
+                },
+                $value,
+                "get_greater_than_or_equal_to_$column",
+                $columnsToFetch,
+                $forceDbFetch
+            );
         }
         
         /**
@@ -231,9 +263,15 @@
          */
         public function getByColumnWithValueLessThanOrEqualTo(string $column, $value, array $columnsToFetch = null,
                                                               bool $forceDbFetch = false) : ResultSet {
-            return $this->getBySelect(function (Select $select) use ($column, $value) {
-                $select->where->lessThanOrEqualTo($column, $value);
-            }, $value, "get_less_than_or_equal_to_$column", $columnsToFetch, $forceDbFetch);
+            return $this->getBySelect(
+                function (Select $select) use ($column, $value) {
+                    $select->where->lessThanOrEqualTo($column, $value);
+                },
+                $value,
+                "get_less_than_or_equal_to_$column",
+                $columnsToFetch,
+                $forceDbFetch
+            );
         }
         
         /**
@@ -250,9 +288,15 @@
          */
         public function getByColumnWithValueInCollection(string $column, $valueCollection, array $columnsToFetch = null,
                                                          bool $forceDbFetch = false) : ResultSet {
-            return $this->getBySelect(function (Select $select) use ($column, $valueCollection) {
-                $select->where->in($column, $valueCollection);
-            }, $valueCollection, "get_in_collection_$column", $columnsToFetch, $forceDbFetch);
+            return $this->getBySelect(
+                function (Select $select) use ($column, $valueCollection) {
+                    $select->where->in($column, $valueCollection);
+                },
+                $valueCollection,
+                "get_in_collection_$column",
+                $columnsToFetch,
+                $forceDbFetch
+            );
         }
         
         // TODO(Matthew): Delete this? Not much point to it for the performance hit that comes with it.
@@ -356,7 +400,7 @@
             // Fetch from db if cache fails or if db fetch is forced.
             // Else set final result from fetched cache item.
             if (!$cacheFetchSuccess) {
-                $select = $this->sql->select()->columns($columnsToFetch ?: $this->columns ?: Select::SQL_STAR);
+                $select = $this->sql->select()->columns($columnsToFetch ?: $this->columns ?: [Select::SQL_STAR]);
                 $result = $this->selectWith($select);
                 $dbCache->setItem($cacheLocation, $result);
             } else {

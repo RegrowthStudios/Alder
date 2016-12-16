@@ -5,7 +5,7 @@
     define("SRC_DIRECTORY", file_build_path(APP_DIRECTORY, "src"));
     define("VENDOR_DIRECTORY", file_build_path(APP_DIRECTORY, "vendor"));
     define("CONFIG_DIRECTORY", file_build_path(APP_DIRECTORY, "config"));
-    define("LANGUAGE_DIRECTORY", file_build_path(APP_DIRECTORY, "language"));
+    define("LANGUAGE_DIRECTORY", file_build_path(APP_DIRECTORY, "i18n"));
     define("API_MAP_DIRECTORY", file_build_path(APP_DIRECTORY, "apimap"));
     define("LOGS_DIRECTORY", file_build_path(APP_DIRECTORY, "logs"));
     define("TEMP_DIRECTORY", file_build_path(APP_DIRECTORY, "temp"));

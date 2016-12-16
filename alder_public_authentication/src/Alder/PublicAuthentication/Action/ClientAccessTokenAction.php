@@ -218,7 +218,7 @@
                     "error" => "server_error",
                     "error_description" => $translator->translate("server_failed")
                 ], 500);
-                throw new \OAuthException($translator->translate("token_generation_failed", "oauth"), E_USER_ERROR);
+                throw new \OAuthException($translator->translate("token_generation_failed", "oauth", $translator->getFallbackLocale()), E_USER_ERROR);
             }
             
             // Complete response data and set response to include it in body as JSON encoded string.

@@ -119,7 +119,7 @@
                     "error" => "server_error",
                     "error_description" => $translator->translate("server_failed")
                 ], 500);
-                throw new \OAuthException($translator->translate("scope_resolution_failed", "oauth"), E_USER_ERROR);
+                throw new \OAuthException($translator->translate("scope_resolution_failed", "oauth", $translator->getFallbackLocale()), E_USER_ERROR);
             } else if (empty($scopes)) {
                 $this->response = new JsonResponse([
                     "for" => "client",
@@ -145,7 +145,7 @@
                     "error" => "server_error",
                     "error_description" => $translator->translate("server_failed")
                 ], 500);
-                throw new \OAuthException($translator->translate("token_generation_failed", "oauth"), E_USER_ERROR);
+                throw new \OAuthException($translator->translate("token_generation_failed", "oauth", $translator->getFallbackLocale()), E_USER_ERROR);
             }
             
             // Embed result in return body.

@@ -70,6 +70,18 @@
                 "user_access_token" => [ /* User Access Token Settings */
                     "duration" => 7200/*2 Hours*/, // How long should an authorisation code last?
                 ]
+            ],
+            "language" => [ /* Language Settings */
+                "language_sources" => [ /* Language Source File Settings */
+                    "file_patterns" => [ /* File patterns for language files to load from. */
+                        [
+                            "type" =>  \Zend\I18n\Translator\Loader\PhpArray::class,
+                            "base_dir" => LANGUAGE_DIRECTORY,
+                            "pattern" => file_build_path("oauth", "%s.php"),
+                            "text_domain" => "oauth"
+                        ]
+                    ]
+                ]
             ]
         ]
     ];

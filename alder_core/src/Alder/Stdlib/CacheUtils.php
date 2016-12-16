@@ -18,8 +18,6 @@
          * @param mixed  $specifics The specific parameters that uniquely identify the desired cache item.
          *
          * @return string The generated cache address.
-         *
-         * @throws \InvalidArgumentException If $location is not a string.
          */
         public static function generateCacheAddress(string $location, ...$specifics) : string {
             $cacheName = $location;

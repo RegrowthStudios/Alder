@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Stdlib;
+    namespace Alder;
     
     /**
      * Provides functionality for containers that retrieve their data from a cache first or a default object second.
@@ -9,7 +9,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class Container
+    class CacheContainer
     {
         /**
          * The single instance of the container.
@@ -23,7 +23,7 @@
          *
          * @return self The container instance.
          */
-        public static function create(string $defaultPath, string $cachePath) : Container {
+        public static function create(string $defaultPath, string $cachePath) : CacheContainer {
             if (!isset(self::$instance)) {
                 self::$instance = new self($defaultPath, $cachePath);
             }

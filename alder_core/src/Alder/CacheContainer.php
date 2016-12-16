@@ -16,7 +16,7 @@
          *
          * @var self
          */
-        protected static $instance = null;
+        protected static $instances = [];
         
         /**
          * Create a new container instance if none exists, return the container.
@@ -24,11 +24,12 @@
          * @return self The container instance.
          */
         public static function create(string $defaultPath, string $cachePath) : CacheContainer {
-            if (!isset(self::$instance)) {
-                self::$instance = new self($defaultPath, $cachePath);
+            $class = get_called_class();
+            if (!isset(self::$instances[$class])) {
+                self::$instances[$class] = new $class($defaultPath, $cachePath);
             }
             
-            return self::$instance;
+            return self::$instances[$class];
         }
         
         /**

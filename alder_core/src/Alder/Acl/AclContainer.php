@@ -2,8 +2,8 @@
     
     namespace Alder\Acl;
     
-    use Alder\CacheContainer;
-    
+    use Alder\DataContainer;
+
     /**
      * Provides functionality for retrieving and storing ACL data as well as checking access rights of users against it.
      *
@@ -11,7 +11,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class AclContainer extends CacheContainer
+    class AclContainer extends DataContainer
     {
         /**
          * Filepath to configuration for the default ACL object.
@@ -25,7 +25,7 @@
         protected const CUSTOM_ACL_FILEPATH = CACHE_DIRECTORY . DIRECTORY_SEPARATOR . "acl" . DIRECTORY_SEPARATOR
                                               . "acl.cache";
         
-        public static function create() : CacheContainer {
+        public static function create() : DataContainer {
             return parent::create(self::DEFAULT_ACL_FILEPATH, self::CUSTOM_ACL_FILEPATH);
         }
     }

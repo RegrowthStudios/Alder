@@ -26,7 +26,7 @@
                 "path" => "(/{locale:[a-z]{2}_[A-Z]{2}})/auth(/{response_type:(token|code)}(/{client_id:[a-zA-Z0-9]+}))",
                 "middleware" => [
                     \Alder\PublicAuthentication\Middleware\AclMiddleware::class,
-                    new \Alder\PublicAuthentication\Action\ClientAuthenticationAction([ "module" => "public_authentication" ])
+                    new \Alder\PublicAuthentication\Action\ClientAuthorisationAction([ "module" => "public_authentication" ])
                 ]
             ],
             [

@@ -25,8 +25,24 @@
                 "alder_db_cache" => function (\Interop\Container\ContainerInterface $container) {
                     return \Alder\Cache\CacheServiceFactory::create("db");
                 },
-                "alder_language_cache" => function (\Interop\Container\ContainerInterface $container) {
-                    return \Alder\Cache\CacheServiceFactory::create("language");
+                "translator" => function (\Interop\Container\ContainerInterface $container) {
+                    $config = $container->get("config")["alder"]["language"];
+    
+                    $locale = ($config["default_locale"] ?: \Locale::getDefault());
+    
+                    $languageSources = $config["language_sources"];
+    
+                    $translator = \Zend\I18n\Translator\Translator::factory([
+                        "locale" => $locale,
+                        "translation_file_patterns" => $languageSources["file_patterns"],
+                        "translation_files" => $languageSources["files"],
+                        "remote_translation" => $languageSources["remote_files"],
+                        "cache" => \Alder\Cache\CacheServiceFactory::create("language")
+                    ]);
+    
+                    if ($config["fallback_locale"]) {
+                        $translator->setFallbackLocale($config["fallback_locale"]);
+                    }
                 },
                 "token_signer" => function(\Interop\Container\ContainerInterface $container) {
                     $signMethod = $container->get("config")["alder"]["token"]["sign_method"];

@@ -29,7 +29,8 @@
          *
          * @return \Alder\DataContainer The container instance.
          */
-        public static function create(string $defaultPath, string $cachePath, string $expectedObj = null) : DataContainer {
+        public static function create(string $defaultPath, string $cachePath,
+                                      string $expectedObj = null) : DataContainer {
             $class = get_called_class();
             if (!isset(self::$instances[$class])) {
                 self::$instances[$class] = new $class($defaultPath, $cachePath, $expectedObj);
@@ -62,20 +63,25 @@
         /**
          * Prepares the data, fetching from the filesystem if cached, constructing from default settings otherwise.
          *
-         * @param string $defaultPath The default path to find the data at.
-         * @param string $cachePath   The path to where the data is cached.
-         * @param string $expectedObj The expected object type to be acquired from the cache.
+         * @param string      $defaultPath The default path to find the data at.
+         * @param string      $cachePath   The path to where the data is cached.
+         * @param string|null $expectedObj The expected object type to be acquired from the cache.
          *
          * @throws \InvalidArgumentException If the provided default path is invalid.
          */
-        protected function __construct(string $defaultPath, string $cachePath, string $expectedObj) {
+        protected function __construct(string $defaultPath, string $cachePath, ?string $expectedObj) {
             // Throw an exception if the default data source is non-existent.
             /**
              * @var \Zend\I18n\Translator\Translator $translator
              */
             $translator = DiContainer::get()->get("translator");
             if (!is_readable($defaultPath)) {
-                throw new \InvalidArgumentException(sprintf($translator->translate("default_data_path_invalid", "core", $translator->getFallbackLocale()), get_called_class()));
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        $translator->translate("default_data_path_invalid", "core", $translator->getFallbackLocale()),
+                        get_called_class()
+                    )
+                );
             }
             
             $this->defaultPath = $defaultPath;

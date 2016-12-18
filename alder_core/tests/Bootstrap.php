@@ -17,3 +17,10 @@
     }
     
     require file_build_path(VENDOR_DIRECTORY, "autoload.php");
+    
+    // Create a config container.
+    /** @var \Interop\Container\ContainerInterface $container */
+    $container = require file_build_path(CONFIG_DIRECTORY, "container.php");
+    
+    // Set up the container holder.
+    \Alder\DiContainer::set($container);

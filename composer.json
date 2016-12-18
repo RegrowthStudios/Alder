@@ -24,7 +24,9 @@
         "lcobucci/jwt": "^3.2",
         "zendframework/zend-log": "^2.9",
         "roave/security-advisories": "dev-master",
-        "zendframework/zend-i18n": "^2.7"
+        "zendframework/zend-i18n": "^2.7",
+        "adambrett/shell-wrapper": "^0.7.0",
+        "symfony/filesystem": "^3.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.6"

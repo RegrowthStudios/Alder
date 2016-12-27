@@ -78,7 +78,7 @@
         public function containerPutsDefaultsIntoCacheIfNoCacheOnCreate() {
             DataContainer::create(file_build_path(TEMP_DIRECTORY, "test.txt"), file_build_path(TEMP_DIRECTORY, "fake_cache.txt"));
             
-            $this->assertTrue(file_get_contents(file_build_path(TEMP_DIRECTORY, "fake_cache.txt")) === "test");
+            $this->assertTrue(file_get_contents(file_build_path(TEMP_DIRECTORY, "fake_cache.txt")) === serialize("test"));
         }
         
         /**

@@ -5,6 +5,11 @@ if (( $# < 1 )); then
     exit 1
 fi
 
+if ! hash composer 2>/dev/null; then
+    echo "Composer has not been set up yet."
+    exit 2
+fi
+
 echo "Beginning build process..."
 
 if [ ! -d "build" ]; then
@@ -28,7 +33,7 @@ do
     if [ ! -d "alder_$v" ]; then
         echo "No module by the name '$v' exists!"
         echo "Exiting..."
-        exit 1
+        exit 3
     fi
     if (( $# > $counter )); then
         component_str+="${v}, "
@@ -53,17 +58,18 @@ fi
 mkdir "$tmp_build_dir"
 
 echo
-echo "Copying over third-party libraries..."
-cp -r vendor/. "${tmp_build_dir}/vendor"
+echo "Copying over global composer spec..."
+cp composer.json "${tmp_build_dir}/composer/composer.json" 2>/dev/null
 
 echo "Copying over core library..."
-cp alder_core/global.php "${tmp_build_dir}/global.php" 2>/dev/null
-cp alder_core/phpunit.xml "${tmp_build_dir}/phpunit.xml" 2>/dev/null
-cp -r alder_core/config/. "${tmp_build_dir}/config" 2>/dev/null
-cp -r alder_core/global/. "${tmp_build_dir}/global" 2>/dev/null
-cp -r alder_core/public/. "${tmp_build_dir}/public" 2>/dev/null
-cp -r alder_core/src/. "${tmp_build_dir}/src" 2>/dev/null
-cp -r alder_core/tests/. "${tmp_build_dir}/tests" 2>/dev/null
+cp "alder_core/global.php" "${tmp_build_dir}/global.php" 2>/dev/null
+cp "alder_core/phpunit.xml" "${tmp_build_dir}/phpunit.xml" 2>/dev/null
+cp -r "alder_core/config/." "${tmp_build_dir}/config" 2>/dev/null
+cp -r "alder_core/global/." "${tmp_build_dir}/global" 2>/dev/null
+cp -r "alder_core/public/." "${tmp_build_dir}/public" 2>/dev/null
+cp -r "alder_core/src/." "${tmp_build_dir}/src" 2>/dev/null
+cp -r "alder_core/tests/." "${tmp_build_dir}/tests" 2>/dev/null
+cp "alder_core/composer.json" "${tmp_build_dir}/composer/core/composer.json" 2>/dev/null
 
 for v in "$@"
 do
@@ -75,34 +81,43 @@ do
     cp -r "alder_${v}/public/." "${tmp_build_dir}/public" 2>/dev/null
     cp -r "alder_${v}/src/." "${tmp_build_dir}/src" 2>/dev/null
     cp -r "alder_${v}/tests/." "${tmp_build_dir}/tests" 2>/dev/null
+    cp "alder_${v}/composer.json" "${tmp_build_dir}/composer/${v}/composer.json" 2>/dev/null
 done
+
+curr_dir=$(pwd)
+
+echo
+echo "Installing vendor libraries..."
+cd ${tmp_build_dir}/composer
+composer install --ignore-platform-reqs --no-dev --optimize-autoloader
+cd ${curr_dir}
+
+echo
+echo "Patching vendor libraries..."
+cp -r "vendor_patch/." "${tmp_build_dir}/vendor" 2>/dev/null
 
 echo
 echo "Running tests for build..."
-./runTests.sh $tmp_build_dir $test_results_dir
+./runTests.sh ${tmp_build_dir} ${test_results_dir}
 echo "Tests complete."
 
 echo
 echo "Creating build archive..."
-curr_dir=$(pwd)
-cd $tmp_dir
+cd ${tmp_dir}
 artefacts_dir="../artefacts/$build_name"
 build_archive_dir="${artefacts_dir}/${build_name}.tar.gz"
-
-if [ ! -d $artefacts_dir ]; then
-    mkdir $artefacts_dir
+if [ ! -d ${artefacts_dir} ]; then
+    mkdir ${artefacts_dir}
 fi
-
-if [ -f $build_archive_dir ]; then
-    rm $build_archive_dir
+if [ -f ${build_archive_dir} ]; then
+    rm ${build_archive_dir}
 fi
-
-tar -cvzf $build_archive_dir $build_name 1>/dev/null
-cd $curr_dir
+tar -cvzf ${build_archive_dir} ${build_name} 1>/dev/null
+cd ${curr_dir}
 
 echo
 echo "Clearing up..."
-rm -r $tmp_dir
+rm -r ${tmp_dir}
 
 echo
 echo "Build complete!"

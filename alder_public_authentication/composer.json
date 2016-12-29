@@ -1,0 +1,9 @@
+{
+    "require": {
+        "roave/security-advisories": "dev-master",
+        "lcobucci/jwt": "^3.2",
+        "zendframework/zend-db": "^2.8",
+        "zendframework/zend-expressive": "^1.0",
+        "zendframework/zend-json": "^3.0"
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "require": {
+        "roave/security-advisories": "dev-master",
+        "lcobucci/jwt": "^3.2",
+        "zendframework/zend-stdlib": "^3.1",
+        "zendframework/zend-math": "^3.0",
+        "zendframework/zend-expressive": "^1.0",
+        "zendframework/zend-i18n": "^2.7",
+        "zendframework/zend-json": "^3.0",
+        "zendframework/zend-db": "^2.8",
+        "zendframework/zend-cache": "^2.7",
+        "zendframework/zend-log": "^2.9",
+        "zendframework/zend-permissions-acl": "^2.6",
+        "mtymek/expressive-config-manager": "^0.4.0",
+        "adambrett/shell-wrapper": "^0.7.0",
+        "symfony/filesystem": "^3.2"
+    }
+}

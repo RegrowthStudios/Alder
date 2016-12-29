@@ -1,5 +1,5 @@
 {
-    "name": "regrowthstudios/alder_core",
+    "name": "regrowthstudios/alder",
     "description": "The core library for all Alder services, a service package for game developed from Regrowth Studios.",
     "type": "project",
     "license": "proprietary",
@@ -11,25 +11,11 @@
     ],
     "require": {
         "php": "^7.0",
-        "zendframework/zend-stdlib": "^3.1",
-        "zendframework/zend-expressive": "^1.0",
-        "zendframework/zend-permissions-acl": "^2.6",
-        "zendframework/zend-json": "^3.0",
-        "zendframework/zend-expressive-helpers": "^2.1",
-        "mtymek/expressive-config-manager": "^0.4.0",
-        "zendframework/zend-cache": "^2.7",
-        "zendframework/zend-expressive-fastroute": "^1.2",
-        "zendframework/zend-db": "^2.8",
-        "zendframework/zend-math": "^3.0",
-        "lcobucci/jwt": "^3.2",
-        "zendframework/zend-log": "^2.9",
-        "roave/security-advisories": "dev-master",
-        "zendframework/zend-i18n": "^2.7",
-        "adambrett/shell-wrapper": "^0.7.0",
-        "symfony/filesystem": "^3.2"
+        "wikimedia/composer-merge-plugin": "^1.3",
+        "roave/security-advisories": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.6"
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "psr-4": {
@@ -40,6 +26,16 @@
         "psr-4": {
             "AlderTest\\": "tests/",
             "AlderTest\\Alder\\": [ "tests/Alder/unit/", "tests/Alder/functional/" ]
+        }
+    },
+    "config": {
+        "vendor-dir": "../vendor"
+    },
+    "extra": {
+        "merge-plugin": {
+            "require": [
+                "alder_core/composer.json"
+            ]
         }
     }
 }

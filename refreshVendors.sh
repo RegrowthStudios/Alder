@@ -39,6 +39,6 @@ echo
 
 if [ -d VENDOR-PATCH ]; then
     echo "Patching vendors..."
-    cp -r -f VENDOR-PATCH/. vendor/
+    cp -r -f vendor_patch/. vendor/
     echo
 fi

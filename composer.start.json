@@ -34,8 +34,4 @@
     "extra": {
         "merge-plugin": {
             "require": [
-                "core/composer.json"
-            ]
-        }
-    }
-}
+                "core/composer.json",

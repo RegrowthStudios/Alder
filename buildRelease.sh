@@ -60,7 +60,18 @@ mkdir "${tmp_build_dir}/composer"
 
 echo
 echo "Copying over global composer spec..."
-cp "composer.json" "${tmp_build_dir}/composer/composer.json" 2>/dev/null
+cat "composer.start.json" >> "${tmp_build_dir}/composer/composer.json"
+count=1
+for v in "$@"
+do
+    if (( $# > $count )); then
+        echo "                \"${v}/composer.json\"," >> "${tmp_build_dir}/composer/composer.json"
+        count+=1
+    else
+        echo "                \"${v}/composer.json\"" >> "${tmp_build_dir}/composer/composer.json"
+    fi
+done
+cat "composer.end.json" >> "${tmp_build_dir}/composer/composer.json"
 
 echo "Copying over core library..."
 cp "alder_core/global.php" "${tmp_build_dir}/global.php" 2>/dev/null

@@ -56,10 +56,11 @@ if [ -d "$tmp_build_dir" ]; then
     rm -r "$tmp_build_dir"
 fi
 mkdir "$tmp_build_dir"
+mkdir "${tmp_build_dir}/composer"
 
 echo
 echo "Copying over global composer spec..."
-cp composer.json "${tmp_build_dir}/composer/composer.json" 2>/dev/null
+cp "composer.json" "${tmp_build_dir}/composer/composer.json" 2>/dev/null
 
 echo "Copying over core library..."
 cp "alder_core/global.php" "${tmp_build_dir}/global.php" 2>/dev/null
@@ -69,6 +70,7 @@ cp -r "alder_core/global/." "${tmp_build_dir}/global" 2>/dev/null
 cp -r "alder_core/public/." "${tmp_build_dir}/public" 2>/dev/null
 cp -r "alder_core/src/." "${tmp_build_dir}/src" 2>/dev/null
 cp -r "alder_core/tests/." "${tmp_build_dir}/tests" 2>/dev/null
+mkdir "${tmp_build_dir}/composer/core"
 cp "alder_core/composer.json" "${tmp_build_dir}/composer/core/composer.json" 2>/dev/null
 
 for v in "$@"
@@ -81,6 +83,7 @@ do
     cp -r "alder_${v}/public/." "${tmp_build_dir}/public" 2>/dev/null
     cp -r "alder_${v}/src/." "${tmp_build_dir}/src" 2>/dev/null
     cp -r "alder_${v}/tests/." "${tmp_build_dir}/tests" 2>/dev/null
+    mkdir "${tmp_build_dir}/composer/${v}"
     cp "alder_${v}/composer.json" "${tmp_build_dir}/composer/${v}/composer.json" 2>/dev/null
 done
 

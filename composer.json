@@ -34,7 +34,7 @@
     "extra": {
         "merge-plugin": {
             "require": [
-                "alder_core/composer.json"
+                "core/composer.json"
             ]
         }
     }

@@ -14,6 +14,7 @@
         "zendframework/zend-permissions-acl": "^2.6",
         "mtymek/expressive-config-manager": "^0.4.0",
         "adambrett/shell-wrapper": "^0.7.0",
-        "symfony/filesystem": "^3.2"
+        "symfony/filesystem": "^3.2",
+        "composer/semver": "^1.4"
     }
 }

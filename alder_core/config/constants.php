@@ -4,6 +4,10 @@
     define("APP_DIRECTORY", dirname(__DIR__));
     define("SRC_DIRECTORY", file_build_path(APP_DIRECTORY, "src"));
     define("VENDOR_DIRECTORY", file_build_path(APP_DIRECTORY, "vendor"));
+    define("INSTALL_DIRECTORY", file_build_path(APP_DIRECTORY, "install"));
+    define("INSTALL_CONFIG_DIRECTORY", file_build_path(INSTALL_DIRECTORY, "config"));
+    define("INSTALL_DATA_DIRECTORY", file_build_path(INSTALL_DIRECTORY, "data"));
+    define("DATA_DIRECTORY", file_build_path(APP_DIRECTORY, "data"));
     define("CONFIG_DIRECTORY", file_build_path(APP_DIRECTORY, "config"));
     define("LANGUAGE_DIRECTORY", file_build_path(APP_DIRECTORY, "i18n"));
     define("API_MAP_DIRECTORY", file_build_path(APP_DIRECTORY, "apimap"));

@@ -19,7 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Alder\\": "src/Alder/"
+            "Alder\\": "src/Alder/",
+            "Alder\\Install": "install/src/Alder"
         }
     },
     "autoload-dev": {

@@ -2,7 +2,8 @@
     
     return [
         "version" => "0.1.0",
-        "dependencies" => [
+        "soft_dependencies" => [
             "Core" => "^0.1.0"
-        ]
+        ],
+        "hard_dependencies" => []
     ];

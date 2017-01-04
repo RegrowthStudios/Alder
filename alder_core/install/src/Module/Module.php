@@ -1,22 +1,52 @@
 <?php
     
-    namespace Alder\Install\Info;
+    namespace Alder\Install\Module;
     
     use Alder\Install\Info\Exception\MalformedInfoException;
     
-    class Info
+    use MikeRoetgers\DependencyGraph\Operation;
+    
+    class Module implements Operation
     {
-        protected $currentVersion      = "";
+        /**
+         * @var string
+         */
+        protected $moduleName              = "";
         
+        /**
+         * @var string
+         */
+        protected $currentVersion          = "";
+        
+        /**
+         * @var array
+         */
         protected $currentSoftDependencies = [];
         
+        /**
+         * @var array
+         */
         protected $currentHardDependencies = [];
         
-        protected $futureVersion       = "";
+        /**
+         * @var string
+         */
+        protected $futureVersion           = "";
         
+        /**
+         * @var array
+         */
         protected $futureSoftDependencies  = [];
         
+        /**
+         * @var array
+         */
         protected $futureHardDependencies  = [];
+        
+        /**
+         * @var string[]
+         */
+        protected $tags = [];
         
         /**
          * Info constructor.
@@ -24,6 +54,8 @@
          * @param string $module
          */
         public function __construct(string $module) {
+            $this->tags[] = $module;
+            
             [ $this->currentVersion,
               $this->currentSoftDependencies,
               $this->currentHardDependencies ] = $this->getInfo(file_build_path(DATA_DIRECTORY, $module, "info.php"));
@@ -31,6 +63,36 @@
             [ $this->futureVersion,
               $this->futureSoftDependencies,
               $this->futureHardDependencies ] = $this->getInfo(file_build_path(INSTALL_DATA_DIRECTORY, $module, "info.php"));
+        }
+    
+        /**
+         * @return string
+         */
+        public function getId() {
+            return $this->tags[0];
+        }
+    
+        /**
+         * @param string $tag
+         */
+        public function addTag($tag) {
+            $this->tags[] = $tag;
+        }
+    
+        /**
+         * @param string $tag
+         *
+         * @return bool
+         */
+        public function hasTag($tag) {
+            return in_array($tag, $this->tags);
+        }
+        
+        /**
+         * @return string
+         */
+        public function getModuleName() : string {
+            return $this->getId();
         }
         
         /**
@@ -120,49 +182,6 @@
             }
             return $futureDependencies;
         }
-        
-        ///**
-        // * Evaluates the constraints placed on versions of dependencies of the module
-        // *
-        // * @return array
-        // */
-        //public function evaluateDependencies() : array {
-        //    $evaluation = [
-        //        "_dependencyEvaluation" => true
-        //    ];
-        //
-        //    foreach ($this->getLatestSoftDependencies() as $module => $constraint) {
-        //        $moduleInfo = Cache::getInfoObj($module);
-        //
-        //        $evaluation[$module] = [
-        //            "current_version" => $moduleInfo->getCurrentVersion(),
-        //            "future_version" => $moduleInfo->getFutureVersion()
-        //        ];
-        //        if (!Semver::satisfies($moduleInfo->getLatestVersion(), $constraint)) {
-        //            $evaluation["_dependencyEvaluation"] = false;
-        //            $evaluation[$module]["evaluation"] = false;
-        //        } else {
-        //            $evaluation[$module]["evaluation"] = true;
-        //        }
-        //    }
-        //    foreach ($this->getLatestHardDependencies() as $module => $constraint) {
-        //        $moduleInfo = Cache::getInfoObj($module);
-        //
-        //        $evaluation[$module] = [
-        //            "current_version" => $moduleInfo->getCurrentVersion(),
-        //            "future_version" => $moduleInfo->getFutureVersion()
-        //        ];
-        //        // TODO(Matthew): This sucks, should instead be future version checked IFF operation of other module will be processed first.
-        //        if (!Semver::satisfies($moduleInfo->getCurrentVersion(), $constraint)) {
-        //            $evaluation["_dependencyEvaluation"] = false;
-        //            $evaluation[$module]["evaluation"] = false;
-        //        } else {
-        //            $evaluation[$module]["evaluation"] = true;
-        //        }
-        //    }
-        //
-        //    return $evaluation;
-        //}
         
         /**
          * Gets the module information provided by the PHP array at the given filepath.

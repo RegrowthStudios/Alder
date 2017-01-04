@@ -4,8 +4,6 @@
     
     use Alder\Install\Info\Exception\MalformedInfoException;
     
-    use Composer\Semver\Semver;
-    
     class Info
     {
         protected $currentVersion      = "";
@@ -123,48 +121,48 @@
             return $futureDependencies;
         }
         
-        /**
-         * Evaluates the constraints placed on versions of dependencies of the module
-         *
-         * @return array
-         */
-        public function evaluateDependencies() : array {
-            $evaluation = [
-                "_dependencyEvaluation" => true
-            ];
-            
-            foreach ($this->getLatestSoftDependencies() as $module => $constraint) {
-                $moduleInfo = Cache::getInfoObj($module);
-    
-                $evaluation[$module] = [
-                    "current_version" => $moduleInfo->getCurrentVersion(),
-                    "future_version" => $moduleInfo->getFutureVersion()
-                ];
-                if (!Semver::satisfies($moduleInfo->getLatestVersion(), $constraint)) {
-                    $evaluation["_dependencyEvaluation"] = false;
-                    $evaluation[$module]["evaluation"] = false;
-                } else {
-                    $evaluation[$module]["evaluation"] = true;
-                }
-            }
-            foreach ($this->getLatestHardDependencies() as $module => $constraint) {
-                $moduleInfo = Cache::getInfoObj($module);
-    
-                $evaluation[$module] = [
-                    "current_version" => $moduleInfo->getCurrentVersion(),
-                    "future_version" => $moduleInfo->getFutureVersion()
-                ];
-                // TODO(Matthew): This sucks, should instead be future version checked IFF operation of other module will be processed first.
-                if (!Semver::satisfies($moduleInfo->getCurrentVersion(), $constraint)) {
-                    $evaluation["_dependencyEvaluation"] = false;
-                    $evaluation[$module]["evaluation"] = false;
-                } else {
-                    $evaluation[$module]["evaluation"] = true;
-                }
-            }
-            
-            return $evaluation;
-        }
+        ///**
+        // * Evaluates the constraints placed on versions of dependencies of the module
+        // *
+        // * @return array
+        // */
+        //public function evaluateDependencies() : array {
+        //    $evaluation = [
+        //        "_dependencyEvaluation" => true
+        //    ];
+        //
+        //    foreach ($this->getLatestSoftDependencies() as $module => $constraint) {
+        //        $moduleInfo = Cache::getInfoObj($module);
+        //
+        //        $evaluation[$module] = [
+        //            "current_version" => $moduleInfo->getCurrentVersion(),
+        //            "future_version" => $moduleInfo->getFutureVersion()
+        //        ];
+        //        if (!Semver::satisfies($moduleInfo->getLatestVersion(), $constraint)) {
+        //            $evaluation["_dependencyEvaluation"] = false;
+        //            $evaluation[$module]["evaluation"] = false;
+        //        } else {
+        //            $evaluation[$module]["evaluation"] = true;
+        //        }
+        //    }
+        //    foreach ($this->getLatestHardDependencies() as $module => $constraint) {
+        //        $moduleInfo = Cache::getInfoObj($module);
+        //
+        //        $evaluation[$module] = [
+        //            "current_version" => $moduleInfo->getCurrentVersion(),
+        //            "future_version" => $moduleInfo->getFutureVersion()
+        //        ];
+        //        // TODO(Matthew): This sucks, should instead be future version checked IFF operation of other module will be processed first.
+        //        if (!Semver::satisfies($moduleInfo->getCurrentVersion(), $constraint)) {
+        //            $evaluation["_dependencyEvaluation"] = false;
+        //            $evaluation[$module]["evaluation"] = false;
+        //        } else {
+        //            $evaluation[$module]["evaluation"] = true;
+        //        }
+        //    }
+        //
+        //    return $evaluation;
+        //}
         
         /**
          * Gets the module information provided by the PHP array at the given filepath.

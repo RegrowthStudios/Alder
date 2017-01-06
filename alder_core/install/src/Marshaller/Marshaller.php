@@ -19,6 +19,26 @@
                     self::prepareModuleForMarshalling($file->getBasename(), $dependencyManager);
                 }
             }
+            
+            /**
+             * @var \Alder\Install\Module\Module[] $executableOperations
+             */
+            while ($executableOperations = $dependencyManager->getExecutableOperations()) {
+                while ($operation = array_shift($executableOperations)) {
+                    $dependencyManager->markAsStarted($operation);
+                    $moduleName = $operation->getModuleName();
+                    if ($operation->getCurrentVersion()) {
+                        // Updgrade
+                        $class = "Alder\\Install\\Modules\\$moduleName\\Upgrade";
+                        $class::run();
+                    } else {
+                        // Install
+                        $class = "Alder\\Install\\Modules\\$moduleName\\Install";
+                        $class::run();
+                    }
+                    $dependencyManager->markAsExecuted($operation);
+                }
+            }
         }
         
         protected static function prepareModuleForMarshalling(string $moduleName, DependencyManager& $dependencyManager) {
@@ -28,14 +48,14 @@
             [ $netSoftEvaluation,
               $softEvaluations ] = self::evaluateDependencies($module);
             if (!$netSoftEvaluation) {
-                // TODO(Matthew): Print error using each dependency evaluation.
+                // TODO(Matthew): Print error of each failed dependency evaluation.
             }
             
             // Evaluate soft dependencies.
             [ $netHardEvaluation,
               $hardEvaluations ] = self::evaluateDependencies($module, $dependencyManager);
             if (!$netHardEvaluation) {
-                // TODO(Matthew): Print error using each dependency evaluation.
+                // TODO(Matthew): Print error of each failed dependency evaluation.
             }
         }
         

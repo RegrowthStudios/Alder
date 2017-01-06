@@ -26,16 +26,22 @@
             while ($executableOperations = $dependencyManager->getExecutableOperations()) {
                 while ($operation = array_shift($executableOperations)) {
                     $dependencyManager->markAsStarted($operation);
+                    
                     $moduleName = $operation->getModuleName();
                     if ($operation->getCurrentVersion()) {
                         // Updgrade
                         $class = "Alder\\Install\\Modules\\$moduleName\\Upgrade";
-                        $class::run();
                     } else {
                         // Install
                         $class = "Alder\\Install\\Modules\\$moduleName\\Install";
-                        $class::run();
                     }
+                    
+                    if (method_exists($class, "run")) {
+                        $class::run();
+                    } else {
+                        // Error: Missing execution function.
+                    }
+                    
                     $dependencyManager->markAsExecuted($operation);
                 }
             }

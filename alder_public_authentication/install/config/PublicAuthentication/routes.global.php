@@ -5,12 +5,6 @@
      */
 
     return [
-        "dependencies" => [
-            "invokables" => [
-                \Zend\Expressive\Router\RouterInterface::class => Zend\Expressive\Router\FastRouteRouter::class,
-            ]
-        ],
-
         // TODO(Matthew): Ensure all paths are of valid format.
         "routes" => [
             [

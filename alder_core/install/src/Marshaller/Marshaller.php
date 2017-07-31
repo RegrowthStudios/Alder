@@ -40,19 +40,25 @@
                 while ($operation = array_shift($executableOperations)) {
                     $dependencyManager->markAsStarted($operation);
                     
+                    $moduleClass  = "";
+                    $defaultClass = "";
+
                     $moduleName = $operation->getModuleName();
                     if ($operation->getCurrentVersion()) {
-                        // Updgrade
-                        $class = "Alder\\Install\\Modules\\$moduleName\\Upgrade";
+                        // Upgrade
+                        $moduleClass  = "Alder\\Install\\Modules\\$moduleName\\Action\\Upgrade";
+                        $defaultClass = "Alder\\Install\\Action\\Upgrade";
                     } else {
                         // Install
-                        $class = "Alder\\Install\\Modules\\$moduleName\\Install";
+                        $moduleClass  = "Alder\\Install\\Modules\\$moduleName\\Action\\Install";
+                        $defaultClass = "Alder\\Install\\Action\\Install";
                     }
                     
-                    if (method_exists($class, "run")) {
-                        $class::run();
+                    // TODO(Matthew): Handle failure case of run().
+                    if (method_exists($moduleClass, "run")) {
+                        $moduleClass::run($moduleName);
                     } else {
-                        // Error: Missing execution function.
+                        $defaultClass::run($moduleName);
                     }
                     
                     $dependencyManager->markAsExecuted($operation);

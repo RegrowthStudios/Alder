@@ -42,7 +42,7 @@
         return $cookie;
     }
     
-    // TODO(Matthew): Use this instead of arbitrary strings for constants, therefore can reduce heaviness of this function.
+    // TODO(Matthew): Try to find a way to not need to canonicalise anything.
     /**
      * Canonicalises a given action class path or name.
      *

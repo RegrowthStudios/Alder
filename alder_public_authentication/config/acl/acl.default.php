@@ -4,6 +4,7 @@
     use Zend\Permissions\Acl\Resource\GenericResource as Resource;
     use Zend\Permissions\Acl\Role\GenericRole as Role;
     
+    // TODO(Matthew): Create declarative config file and create ACL object from current config.
     // TODO(Matthew): Custom roll of ACL object to allow for per role, per resource, per privilege restrictions beyond just allow/deny (e.g. frequency of usage, hide etc.)?
     
     $acl = new Acl();

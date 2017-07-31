@@ -11,7 +11,17 @@
         /**
          * @var string
          */
-        protected $moduleName              = "";
+        protected $name                    = "";
+
+        /**
+         * @var string
+         */
+        protected $description             = "";
+
+        /**
+         * @var string
+         */
+        protected $author                  = "";
         
         /**
          * @var string
@@ -56,13 +66,25 @@
         public function __construct(string $module) {
             $this->tags[] = $module;
             
-            [ $this->currentVersion,
-              $this->currentSoftDependencies,
-              $this->currentHardDependencies ] = $this->getInfo(file_build_path(DATA_DIRECTORY, $module, "info.php"));
+            list( $_,
+                  $_,
+                  $_,
+                  $this->currentVersion,
+                  $this->currentSoftDependencies,
+                  $this->currentHardDependencies ) = $this->getInfo(file_build_path(DATA_DIRECTORY, $module, "info.php"));
             
-            [ $this->futureVersion,
-              $this->futureSoftDependencies,
-              $this->futureHardDependencies ] = $this->getInfo(file_build_path(INSTALL_DATA_DIRECTORY, $module, "info.php"));
+            list( $this->name,
+                  $this->description,
+                  $this->author,
+                  $this->futureVersion,
+                  $this->futureSoftDependencies,
+                  $this->futureHardDependencies ) = $this->getInfo(file_build_path(INSTALL_DATA_DIRECTORY, $module, "info.php"));
+
+            // TODO(Matthew): Present this error to user not to backend.
+            //                  For simplicity, require user deletes/repairs this module and then restart total installation process.
+            if (!$this->futureVersion) {
+                throw new MalformedInfoException("Could not load information of module, " . $module . ", to be installed or updated.");
+            }
         }
     
         /**
@@ -183,6 +205,7 @@
             return $futureDependencies;
         }
         
+        // TODO(Matthew): Handle poorly formed info files in such a way as to present to user rather than quietly fail.
         /**
          * Gets the module information provided by the PHP array at the given filepath.
          *
@@ -198,23 +221,53 @@
             if (!$info) {
                 return [
                     "",
+                    "",
+                    "",
+                    "",
+                    [],
                     []
                 ];
             }
             
+            // Ensure a well-formed module name is provided.
+            if (!is_string($name = $info["name"] ?? null) || !$name) {
+                throw new MalformedInfoException("The name information provided for the module, " . $filepath . ", is malformed.");
+            }
+
+            // If provided, ensure module description is well-formed.
+            $description = $info["description"] ?? "";
+            if (!is_string($description)) {
+                throw new MalformedInfoException("The description information provided for the module, " . $filepath . ", is malformed.");
+            }
+
+            // If provided, ensure module description is well-formed.
+            $author = $info["author"] ?? "";
+            if (!is_string($author)) {
+                throw new MalformedInfoException("The author information provided for the module, " . $filepath . ", is malformed.");
+            }
+
             // Ensure the information provided has a well-formed version string, set the Info instance's version field.
             if (!($version = $this->versionProvided($info))) {
-                throw new MalformedInfoException("The information provided for the specified module is malformed.");
+                throw new MalformedInfoException("The version information provided for the specified module, " . $filepath . ", is malformed.");
             }
             
-            // Ensure a well-formed dependency array is provided.
-            if (!is_array($dependencies = $info["dependencies"] ?? [])) {
-                throw new MalformedInfoException("The information provided for the specified module is malformed.");
+            // Ensure a well-formed soft dependency array is provided.
+            if (!is_array($softDependencies = $info["soft_dependencies"] ?? [])) {
+                throw new MalformedInfoException("The soft dependencies information provided for the specified module, " . $filepath . ", is malformed.");
             }
             
+            // Ensure a well-formed hard dependency array is provided.
+            if (!is_array($hardDependencies = $info["hard_dependencies"] ?? [])) {
+                throw new MalformedInfoException("The hard dependencies information provided for the specified module, " . $filepath . ", is malformed.");
+            }
+
             return [
+                $name,
+                $description,
+                $author,
                 $version,
-                $dependencies
+                $softDependencies,
+                $hardDependencies
             ];
         }
         

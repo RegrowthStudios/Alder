@@ -84,3 +84,50 @@
             exit();
         }
     }
+
+    /**
+     * Diffs the first two arrays recursively, then does the same for the result of the previous two
+     * diff'd arrays and the subsequent array.
+     *
+     * @param array $array1
+     * @param array ...$arrays
+     *
+     * @return array
+     */
+    function array_diff_assoc_recursive(array $array1, array ...$arrays) : array {
+        $difference = [];
+        $firstRun   = true;
+
+        // Iterate over all the comparative arrays, and all of the 1st level keys/values of initially 
+        // the first array then of the diff'd array, comparing with each of the comparative arrays and 
+        // adding to the calculated diff.
+        foreach ($arrays as $array) {
+            foreach (($firstRun ? $array1 : $difference) as $key => $value) {
+                if (is_array($value)) {
+                    // If the value being considered in the first array is itself an array, 
+                    // then if the currently considered comparative array does not contain an array
+                    // at that key then just add that value to the diff. Otherwise, apply this algorithm
+                    // to the diff of the value and the currently considered comparative array's value at the 
+                    // same key.
+                    if (!isset($array[$key]) || !is_array($array[$key])) {
+                        $difference[$key] = $value;
+                    } else {
+                        $new_diff = array_diff_assoc_recursive($value, $array[$key]);
+
+                        // If we got a diff, then add it.
+                        if (!empty($new_diff)) {
+                            $difference[$key] = $new_diff;
+                        }
+                    }
+                } else if (!array_key_exists($key, $array) || $array[$key] !== $value) {
+                    // If the value being considered in the first array is not an array and
+                    // either the current considered comparative array has no value at that key,
+                    // or the value is different, then add that to the diff.
+                    $difference[$key] = $value;
+                }
+                $firstRun = false;
+            }
+        }
+
+        return $difference;
+    }

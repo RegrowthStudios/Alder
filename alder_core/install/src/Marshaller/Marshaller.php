@@ -100,11 +100,17 @@
             $netEvaluation = true;
             $evaluations = [];
             
+            // Figure out if we're dealing with hard or soft dependencies.
+            $dependencies = [];
             if ($dependencyManager) {
                 $dependencyManager->addOperation($module);
+                $dependencies = $module->getLatestHardDependencies();
+            } else {
+                $dependencies = $module->getLatestSoftDependencies();
             }
             
-            foreach ($module->getLatestSoftDependencies() as $dependencyName => $constraint) {
+            // Iterate over dependencies and evaluate our capability to satisfy them.
+            foreach ($dependencies as $dependencyName => $constraint) {
                 $dependency = Cache::getModule($dependencyName);
                 
                 $evaluations[$dependencyName] = [

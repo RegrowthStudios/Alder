@@ -20,3 +20,7 @@
 .panel-heading > p {
     margin: 0;
 }
+
+.configuration-options .pager {
+    margin: 0;
+}

@@ -1,4 +1,4 @@
-window.onload = function() {
+document.onload = function() {
     var topOffset = 50;
     var width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
     if (width < 768) {
@@ -12,3 +12,21 @@ window.onload = function() {
         $("#page-wrapper").css("min-height", (height) + "px");
     }
 };
+
+// Makes sure that styling of the side menu is as expected (i.e. sublist focus styling on expanded not on browser definition of focus).
+$(document).ready(function() {
+    $("#side-menu > li").click(function() {
+        var subList = $(this).children("ul");
+        if ($(subList).length) {
+            var item = $(this).children("a");
+            if ($(subList).attr("aria-expanded") === "true") {
+                $(this).parent().children("li").each(function() {
+                    $(this).children("a").removeClass("focused");
+                });
+                $(item).addClass("focused");
+            } else {
+                $(item).blur().removeClass("focused");
+            }
+        }
+    });
+});

@@ -14,11 +14,14 @@ button, button:focus, button:active,
 
 .navbar-brand {
     font-size: 2.0em;
-    line-height: 26px;
+    line-height: 20px;
     margin-left: 5px;
 }
 .navbar-brand:hover {
     cursor: default;
+}
+.navbar-default {
+    background-color: transparent;
 }
 .navbar-default .navbar-brand {
     color: #5e5e5e;
@@ -26,11 +29,30 @@ button, button:focus, button:active,
 .sidebar {
     margin-top: 51px;
 }
-.sidebar ul li {
+#side-menu > li {
     font-size: 1.1em;
 }
 .sidebar .fa.arrow::before {
     content: "\f105";
+}
+.sidebar-nav > .nav > li > a:focus {
+    text-decoration: none;
+    background-color: inherit;
+    color: #337ab7;
+}
+.sidebar-nav > .nav > li > a:hover {
+    text-decoration: none;
+    background-color: #eee;
+    color: #23527c;
+}
+.sidebar-nav > .nav > li > a.focused {
+    text-decoration: none;
+    background-color: #eee;
+    color: #23527c;
+}
+.sidebar .nav-second-level li a {
+    padding: 5px 15px 5px 37px;
+    font-size: 0.92em;
 }
 
 .panel-yellow .panel-heading {

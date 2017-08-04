@@ -1,0 +1,81 @@
+body {
+    font-family: "Fantasque Sans Mono", "Droid Sans Mono", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+input::-moz-focus-inner {
+    border: 0;
+}
+a, a:active, a:focus, 
+button, button:focus, button:active, 
+.btn, .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn.focus:active, .btn.active.focus {
+    outline: none;
+    outline: 0;
+}
+
+.navbar-brand {
+    font-size: 2.0em;
+    line-height: 26px;
+    margin-left: 5px;
+}
+.navbar-brand:hover {
+    cursor: default;
+}
+.navbar-default .navbar-brand {
+    color: #5e5e5e;
+}
+.sidebar {
+    margin-top: 51px;
+}
+.sidebar ul li {
+    font-size: 1.1em;
+}
+.sidebar .fa.arrow::before {
+    content: "\f105";
+}
+
+.panel-yellow .panel-heading {
+    border-color: #f0ad4e;
+    color: white;
+    background-color: #f0ad4e;
+}
+.panel-red .panel-heading {
+    border-color: #d9534f;
+    color: white;
+    background-color: #d9534f;
+}
+.panel-green .panel-heading {
+    border-color: #5cb85c;
+    color: white;
+    background-color: #5cb85c;
+}
+.panel-yellow > a:hover > .panel-heading {
+    border-color: #df8a13;
+    color: white;
+    background-color: #df8a13;
+}
+.panel-red > a:hover > .panel-heading {
+    border-color: #b52b27;
+    color: white;
+    background-color: #b52b27;
+}
+.panel-green > a:hover > .panel-heading {
+    border-color: #3d8b3d;
+    color: white;
+    background-color: #3d8b3d;
+}
+
+
+.large {
+    font-size: 30px;
+}
+.big {
+    font-size: 26px;
+}
+
+.sidebar ul li.disabled a {
+    background-color: transparent;
+}
+
+.modal-body {
+    font-size: 1.1em;
+}

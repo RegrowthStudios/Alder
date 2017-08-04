@@ -1,0 +1,15 @@
+.install-breadcrumb {
+    font-size: 1.4em;
+}
+.install-breadcrumb:hover {
+    cursor: default;
+}
+.install-breadcrumb > .complete {
+    color: #2cb22c;
+}
+.install-breadcrumb > .current {
+    color: #f89100;
+}
+.install-breadcrumb > .incomplete {
+    color: #ff4500;
+}

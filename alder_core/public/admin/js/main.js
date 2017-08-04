@@ -1,4 +1,4 @@
-document.onload = function() {
+window.onload = function() {
     var topOffset = 50;
     var width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
     if (width < 768) {

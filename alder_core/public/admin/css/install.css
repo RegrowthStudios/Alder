@@ -13,3 +13,10 @@
 .install-breadcrumb > .incomplete {
     color: #ff4500;
 }
+
+.panel-heading {
+    font-size: 2em;
+}
+.panel-heading > p {
+    margin: 0;
+}

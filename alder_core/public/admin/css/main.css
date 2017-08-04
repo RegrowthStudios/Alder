@@ -12,6 +12,9 @@ button, button:focus, button:active,
     outline: 0;
 }
 
+.navbar-header {
+    float: left;
+}
 .navbar-brand {
     font-size: 2.0em;
     line-height: 20px;
@@ -20,11 +23,24 @@ button, button:focus, button:active,
 .navbar-brand:hover {
     cursor: default;
 }
+.navbar-top-links {
+    float: right;
+}
 .navbar-default {
     background-color: transparent;
 }
 .navbar-default .navbar-brand {
     color: #5e5e5e;
+}
+.sidebar-burger-button {
+    float: left;
+    margin-left: 15px;
+}
+.sidebar-burger-button > button.navbar-toggle:focus {
+    background-color: inherit;
+}
+.sidebar-burger-button > button.navbar-toggle:hover {
+    background-color: #ddd;
 }
 .sidebar {
     margin-top: 51px;
@@ -44,6 +60,16 @@ button, button:focus, button:active,
     text-decoration: none;
     background-color: #eee;
     color: #23527c;
+}
+.sidebar-nav > .nav > li.disabled > a:hover {
+    text-decoration: none;
+    background-color: transparent;
+    color: #777;
+}
+.sidebar-nav > .nav > li.disabled > a:focus {
+    text-decoration: none;
+    background-color: transparent;
+    color: #777;
 }
 .sidebar-nav > .nav > li > a.focused {
     text-decoration: none;

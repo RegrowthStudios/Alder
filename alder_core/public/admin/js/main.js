@@ -14,6 +14,7 @@ document.onload = function() {
 };
 
 // Makes sure that styling of the side menu is as expected (i.e. sublist focus styling on expanded not on browser definition of focus).
+// Additionally fix bug that causes arrows to point wrong way.
 $(document).ready(function() {
     $("#side-menu > li").click(function() {
         var subList = $(this).children("ul");
@@ -24,8 +25,10 @@ $(document).ready(function() {
                     $(this).children("a").removeClass("focused");
                 });
                 $(item).addClass("focused");
+                $(this).addClass("active");
             } else {
                 $(item).blur().removeClass("focused");
+                $(this).removeClass("active");
             }
         }
     });

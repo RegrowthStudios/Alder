@@ -1,0 +1,174 @@
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <span class="navbar-brand" href="/admin">Alder Admin Panel</span>
+        </div> <!-- /.navbar-header -->
+
+        <ul class="nav navbar-top-links navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-alerts">
+              {% for alert in alerts %}
+              <li>
+                <a href="{{ alert.url }}">
+                  <div>
+                    <i class="fa {{ alert.icon }} fa-fw"></i> {{ alert.message }}
+                    <span class="pull-right text-muted small">{{ alert.time }}</span>
+                  </div>
+                </a>
+              </li>
+              <li class="divider"></li>
+              {% endfor %}
+              <li>
+                <a class="text-center" href="/admin/alerts">
+                  <strong>See All Alerts</strong>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </li>
+            </ul>
+            <!-- /.dropdown-alerts -->
+          </li>
+          <!-- /.dropdown -->
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-tasks fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-tasks">
+              {% for task in tasks %}
+              <li>
+                <a href="{{ task.url }}">
+                  <div>
+                    <p>
+                      <strong>{{ task.name }}</strong>
+                      <span class="pull-right text-muted">{{ task.progress_message }}</span>
+                    </p>
+                    <div class="progress progress-striped active">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ task.progress }}" aria-valuemin="{{ task.min }}" aria-valuemax="{{ task.max }}" style="width: {{ task.progress }}%">
+                        <span class="sr-only">{{ task.progress_message }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="divider"></li>
+              {% endfor %}
+                <li>
+                  <a class="text-center" href="/admin/tasks">
+                    <strong>See All Tasks</strong>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </li>
+            </ul>
+            <!-- /.dropdown-tasks -->
+          </li>
+          <!-- /.dropdown -->
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-messages">
+              {% for message in messages %}
+              <li>
+                <a href="{{ message.url }}">
+                  <div>
+                    <strong>{{ message.sender }}</strong>
+                    <span class="pull-right text-muted">
+                      <em>{{ message.time }}</em>
+                    </span>
+                  </div>
+                  <div>{{ message.brief }}</div>
+                </a>
+              </li>
+              <li class="divider"></li>
+              {% endfor %}
+              <li>
+                <a class="text-center" href="/admin/messages">
+                  <strong>Read All Messages</strong>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </li>
+            </ul>
+            <!-- /.dropdown-messages -->
+          </li>
+          <!-- /.dropdown -->
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+              <li><a href="#"><i class="fa fa-gear fa-fw"></i> Account Settings</a></li>
+              <li class="divider"></li>
+              <li><a href="#"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+            </ul>
+            <!-- /.dropdown-user -->
+          </li>
+          <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+
+        <div class="sidebar-burger-button">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <!-- /.sidebar-burger-button -->
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li>
+                      <a href="/admin"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                    </li>
+                    <li class="disabled">
+                      <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Usage Statistics<span class="fa arrow"></span></a>
+                      <ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
+                        <li>
+                          <a href="/admin/stats/demographics">Demographics</a>
+                        </li>
+                        <li>
+                          <a href="/admin/stats/api">API Statistics</a>
+                        </li>
+                      </ul>
+                      <!-- /.nav-second-level -->
+                    </li>
+                    <li class="disabled">
+                      <a href="/admin/settings"><i class="fa fa-cogs fa-fw"></i> Settings</a>
+                    </li>
+                    <li class="disabled">
+                      <a href="#"><i class="fa fa-wrench fa-fw"></i> Tools<span class="fa arrow"></span></a>
+                      <ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
+                        <li>
+                          <a href="/admin/tasks">Tasks</a>
+                        </li>
+                        <li>
+                          <a href="/admin/cache-rebuilder">Cache Rebuilder</a>
+                        </li>
+                        <li>
+                          <a href="/admin/file-verifier">File Verifier</a>
+                        </li>
+                      </ul>
+                      <!-- /.nav-second-level -->
+                    </li>
+                    <li class="disabled">
+                      <a href="#"><i class="fa fa-book fa-fw"></i> Logs<span class="fa arrow"></span></a>
+                      <ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
+                        <li>
+                          <a href="/admin/action-log">Action Log</a>
+                        </li>
+                        <li>
+                          <a href="/admin/server-error-log">Server Error Log</a>
+                        </li>
+                      </ul>
+                      <!-- /.nav-second-level -->
+                    </li>
+                </ul>
+            </div>
+            <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+      </nav>

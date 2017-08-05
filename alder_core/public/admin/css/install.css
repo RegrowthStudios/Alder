@@ -4,14 +4,11 @@
 .install-breadcrumb:hover {
     cursor: default;
 }
-.install-breadcrumb > .complete {
-    color: #469846;
+.install-breadcrumb > li {
+    color: #777;
 }
-.install-breadcrumb > .current {
-    color: #e58e13;
-}
-.install-breadcrumb > .incomplete {
-    color: #d85727;
+.install-breadcrumb > li.current {
+    color: #337ab7;
 }
 
 .panel-heading {

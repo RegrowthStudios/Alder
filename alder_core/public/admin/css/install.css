@@ -5,13 +5,13 @@
     cursor: default;
 }
 .install-breadcrumb > .complete {
-    color: #2cb22c;
+    color: #469846;
 }
 .install-breadcrumb > .current {
-    color: #f89100;
+    color: #e58e13;
 }
 .install-breadcrumb > .incomplete {
-    color: #ff4500;
+    color: #d85727;
 }
 
 .panel-heading {

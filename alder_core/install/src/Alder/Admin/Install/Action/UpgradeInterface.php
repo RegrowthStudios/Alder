@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Install\Action;
+    namespace Alder\Admin\Install\Action;
     
     /**
      * Interface for all classes providing upgrade procedures for Alder mdoules.

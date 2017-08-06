@@ -1,8 +1,8 @@
 <?php
     
-    namespace Alder\Install\Module;
+    namespace Alder\Admin\Install\Module;
     
-    use Alder\Install\Info\Exception\MalformedInfoException;
+    use Alder\Admin\Install\Module\Exception\MalformedInfoException;
     
     class Cache
     {

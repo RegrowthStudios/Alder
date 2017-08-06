@@ -1,9 +1,9 @@
 <?php
     
-    namespace Alder\Install\Marshaller;
+    namespace Alder\Admin\Install\Marshaller;
     
-    use Alder\Install\Module\Cache;
-    use Alder\Install\Module\Module;
+    use Alder\Admin\Install\Module\Cache;
+    use Alder\Admin\Install\Module\Module;
     
     use Composer\Semver\Semver;
     

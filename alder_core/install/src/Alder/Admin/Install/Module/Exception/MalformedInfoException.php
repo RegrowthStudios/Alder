@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Install\Info\Exception;
+    namespace Alder\Admin\Install\Info\Exception;
 
     /**
      * Exception for instances where a module provides a malformed info file.

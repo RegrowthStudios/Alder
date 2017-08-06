@@ -60,7 +60,7 @@
         
         // Create a config container.
         /** @var \Interop\Container\ContainerInterface $container */
-        $container = require file_build_path(CONFIG_DIRECTORY, "container.php");
+        $container = require file_build_path(CONFIG_DIRECTORY, "container.public.php");
         
         // Set up the container holder.
         DiContainer::set($container);
@@ -69,10 +69,10 @@
         /** @var \Zend\Expressive\Application $app */
         $app = $container->get(Application::class);
         
+        // Grab original request object.
         $request = ServerRequestFactory::fromGlobals();
-        //$request = $request->withMethod("POST")
-        //    ->withUri($request->getUri()->withPath("/auth"))
-        //    ->withAttribute("username", "matthew")->withAttribute("password", "testPass");
+        
+        // Run app with grabbed request object.
         $app->run($request);
         
         // Store the resulting timing if in development mode.

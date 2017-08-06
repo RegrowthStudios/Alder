@@ -48,13 +48,12 @@
         Logger::registerErrorHandler($errorLogger);
         Logger::registerExceptionHandler($errorLogger);
         
-        // TODO(Matthew): Load admin config rather than normal app config.
         // TODO(Matthew): Write admin routes and default admin config.
         // TODO(Matthew): Add middleware that checks if we're installed, and if not serve a page prompting install.
 
         // Create a config container.
         /** @var \Interop\Container\ContainerInterface $container */
-        $container = require file_build_path(CONFIG_DIRECTORY, "container.php");
+        $container = require file_build_path(CONFIG_DIRECTORY, "container.admin.php");
         
         // Set up the container holder.
         DiContainer::set($container);
@@ -63,10 +62,10 @@
         /** @var \Zend\Expressive\Application $app */
         $app = $container->get(Application::class);
         
+        // Grab original request object.
         $request = ServerRequestFactory::fromGlobals();
-        //$request = $request->withMethod("POST")
-        //    ->withUri($request->getUri()->withPath("/auth"))
-        //    ->withAttribute("username", "matthew")->withAttribute("password", "testPass");
+        
+        // Run app with grabbed request object.
         $app->run($request);
     } catch (\Exception $ex) {
         // Log error if a critical exception occurred.

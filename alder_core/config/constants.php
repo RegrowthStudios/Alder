@@ -10,6 +10,7 @@
     define("DATA_DIRECTORY", file_build_path(APP_DIRECTORY, "data"));
     define("CONFIG_DIRECTORY", file_build_path(APP_DIRECTORY, "config"));
     define("COMMON_CONFIG_DIRECTORY", file_build_path(CONFIG_DIRECTORY, "common"));
+    define("PUBLIC_CONFIG_DIRECTORY", file_build_path(CONFIG_DIRECTORY, "public"));
     define("ADMIN_CONFIG_DIRECTORY", file_build_path(CONFIG_DIRECTORY, "admin"));
     define("LANGUAGE_DIRECTORY", file_build_path(APP_DIRECTORY, "i18n"));
     define("API_MAP_DIRECTORY", file_build_path(APP_DIRECTORY, "apimap"));

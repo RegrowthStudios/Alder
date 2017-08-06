@@ -81,7 +81,7 @@
                         [
                             "type" =>  \Zend\I18n\Translator\Loader\PhpArray::class,
                             "base_dir" => LANGUAGE_DIRECTORY,
-                            "pattern" => file_build_path("core", "%s.php"),
+                            "pattern" => file_build_path("Core", "%s.php"),
                             "text_domain" => "core"
                         ]
                     ],

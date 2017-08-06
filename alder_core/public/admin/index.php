@@ -48,7 +48,6 @@
         Logger::registerErrorHandler($errorLogger);
         Logger::registerExceptionHandler($errorLogger);
         
-        // TODO(Matthew): Write admin routes and default admin config.
         // TODO(Matthew): Add middleware that checks if we're installed, and if not serve a page prompting install.
 
         // Create a config container.

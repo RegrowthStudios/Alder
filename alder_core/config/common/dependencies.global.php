@@ -10,6 +10,7 @@
         "dependencies" => [
             "invokables" => [
                 \Zend\Expressive\Helper\ServerUrlHelper::class => Zend\Expressive\Helper\ServerUrlHelper::class,
+                \Zend\Expressive\Router\RouterInterface::class => Zend\Expressive\Router\FastRouteRouter::class
             ],
             "factories" => [
                 \Zend\Expressive\Application::class => Zend\Expressive\Container\ApplicationFactory::class,

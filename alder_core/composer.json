@@ -2,6 +2,8 @@
     "require": {
         "roave/security-advisories": "dev-master",
         "lcobucci/jwt": "^3.2",
+        "twig/twig": "^2.4",
+        "zendframework/zend-expressive-twigrenderer": "^1.4",
         "zendframework/zend-config": "^3.1.0",
         "zendframework/zend-config-aggregator": "^1.0.0",
         "zendframework/zend-stdlib": "^3.1",

@@ -4,6 +4,8 @@
     define("APP_DIRECTORY", dirname(__DIR__));
     define("SRC_DIRECTORY", file_build_path(APP_DIRECTORY, "src"));
     define("VENDOR_DIRECTORY", file_build_path(APP_DIRECTORY, "vendor"));
+    define("PUBLIC_DIRECTORY", file_build_path(APP_DIRECTORY, "public"));
+    define("PUBLIC_ADMIN_DIRECTORY", file_build_path(PUBLIC_DIRECTORY, "admin"));
     define("INSTALL_DIRECTORY", file_build_path(APP_DIRECTORY, "install"));
     define("INSTALL_CONFIG_DIRECTORY", file_build_path(INSTALL_DIRECTORY, "config"));
     define("INSTALL_DATA_DIRECTORY", file_build_path(INSTALL_DIRECTORY, "data"));

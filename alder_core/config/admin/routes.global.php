@@ -84,40 +84,33 @@
                     new \Alder\Admin\Action\MessagesAction([ "module" => "core" ])
                 ]
             ],
-            [ // Provides front-end view.
+            [
                 "name" => "install",
                 "path" => "/install",
                 "middleware" => [
-                    new \Alder\Admin\Action\InstallAction([ "module" => "core" ])
+                    new \Alder\Admin\Install\Action\InstallAction([ "module" => "core" ])
                 ]
             ],
-            [ // Provides back-end API.
-                "name" => "install-overview",
-                "path" => "/install/overview",
-                "middleware" => [
-                    new \Alder\Admin\Install\Action\InstallOverviewAction([ "module" => "core" ])
-                ]
-            ],
-            [ // Provides back-end API.
+            [
                 "name" => "install-config",
                 "path" => "/install/config",
                 "middleware" => [
                     new \Alder\Admin\Install\Action\InstallConfigAction([ "module" => "core" ])
                 ]
             ],
-            [ // Provides back-end API.
+            [
                 "name" => "install-database",
                 "path" => "/install/database",
                 "middleware" => [
                     new \Alder\Admin\Install\Action\InstallDatabaseAction([ "module" => "core" ])
                 ]
             ],
-            [ // Provides back-end API.
+            [
                 "name" => "install-tasks",
                 "path" => "/install/tasks",
                 "middleware" => [
                     new \Alder\Admin\Install\Action\InstallTasksAction([ "module" => "core" ])
                 ]
-            ],
+            ]
         ]
     ];

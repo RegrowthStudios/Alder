@@ -71,7 +71,7 @@
         }
 
         protected function firstInstall() : bool {
-            
+            return DiContainer::get()->get("config")->alder->installed;
         }
 
         protected function installDependencies() : void {

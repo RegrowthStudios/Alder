@@ -1,7 +1,7 @@
 <?php
     
     // Define a bunch of directory constants.
-    define("APP_DIRECTORY", dirname(__DIR__));
+    define("APP_DIRECTORY", __DIR__);
     define("SRC_DIRECTORY", file_build_path(APP_DIRECTORY, "src"));
     define("VENDOR_DIRECTORY", file_build_path(APP_DIRECTORY, "vendor"));
     define("PUBLIC_DIRECTORY", file_build_path(APP_DIRECTORY, "public"));
@@ -11,9 +11,6 @@
     define("INSTALL_DATA_DIRECTORY", file_build_path(INSTALL_DIRECTORY, "data"));
     define("DATA_DIRECTORY", file_build_path(APP_DIRECTORY, "data"));
     define("CONFIG_DIRECTORY", file_build_path(APP_DIRECTORY, "config"));
-    define("COMMON_CONFIG_DIRECTORY", file_build_path(CONFIG_DIRECTORY, "common"));
-    define("PUBLIC_CONFIG_DIRECTORY", file_build_path(CONFIG_DIRECTORY, "public"));
-    define("ADMIN_CONFIG_DIRECTORY", file_build_path(CONFIG_DIRECTORY, "admin"));
     define("LANGUAGE_DIRECTORY", file_build_path(APP_DIRECTORY, "i18n"));
     define("API_MAP_DIRECTORY", file_build_path(APP_DIRECTORY, "apimap"));
     define("LOGS_DIRECTORY", file_build_path(APP_DIRECTORY, "logs"));

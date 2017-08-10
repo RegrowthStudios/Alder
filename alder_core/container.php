@@ -4,7 +4,7 @@
     use Zend\ServiceManager\ServiceManager;
     
     // Load configuration
-    $config = require file_build_path(__DIR__, "config.public.php");
+    $config = require file_build_path(__DIR__, "config.php");
     
     // Build container
     $container = new ServiceManager();

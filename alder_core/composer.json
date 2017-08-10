@@ -1,4 +1,14 @@
 {
+    "name": "regrowthstudios/alder_core",
+    "description": "The core library for all Alder services, a service package for game developed from Regrowth Studios.",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Matthew Marshall",
+            "email": "matthew.marshall96@yahoo.co.uk"
+        }
+    ],
     "require": {
         "roave/security-advisories": "dev-master",
         "lcobucci/jwt": "^3.2",
@@ -20,5 +30,19 @@
         "symfony/filesystem": "^3.2",
         "composer/semver": "^1.4",
         "mike-roetgers/dependency-graph": "^0.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Alder\\": "src/Alder/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AlderTest\\": "tests/",
+            "AlderTest\\Alder\\": [ "tests/Alder/unit/", "tests/Alder/functional/" ]
+        }
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "regrowthstudios/alder",
-    "description": "The core library for all Alder services, a service package for game developed from Regrowth Studios.",
+    "description": "The skeleton for Alder applications.",
     "type": "project",
     "license": "proprietary",
     "authors": [
@@ -14,24 +14,10 @@
         "wikimedia/composer-merge-plugin": "^1.3",
         "roave/security-advisories": "dev-master"
     },
-    "require-dev": {
-        "phpunit/phpunit": "^5.7"
-    },
-    "autoload": {
-        "psr-4": {
-            "Alder\\": "src/Alder/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "AlderTest\\": "tests/",
-            "AlderTest\\Alder\\": [ "tests/Alder/unit/", "tests/Alder/functional/" ]
-        }
-    },
     "config": {
         "vendor-dir": "../vendor"
     },
     "extra": {
         "merge-plugin": {
             "require": [
-                "core/composer.json",
+                "info/Core/composer.json",

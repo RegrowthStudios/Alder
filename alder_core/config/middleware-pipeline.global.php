@@ -2,9 +2,7 @@
     
     /**
      * The middleware pipeline configuration. This works in concert with the routes
-     * configuration to determine the specific middleware pipeline to take for a given request.
-     * 
-     * //TODO(Matthew): Modify this to match requirements for the admin component of this module.
+     * configuration to determine the specific application pipeline to take for a given request.
      */
     
     return [
@@ -40,8 +38,16 @@
             // defined in multiple configuration files/locations. This file defines
             // some conventional keys for middleware to execute early, routing
             // middleware, and error middleware.
-            
-            // Middleware for bootstrapping, pre-conditions and modifications to outgoing responses.
+
+            // Middleware for installation.
+            [
+                "middleware" => [
+                    \Alder\Admin\Install\Middleware\InstallNeededMiddleware::class
+                ],
+                "priority" => 20000
+            ],
+
+            // Middleware for bootstrapping, pre-route conditions, global authentication and establishing pre-route helpers.
             [
                 "middleware" => [
                     \Alder\Middleware\ApiMapMiddleware::class,
@@ -49,15 +55,14 @@
                     \Alder\Middleware\SessionMiddleware::class,
                     \Zend\Expressive\Helper\ServerUrlMiddleware::class,
                 ],
-                "priority" => PHP_INT_MAX,
+                "priority" => 10000,
             ],
             
-            // Middleware for route-based authentication, validation and authorisation.
+            // Middleware for route-based validation and authorisation.
             [
                 "middleware" => [
                     \Zend\Expressive\Container\ApplicationFactory::ROUTING_MIDDLEWARE,
                     \Zend\Expressive\Helper\UrlHelperMiddleware::class,
-                    \Alder\Middleware\LocalisationMiddleware::class,
                     \Zend\Expressive\Container\ApplicationFactory::DISPATCH_MIDDLEWARE,
                 ],
                 "priority" => 1,

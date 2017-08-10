@@ -2,6 +2,7 @@
 
     return [
         "alder" => [
+            "installed" => false, // Flag for if application is installed.
             "app_name" => "Alder", // Title of the application.
             "db" => [ /* Database Settings */
                 "adapter" => [ /* Db Adapter Settings */

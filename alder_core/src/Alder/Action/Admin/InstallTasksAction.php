@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Admin\Install\Action;
+    namespace Alder\Action\Admin;
     
     /**
      * Handles showing task changes and applying those changes.
@@ -9,7 +9,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class InstallDatabaseAction
+    class InstallTaskAction
     {
         /**
          * The request sent by the client.

@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Admin\Install\Action;
+    namespace Alder\Action\Admin;
     
     /**
      * Handles showing database changes and applying those changes.

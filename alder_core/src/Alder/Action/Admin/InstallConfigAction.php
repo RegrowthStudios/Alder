@@ -1,23 +1,15 @@
 <?php
     
-    namespace Alder\Admin\Install\Action;
-
-    use \MikeRoetgers\DependencyGraph\DependencyManager;
-
-    use \Twig_Environment;
-    use \Twig_Loader_Filesystem;
-
-    use \Zend\Expressive\Twig\TwigRenderer;
-    use \Zend\Diactoros\Response\HtmlResponse;
-
+    namespace Alder\Action\Admin;
+    
     /**
-     * The install complete action for showing complete installation view.
+     * Handles showing config options view and applying the chosen options.
      *
      * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0
      */
-    class InstallCompleteAction
+    class InstallConfigAction
     {
         /**
          * The request sent by the client.
@@ -49,7 +41,10 @@
 
             switch (strtoupper($this->request->getMethod())) {
                 case "GET":
-                    showComplete();
+                    showConfigOptions();
+                    break;
+                case "POST":
+                    applyConfigChoices();
                     break;
                 default:
                     $this->response = $this->response->withStatus(405);
@@ -62,7 +57,11 @@
             return $this->response;
         }
 
-        protected function showComplete() : void {
+        protected function showConfigOptions() : void {
+
+        }
+
+        protected function applyConfigChoices() : void {
 
         }
     }

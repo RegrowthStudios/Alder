@@ -4,6 +4,8 @@
 
     use Alder\Install\Module\Cache;
 
+    use MikeRoetgers\DependencyGraph\DependencyManager;
+
     class Verifier
     {
         const NO_MANIFEST = "no_manifest";
@@ -23,6 +25,8 @@
         }
 
         protected static function constructInvertedDependencyGraph(bool $installable) : DependencyManager {
+            $dependencyManager = new DependencyManager();
+            
             $infoDir = $installable ? INSTALL_DATA_DIRECTORY : DATA_DIRECTORY;
             foreach (\DirectoryIterator($infoDir) as $file) {
                 if (!$file->isDir()) continue;
@@ -30,6 +34,23 @@
                 $name = $file->getBasename();
 
                 $module = Cache::getModule($name);
+
+                if (!isset($dependencyManager->getOperations()[$module->getId()])) {
+                    $dependencyManager->addOperation($module);
+                }
+
+                $depndencies = $installable ? $module->getFutureHardDependencies() :
+                                              $module->getCurrentHardDependencies();
+
+                foreach ($dependencies as $dependencyName => $constraint) {
+                    $dependency = Cache::getModule($dependencyName);
+
+                    if (!isset($dependencyManager->getOperations()[$$dependency->getId()])) {
+                        $dependencyManager->addOperation($dependency);
+                    }
+
+                    $dependencyManager->addDependencyByTag($module->getId(), $dependency);
+                }
             }
 
         }

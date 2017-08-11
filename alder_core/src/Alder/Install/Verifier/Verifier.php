@@ -53,41 +53,77 @@
                 }
             }
 
+            return $dependencyManager;
         }
 
         protected static function verifyAllInDir(string $directory, DependencyManager $dependencyManager, string $manifest = "files.json") : array {
             $results = [];
 
-            foreach (\DirectoryIterator(file_build_path($directory, "data")) as $file) {
-                if (!$file->isDir()) continue;
+            $filesChecked = [];
+            while ($verifiableModules = $dependencyManager->getExecutableOperations()) {
+                $filesCheckedThisRound = [];
+                while ($module = array_shift($verifiableModules)) {
+                    $dependencyManager->markAsStarted($module);
 
-                $name = $file->getBasename();
-                $manifestFilepath = file_build_path($file->getPathname(), $manifest);
+                    $moduleName = $module->getModuleName();
+                    $manifestFilepath = file_build_path($directory, "data", $moduleName, $manifest);
 
-                if (!file_exists($manifestFilepath)) {
-                    $results[$name]["result"] = NO_MANIFEST;
-                    continue;
-                }
-
-                $results[$name]["result"] = VALID;
-
-                $manifestData = json_decode(file_get_contents($manifestFilepath));
-
-                foreach ($manifestData as $filepathPart => $hash) {
-                    $filepath = file_build_path($directory, $filepathPart);
-                    if (!file_exists($filepath)) {
-                        $results[$name]["result"] = NOT_VALID;
-                        $results[$name]["files"][$filepath] = NOT_VALID;
+                    if (!file_exists($manifestFilepath)) {
+                        $results[$name]["result"] = NO_MANIFEST;
                         continue;
                     }
 
-                    if ($hash == md5(file_get_contents($filepath))) {
-                        $results[$name]["files"][$filepath] = VALID;
-                    } else {
-                        $results[$name]["result"] = NOT_VALID;
-                        $results[$name]["files"][$filepath] = NOT_VALID;
+                    $manifestData = json_decode(file_get_contents($manifestFilepath));
+
+                    foreach ($manifestData as $filepathPart => $hash) {
+                        $filepath = file_build_path($directory, $filepathPart);
+
+                        // If file has already been checked, then skip it.
+                        if (in_array($filepath, $filesChecked)) continue;
+
+                        // Check if the file exists.
+                        if (!file_exists($filepath)) {
+                            // If the file does not exist, check if it was deleted.
+                            if ($hash == "DELETE") {
+                                // File deleted, we're good.
+                                unset($results[$name]["files"][$filepath]);
+                                $results[$name]["files"][$filepath]["result"] = VALID;
+                            } else {
+                                // File wasn't deleted, check if multiple possible owning components exist.
+                                if (!isset($results[$name]["files"][$filepath])) {
+                                    $results[$name]["files"][$filepath]["result"] = NOT_VALID;
+                                    $results[$name]["files"][$filepath]["possibleOwners"] = [
+                                        $moduleName
+                                    ];
+                                } else if ($results[$name]["files"][$filepath]["result"] == NOT_VALID) {
+                                  $results[$name]["files"][$filepath]["possibleOwners"][] = $moduleName;
+                                }
+                            }
+                        }
+                        // Check if file satisfies the hash.
+                        else if ($hash == md5(file_get_contents($filepath))) {
+                            // File satisfies hash, we're good.
+                            unset($results[$name]["files"][$filepath]);
+                            $results[$name]["files"][$filepath]["result"] = VALID;
+                        } else {
+                            // File doesn't satisfy hash, check if multiple possible owning components exist.
+                            if (!isset($results[$name]["files"][$filepath])) {
+                                $results[$name]["files"][$filepath]["result"] = NOT_VALID;
+                                $results[$name]["files"][$filepath]["possibleOwners"] = [
+                                    $moduleName
+                                ];
+                            } else if ($results[$name]["files"][$filepath]["result"] == NOT_VALID) {
+                                $results[$name]["files"][$filepath]["possibleOwners"][] = $moduleName;
+                            }
+                        }
+
+                        if (!in_array($filepath, $filesCheckedThisRound))
+                            $filesCheckedThisRound[] = $filepath;
                     }
+
+                    $dependencyManager->markAsExecuted($module);
                 }
+                $filesChecked = array_merge($filesChecked, $filesCheckedThisRound);
             }
         }
     }

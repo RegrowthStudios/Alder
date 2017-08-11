@@ -2,6 +2,8 @@
     
     namespace Alder\Admin\Install\Action;
 
+    use \MikeRoetgers\DependencyGraph\DependencyManager;
+
     use \Twig_Environment;
     use \Twig_Loader_Filesystem;
 
@@ -47,11 +49,7 @@
 
             switch (strtoupper($this->request->getMethod())) {
                 case "GET":
-                    if (installComplete()) {
-                        showComplete();
-                    } else {
-                        showBegin();
-                    }
+                    showBegin();
                     break;
                 case "POST":
                     beginInstall();
@@ -69,6 +67,22 @@
 
         protected function showBegin() : void {
             // Get information about to-be-installed/updated modules.
+            list ( $allValid,
+                   $results ) = $this->verifyInstallableComponents();
+
+            if (!$allValid) {
+                // TODO(Matthew): Show error view for components whose files don't match their manifest.
+            }
+
+            list ( $allDependenciesSatisfied,
+                   $dependencyEvaluations ) = $this->evaluateDependencies();
+
+            if (!$allDependenciesSatisfied) {
+                // TODO(Matthew): Show error view for components whose dependencies are not satisfied.
+            }
+
+            // TODO(Matthew): Construct arrays of components that are currently installed, and will be installed after this install.
+            // TODO(Matthew): Handle case where no installs/updates are pending.
 
             $loader = new Twig_Loader_Filesystem(file_build_path(PUBLIC_ADMIN_DIRECTORY, "templates"));
             $twig   = new Twig_Environment($loader, [
@@ -82,15 +96,25 @@
             ]));
         }
 
+        /**
+         * Performs first actions in installation procedure:
+         *   Replaces all files shared between old and new versions of component.
+         *   Copies over unshared new files.
+         *   Deletes unshared old files.
+         */
         protected function beginInstall() : void {
 
         }
 
-        protected function installComplete() : bool {
+        protected function verifyInstallableComponents() : array {
+            
+        }
+
+        protected function evaluateDependencies() : array {
 
         }
 
-        protected function showComplete() : void {
+        protected function verifyInstallation() : array {
 
         }
     }

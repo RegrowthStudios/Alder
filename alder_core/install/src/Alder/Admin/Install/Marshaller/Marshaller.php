@@ -19,8 +19,10 @@
     {
         /**
          * Handles the marshalling of the actions required to complete the ongoing installations and/or upgrades.
+         *
+         * @param string $stage The stage of installation/upgrade to perform.
          */
-        public static function marshalInstallAndUpgradeActions() {
+        public static function marshalInstallationsAndUpgrades(string $stage) {
             $dependencyManager = new DependencyManager();
             
             // Prepare each module for marshalling by evaluation all depedencies and constructing a dependency graph..
@@ -52,19 +54,19 @@
                     $moduleName = $module->getModuleName();
                     if ($module->getCurrentVersion()) {
                         // Upgrade
-                        $moduleClass  = "Alder\\Install\\Modules\\$moduleName\\Action\\Upgrade";
-                        $defaultClass = "Alder\\Install\\Action\\Upgrade";
+                        $moduleClass  = "Alder\\Admin\\Install\\Modules\\$moduleName\\Operation\\Upgrade";
+                        $defaultClass = "Alder\\Admin\\Install\\Operation\\Upgrade";
                     } else {
                         // Install
-                        $moduleClass  = "Alder\\Install\\Modules\\$moduleName\\Action\\Install";
-                        $defaultClass = "Alder\\Install\\Action\\Install";
+                        $moduleClass  = "Alder\\Admin\\Install\\Modules\\$moduleName\\Operation\\Install";
+                        $defaultClass = "Alder\\Admin\\Install\\Operation\\Install";
                     }
                     
                     // TODO(Matthew): Handle failure case of run().
-                    if (method_exists($moduleClass, "run")) {
-                        $moduleClass::run($moduleName);
-                    } else {
-                        $defaultClass::run($moduleName);
+                    if (class_exists($moduleClass) && method_exists($moduleClass, $stage)) {
+                        $moduleClass::$stage($moduleName);
+                    }  else {
+                        $defaultClass::$stage($moduleName);
                     }
                     
                     $dependencyManager->markAsExecuted($module);

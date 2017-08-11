@@ -1,6 +1,8 @@
 <?php
 
-    namespace Alder\Verifier;
+    namespace Alder\Install\Verifier;
+
+    use Alder\Install\Module\Cache;
 
     class Verifier
     {
@@ -8,7 +10,31 @@
         const NOT_VALID   = "not_valid";
         const VALID       = "valid";
 
-        public static function verifyAllInDir(string $directory, string $manifest = "files.json") : array {
+        public static function verifyInstalled(string $manifest = "files.json") : array {
+            $dependencyManager = static::constructInvertedDependencyGraph();
+
+            return static::verifyAllInDir(APP_DIRECTORY, $dependencyManager, $manifest);
+        }
+
+        public static function verifyInstallable(string $manifest = "files.json") : array {
+            $dependencyManager = static::constructInvertedDependencyGraph(true);
+
+            return static::verifyAllInDir(INSTALL_DIRECTORY, $dependencyManager, $manifest);
+        }
+
+        protected static function constructInvertedDependencyGraph(bool $installable) : DependencyManager {
+            $infoDir = $installable ? INSTALL_DATA_DIRECTORY : DATA_DIRECTORY;
+            foreach (\DirectoryIterator($infoDir) as $file) {
+                if (!$file->isDir()) continue;
+
+                $name = $file->getBasename();
+
+                $module = Cache::getModule($name);
+            }
+
+        }
+
+        protected static function verifyAllInDir(string $directory, DependencyManager $dependencyManager, string $manifest = "files.json") : array {
             $results = [];
 
             foreach (\DirectoryIterator(file_build_path($directory, "data")) as $file) {

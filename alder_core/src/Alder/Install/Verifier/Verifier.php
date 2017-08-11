@@ -117,8 +117,9 @@
                             }
                         }
 
-                        if (!in_array($filepath, $filesCheckedThisRound))
+                        if (!in_array($filepath, $filesCheckedThisRound)) {
                             $filesCheckedThisRound[] = $filepath;
+                        }
                     }
 
                     $dependencyManager->markAsExecuted($module);

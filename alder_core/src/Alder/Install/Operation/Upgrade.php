@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Admin\Install\Action;
+    namespace Alder\Install\Operation;
     
     /**
      * Class providing the default upgrade behaviour for Alder modules.

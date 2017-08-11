@@ -1,9 +1,9 @@
 <?php
     
-    namespace Alder\Admin\Install\Evaluator;
+    namespace Alder\Install\Evaluator;
     
-    use Alder\Admin\Install\Module\Cache;
-    use Alder\Admin\Install\Module\Module;
+    use Alder\Install\Module\Cache;
+    use Alder\Install\Module\Module;
     
     use Composer\Semver\Semver;
     

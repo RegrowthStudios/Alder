@@ -1,10 +1,10 @@
 <?php
     
-    namespace Alder\Admin\Install\Marshaller;
+    namespace Alder\Install\Marshaller;
     
-    use Alder\Admin\Install\Evaluator\Evaluator;
-    use Alder\Admin\Install\Module\Cache;
-    use Alder\Admin\Install\Module\Module;
+    use Alder\Install\Evaluator\Evaluator;
+    use Alder\Install\Module\Cache;
+    use Alder\Install\Module\Module;
     
     use MikeRoetgers\DependencyGraph\DependencyManager;
     

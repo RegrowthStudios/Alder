@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Admin\Install\Action;
+    namespace Alder\Install\Operation;
     
     /**
      * Interface for all classes providing installation & upgrade procedures for Alder mdoules.
@@ -9,7 +9,7 @@
      * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
      * @since     0.1.0 
      */
-    interface InstallInterface
+    interface OperationInterface
     {
         public static function run(string $moduleName);
     }

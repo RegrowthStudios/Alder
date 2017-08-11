@@ -1,9 +1,8 @@
 <?php
     
-    namespace Alder\Admin\Install\Middleware;
+    namespace Alder\Install\Middleware;
     
     use Alder\DiContainer;
-    use Alder\ApiMap\Factory as ApiMapFactory;
     
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;

@@ -1,8 +1,8 @@
 <?php
     
-    namespace Alder\Admin\Install\Module;
+    namespace Alder\Install\Module;
     
-    use Alder\Admin\Install\Module\Exception\MalformedInfoException;
+    use Alder\Install\Module\Exception\MalformedInfoException;
     
     use MikeRoetgers\DependencyGraph\Operation;
     

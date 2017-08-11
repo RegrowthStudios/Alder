@@ -8,10 +8,10 @@
         const NOT_VALID   = "not_valid";
         const VALID       = "valid";
 
-        protected static function verifyAllInDir(string $directory, string $manifest = "files.json") : array {
+        public static function verifyAllInDir(string $directory, string $manifest = "files.json") : array {
             $results = [];
 
-            foreach (\DirectoryIterator($directory) as $file) {
+            foreach (\DirectoryIterator(file_build_path($directory, "data")) as $file) {
                 if (!$file->isDir()) continue;
 
                 $name = $file->getBasename();
@@ -26,8 +26,8 @@
 
                 $manifestData = json_decode(file_get_contents($manifestFilepath));
 
-                foreach ($manifestData["src"] as $filepathPart => $hash) {
-                    $filepath = file_build_path(SRC_DIRECTORY, $filepathPart);
+                foreach ($manifestData as $filepathPart => $hash) {
+                    $filepath = file_build_path($directory, $filepathPart);
                     if (!file_exists($filepath)) {
                         $results[$name]["result"] = NOT_VALID;
                         $results[$name]["files"][$filepath] = NOT_VALID;

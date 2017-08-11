@@ -50,9 +50,6 @@
                     if (installComplete()) {
                         showComplete();
                     } else {
-                        if (firstInstall()) {
-                            installDependencies();
-                        }
                         showBegin();
                     }
                     break;
@@ -68,14 +65,6 @@
             }
             
             return $this->response;
-        }
-
-        protected function firstInstall() : bool {
-            return DiContainer::get()->get("config")->alder->installed;
-        }
-
-        protected function installDependencies() : void {
-
         }
 
         protected function showBegin() : void {

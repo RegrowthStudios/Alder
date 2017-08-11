@@ -132,6 +132,13 @@
         }
         
         /**
+         * @return bool
+         */
+        public function hasUpdate() : bool {
+            return (bool) $this->getFutureVersion();
+        }
+
+        /**
          * @return array
          */
         public function getCurrentSoftDependencies() : array {

@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Admin\Install\Marshaller;
+    namespace Alder\Admin\Install\Evaluator;
     
     use Alder\Admin\Install\Module\Cache;
     use Alder\Admin\Install\Module\Module;

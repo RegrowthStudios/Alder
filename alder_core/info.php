@@ -1,10 +1,11 @@
 <?php
     
     return [
-        "name" => "Alder Core",
-        "description" => "The core library for all other Alder modules.",
-        "author" => "Regrowth Studios Ltd.",
-        "version" => "0.1.0",
-        "soft_dependencies" => [],
-        "hard_dependencies" => []
+        "name" => "Alder Core", // Human-readable name of component.
+        "namespace" => "Core", // Namespace(/directory) to put component-specific code inside.
+        "description" => "The core library for all other Alder modules.", // Description of component.
+        "author" => "Regrowth Studios Ltd.", // Author of component.
+        "version" => "0.1.0", // Version of this instance of component.
+        "soft_dependencies" => [], // Dependencies required after installation of this component.
+        "hard_dependencies" => [] // Dependencies required before  installation of this component.
     ];

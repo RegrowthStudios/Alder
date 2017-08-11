@@ -44,5 +44,8 @@
             "AlderTest\\": "tests/",
             "AlderTest\\Alder\\": [ "tests/Alder/unit/", "tests/Alder/functional/" ]
         }
+    },
+    "config": {
+        "vendor-dir": "vendor/Core"
     }
 }

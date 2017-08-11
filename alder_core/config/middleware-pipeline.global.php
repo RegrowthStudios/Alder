@@ -42,6 +42,7 @@
             // Middleware for installation.
             [
                 "middleware" => [
+                    \Zend\Expressive\Helper\ServerUrlMiddleware::class,
                     \Alder\Admin\Install\Middleware\InstallNeededMiddleware::class
                 ],
                 "priority" => 20000
@@ -53,7 +54,6 @@
                     \Alder\Middleware\ApiMapMiddleware::class,
                     \Alder\Middleware\LocalisationMiddleware::class,
                     \Alder\Middleware\SessionMiddleware::class,
-                    \Zend\Expressive\Helper\ServerUrlMiddleware::class,
                 ],
                 "priority" => 10000,
             ],

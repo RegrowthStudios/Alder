@@ -16,12 +16,27 @@
         /**
          * @var string
          */
+        protected $namespace               = "";
+
+        /**
+         * @var string
+         */
         protected $description             = "";
 
         /**
          * @var string
          */
+        protected $url                     = "";
+
+        /**
+         * @var string
+         */
         protected $author                  = "";
+
+        /**
+         * @var string
+         */
+        protected $author_url                    = "";
         
         /**
          * @var string
@@ -69,13 +84,19 @@
             list( $_,
                   $_,
                   $_,
+                  $_,
+                  $_,
+                  $_,
                   $this->currentVersion,
                   $this->currentSoftDependencies,
                   $this->currentHardDependencies ) = $this->getInfo(file_build_path(DATA_DIRECTORY, $module, "info.php"));
             
             list( $this->name,
+                  $this->namespace,
                   $this->description,
+                  $this->url,
                   $this->author,
+                  $this->author_url,
                   $this->futureVersion,
                   $this->futureSoftDependencies,
                   $this->futureHardDependencies ) = $this->getInfo(file_build_path(INSTALL_DATA_DIRECTORY, $module, "info.php"));
@@ -115,6 +136,41 @@
          */
         public function getModuleName() : string {
             return $this->getId();
+        }
+
+        /**
+         * @return string
+         */
+        public function getName() : string {
+            return $this->name;
+        }        
+
+        /**
+         * @return string
+         */
+        public function getNamespace() : string {
+            return $this->namespace;
+        }
+
+        /**
+         * @return string
+         */
+        public function getUrl() : string {
+            return $this->url;
+        }
+
+        /**
+         * @return string
+         */
+        public function getAuthor() : string {
+            return $this->author;
+        }
+
+        /**
+         * @return string
+         */
+        public function getAuthorUrl() : string {
+            return $this->author_url;
         }
         
         /**
@@ -231,6 +287,9 @@
                     "",
                     "",
                     "",
+                    "",
+                    "",
+                    "",
                     [],
                     []
                 ];
@@ -240,6 +299,11 @@
             if (!is_string($name = $info["name"] ?? null) || !$name) {
                 throw new MalformedInfoException("The name information provided for the module, " . $filepath . ", is malformed.");
             }
+            
+            // Ensure a well-formed module namespace is provided.
+            if (!is_string($namespace = $info["namespace"] ?? null) || !$namespace) {
+                throw new MalformedInfoException("The namespace information provided for the module, " . $filepath . ", is malformed.");
+            }
 
             // If provided, ensure module description is well-formed.
             $description = $info["description"] ?? "";
@@ -247,10 +311,22 @@
                 throw new MalformedInfoException("The description information provided for the module, " . $filepath . ", is malformed.");
             }
 
+            // If provided, ensure module URL is well-formed.
+            $url = $info["url"] ?? "";
+            if (!is_string($url)) {
+                throw new MalformedInfoException("The URL information provided for the module, " . $filepath . ", is malformed.");
+            }
+
             // If provided, ensure module description is well-formed.
             $author = $info["author"] ?? "";
             if (!is_string($author)) {
                 throw new MalformedInfoException("The author information provided for the module, " . $filepath . ", is malformed.");
+            }
+
+            // If provided, ensure module URL is well-formed.
+            $author_url = $info["author_url"] ?? "";
+            if (!is_string($author_url)) {
+                throw new MalformedInfoException("The author URL information provided for the module, " . $filepath . ", is malformed.");
             }
 
             // Ensure the information provided has a well-formed version string, set the Info instance's version field.
@@ -270,8 +346,11 @@
 
             return [
                 $name,
+                $namespace,
                 $description,
+                $url,
                 $author,
+                $author_url,
                 $version,
                 $softDependencies,
                 $hardDependencies

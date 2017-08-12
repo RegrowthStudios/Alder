@@ -98,9 +98,7 @@
 
             $template = $loader->load("install_overview.twig");
 
-            $this->response = new HtmlResponse($template->render([
-                // Add parameters to be rendered.
-            ]));
+            $this->response = new HtmlResponse($template->render($data));
         }
 
         /**

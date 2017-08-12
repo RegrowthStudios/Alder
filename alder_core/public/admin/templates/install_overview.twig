@@ -41,26 +41,26 @@
                 <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                   <thead>
                     <tr>
-                      <th>Install Priority</th>
                       <th>Name</th>
-                      <th>Version</th>
+                      <th>Old Version</th>
+                      <th>New Version</th>
                       <th>Author</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for module in modules %}
                     <tr>
-                      <td>module.priority</td>
                       {% if module.url is defined %}
-                      <td><a href="{{ module.url }}">module.name</a></td>
+                      <td><a href="{{ module.url }}">{{ module.name }}</a></td>
                       {% else %}
-                      <td>module.name</td>
+                      <td>{{ module.name }}</td>
                       {% endif %}
-                      <td>module.version</td>
+                      <td>{{ module.old_version }}</td>
+                      <td>{{ module.new_version }}</td>
                       {% if module.author_url is defined %}
-                      <td><a href="{{ module.author_url }}">module.author</a></td>
+                      <td><a href="{{ module.author_url }}">{{ module.author }}</a></td>
                       {% else %}
-                      <td>module.author</td>
+                      <td>{{ module.author }}</td>
                       {% endif %}
                     </tr>
                     {% endfor %}

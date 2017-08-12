@@ -19,4 +19,8 @@
                 throw $exception;
             }
         }
+
+        public static function getCachedModules() : array {
+            return self::$infos;
+        }
     }

@@ -2,15 +2,12 @@
     
     namespace Alder\Action\Admin;
 
+    use \Alder\DiContainer;
     use \Alder\Install\Evaluator\Evaluator;
     use \Alder\Install\Verifier\Verifier;
 
     use \MikeRoetgers\DependencyGraph\DependencyManager;
-
-    use \Twig_Environment;
-    use \Twig_Loader_Filesystem;
-
-    use \Zend\Expressive\Twig\TwigRenderer;
+    
     use \Zend\Diactoros\Response\HtmlResponse;
 
     /**
@@ -95,12 +92,9 @@
             // TODO(Matthew): Construct arrays of components that are currently installed, and will be installed after this install.
             // TODO(Matthew): Handle case where no installs/updates are pending.
 
-            $loader = new Twig_Loader_Filesystem(file_build_path(PUBLIC_ADMIN_DIRECTORY, "templates"));
-            $twig   = new Twig_Environment($loader, [
-                "cache" => file_build_path(CACHE_DIRECTORY, "templates")
-            ]);
+            $loader = DiContainer::get()->get("admin_template_loader");
 
-            $template = $twig->load("install_overview.twig");
+            $template = $loader->load("install_overview.twig");
 
             $this->response = new HtmlResponse($template->render([
                 // Add parameters to be rendered.

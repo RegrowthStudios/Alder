@@ -48,6 +48,12 @@
                 "token_signer" => function(\Interop\Container\ContainerInterface $container) {
                     $signMethod = $container->get("config")["alder"]["token"]["sign_method"];
                     return new $signMethod();
+                },
+                "admin_template_loader" => function(\Interop\Container\ContainerInterface $container) {
+                    $loader = new \Twig_Loader_Filesystem(file_build_path(PUBLIC_ADMIN_DIRECTORY, "templates"));
+                    $twig   = new \Twig_Environment($loader, [
+                        "cache" => file_build_path(CACHE_DIRECTORY, "templates", "admin")
+                    ]);
                 }
             ],
         ],

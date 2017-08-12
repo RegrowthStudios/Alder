@@ -2,12 +2,9 @@
     
     namespace Alder\Action\Admin;
 
+    use \Alder\DiContainer;
     use \Alder\Install\Verifier\Verifier;
 
-    use \Twig_Environment;
-    use \Twig_Loader_Filesystem;
-
-    use \Zend\Expressive\Twig\TwigRenderer;
     use \Zend\Diactoros\Response\HtmlResponse;
 
     /**
@@ -71,12 +68,9 @@
                 // TODO(Matthew): Show error view for components whose files don't match their manifest.
             }
 
-            $loader = new Twig_Loader_Filesystem(file_build_path(PUBLIC_ADMIN_DIRECTORY, "templates"));
-            $twig   = new Twig_Environment($loader, [
-                "cache" => file_build_path(CACHE_DIRECTORY, "templates")
-            ]);
+            $loader = DiContainer::get()->get("admin_template_loader");
 
-            $template = $twig->load("install_complete.twig");
+            $template = $loader->load("install_complete.twig");
 
             $this->response = new HtmlResponse($template->render([
                 // Add parameters to be rendered.

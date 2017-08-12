@@ -126,5 +126,25 @@
                 }
                 $filesChecked = array_merge($filesChecked, $filesCheckedThisRound);
             }
+
+            $netResult = true;
+            foreach ($results as $module) {
+                if ($module["result"] == NO_MANIFEST) {
+                    $netResult = false;
+                    continue;
+                }
+                $module["result"] = VALID;
+                foreach ($module["files"] as $file) {
+                    if ($file["result"] == NOT_VALID) {
+                        $module["result"] = NOT_VALID;
+                        $netResult = false;
+                    }
+                }
+            }
+
+            return [
+                $netResult,
+                $results
+            ];
         }
     }

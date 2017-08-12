@@ -4,6 +4,7 @@
 
     use \Alder\DiContainer;
     use \Alder\Install\Evaluator\Evaluator;
+    use \Alder\Install\Module\Cache;
     use \Alder\Install\Verifier\Verifier;
 
     use \MikeRoetgers\DependencyGraph\DependencyManager;
@@ -88,7 +89,8 @@
                 // TODO(Matthew): Show error view for components whose files don't match their manifest.
             }
 
-
+            $data = [];
+            $data["modules"] = $this->listModules();
             // TODO(Matthew): Construct arrays of components that are currently installed, and will be installed after this install.
             // TODO(Matthew): Handle case where no installs/updates are pending.
 
@@ -109,5 +111,46 @@
          */
         protected function beginInstall() : void {
 
+        }
+
+        /**
+         * Lists all modules installed and to-be-installed.
+         *
+         * @return array The list of modules.
+         */
+        protected function listModules() : array {
+            cacheModulesInDir(DATA_DIRECTORY);
+            cacheModulesInDir(INSTALL_DATA_DIRECTORY);
+
+            $moduleData = [];
+
+            foreach (Cache::getCachedModules() as $module) {
+                $moduleData[] = [
+                    "url" => $module->getUrl(),
+                    "name" => $module->getName(),
+                    "old_version" => $module->getCurrentVersion(),
+                    "new_version" => $module->getLatestVersion(),
+                    "author_url" => $module->getAuthorUrl(),
+                    "author" => $module->getAuthor()
+                ];
+            }
+
+            return $moduleData;
+        }
+
+        /**
+         * Looks for modules in the specified directory and caches them.
+         *
+         * @param string $directory The directory in which to search for modules to cache.
+         */
+        protected function cacheModulesInDir(string $directory) : void {
+            foreach (\DirectoryIterator($directory) as $file) {
+                // TODO(Matthew): isDir may return true for dots... handle that! (Don't forget the other foreach over DirIterators...)
+                if (!$file->isDir()) {
+                    continue;
+                }
+
+                Cache::getModule($file->getBasename());
+            }
         }
     }

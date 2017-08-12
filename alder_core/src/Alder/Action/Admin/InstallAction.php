@@ -2,6 +2,9 @@
     
     namespace Alder\Action\Admin;
 
+    use \Alder\Install\Evaluator\Evaluator;
+    use \Alder\Install\Verifier\Verifier;
+
     use \MikeRoetgers\DependencyGraph\DependencyManager;
 
     use \Twig_Environment;
@@ -66,20 +69,28 @@
         }
 
         protected function showBegin() : void {
-            // Get information about to-be-installed/updated modules.
+            $dependencyManager = new DependencyManager();
+
+            // Evaluate satisfiability of dependencies.
+            list ( $allDependenciesSatisfied,
+                   $dependencyEvaluations ) = Evaluator::doEvaluation($dependencyManager);
+
+            if (!$allDependenciesSatisfied) {
+                // TODO(Matthew): Show error view for components whose dependencies are not satisfied.
+            }
+
+            if (!@$dependencyManager->getExecutableOperations()) {
+                // TODO(Matthew): Show error view for circular dependencies.
+            }
+
+            // Validate to-be-installed/updated modules.
             list ( $allValid,
-                   $results ) = $this->verifyInstallableComponents();
+                   $results ) = Verifier::verifyInstallable();
 
             if (!$allValid) {
                 // TODO(Matthew): Show error view for components whose files don't match their manifest.
             }
 
-            list ( $allDependenciesSatisfied,
-                   $dependencyEvaluations ) = $this->evaluateDependencies();
-
-            if (!$allDependenciesSatisfied) {
-                // TODO(Matthew): Show error view for components whose dependencies are not satisfied.
-            }
 
             // TODO(Matthew): Construct arrays of components that are currently installed, and will be installed after this install.
             // TODO(Matthew): Handle case where no installs/updates are pending.
@@ -103,18 +114,6 @@
          *   Deletes unshared old files.
          */
         protected function beginInstall() : void {
-
-        }
-
-        protected function verifyInstallableComponents() : array {
-            
-        }
-
-        protected function evaluateDependencies() : array {
-
-        }
-
-        protected function verifyInstallation() : array {
 
         }
     }

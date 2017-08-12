@@ -6,24 +6,52 @@
 
     use MikeRoetgers\DependencyGraph\DependencyManager;
 
+    /**
+     * Provides procedures to verify the integrity of components installed and installable.
+     *
+     * @author    Matthew Marshall <matthew.marshall96@yahoo.co.uk>
+     * @copyright 2016, Regrowth Studios Ltd. All Rights Reserved
+     * @since     0.1.0
+     */
     class Verifier
     {
         const NO_MANIFEST = "no_manifest";
         const NOT_VALID   = "not_valid";
         const VALID       = "valid";
 
+        /**
+         * Verifies integrity of installed components.
+         * 
+         * @param string $manifest The name of the manifest file.
+         *
+         * @return array A list of two parts: whether everything verified was valid, and an array of results per file per component.
+         */
         public static function verifyInstalled(string $manifest = "files.json") : array {
             $dependencyManager = static::constructInvertedDependencyGraph();
 
             return static::verifyAllInDir(APP_DIRECTORY, $dependencyManager, $manifest);
         }
 
+        /**
+         * Verifies integrity of installable components.
+         * 
+         * @param string $manifest The name of the manifest file.
+         *
+         * @return array A list of two parts: whether everything verified was valid, and an array of results per file per component.
+         */
         public static function verifyInstallable(string $manifest = "files.json") : array {
             $dependencyManager = static::constructInvertedDependencyGraph(true);
 
             return static::verifyAllInDir(INSTALL_DIRECTORY, $dependencyManager, $manifest);
         }
 
+        /**
+         * Constructs an inverted dependency graph of components to be verified.
+         * 
+         * @param bool $installable Whether the dependency graph is of installable or installed components.
+         *
+         * @return \MikeRoetgers\DependencyGraph\DependencyManager The constructed dependency graph.
+         */
         protected static function constructInvertedDependencyGraph(bool $installable) : DependencyManager {
             $dependencyManager = new DependencyManager();
             
@@ -56,6 +84,15 @@
             return $dependencyManager;
         }
 
+        /**
+         * Verifies integrity of components in the specified directory.
+         * 
+         * @param string $directory The name of the directory in which to verify components.
+         * @param \MikeRoetgers\DependencyGraph\DependencyManager $dependencyManager The (inverted) dependency graph to use for handling overrides.
+         * @param string $manifest The name of the manifest file.
+         *
+         * @return array A list of two parts: whether everything verified was valid, and an array of results per file per component.
+         */
         protected static function verifyAllInDir(string $directory, DependencyManager $dependencyManager, string $manifest = "files.json") : array {
             $results = [];
 

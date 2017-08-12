@@ -2,7 +2,7 @@
     
     namespace Alder\Action\Admin;
 
-    use \MikeRoetgers\DependencyGraph\DependencyManager;
+    use \Alder\Install\Verifier\Verifier;
 
     use \Twig_Environment;
     use \Twig_Loader_Filesystem;
@@ -63,6 +63,23 @@
         }
 
         protected function showComplete() : void {
+            // Verify installation.
+            list ( $allValid,
+                   $results ) = Verifier::verifyInstalled();
 
+            if (!$allValid) {
+                // TODO(Matthew): Show error view for components whose files don't match their manifest.
+            }
+
+            $loader = new Twig_Loader_Filesystem(file_build_path(PUBLIC_ADMIN_DIRECTORY, "templates"));
+            $twig   = new Twig_Environment($loader, [
+                "cache" => file_build_path(CACHE_DIRECTORY, "templates")
+            ]);
+
+            $template = $twig->load("install_complete.twig");
+
+            $this->response = new HtmlResponse($template->render([
+                // Add parameters to be rendered.
+            ]));
         }
     }

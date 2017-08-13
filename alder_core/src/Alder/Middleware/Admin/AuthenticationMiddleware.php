@@ -3,6 +3,7 @@
     namespace Alder\Middleware\Admin;
     
     use Alder\DiContainer;
+    use Alder\Middleware\MiddlewareTrait;
     use Alder\Token\Validator;
     
     use Lcobucci\JWT\Parser;
@@ -23,17 +24,16 @@
      */
     class InstallNeededMiddleware implements MiddlewareInterface
     {
+        use MiddlewareTrait;
+
         /**
          * Determine if requestee is authenticated sufficiently to access admin section of application.
          *
-         * @param \Psr\Http\Message\ServerRequestInterface $request  The data of the request.
-         * @param \Psr\Http\Message\ResponseInterface      $response The response to be sent back.
-         * @param callable|NULL                            $next     The next middleware to be called.
+         * @param callable|NULL $next The next middleware to be called.
          *
          * @return \Psr\Http\Message\ResponseInterface The response produced.
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
-                                 callable $next = null) : ResponseInterface {
+        public function call(callable $next = null) : ResponseInterface {
             if (!DiContainer::get()->get("config")->alder->installed ||
                 $request->getUri()->getPath() == "/admin/login") {
                 return $next($request, $response);

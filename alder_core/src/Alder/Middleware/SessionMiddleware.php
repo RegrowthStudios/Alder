@@ -31,17 +31,11 @@
         /**
          * Process session data held by the user.
          *
-         * @param \Psr\Http\Message\ServerRequestInterface $request
-         * @param \Psr\Http\Message\ResponseInterface      $response
-         * @param callable                                 $next
+         * @param callable|NULL $next The next middleware to be called.
          *
          * @return \Psr\Http\Message\ResponseInterface The resulting response of the middleware execution.
          */
-        public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
-                                 callable $next = null) : ResponseInterface {
-            $this->request = $request;
-            $this->response = $response;
-    
+        protected function call(callable $next) : ResponseInterface {
             $visitorDetails = $this->fetchClientSideSessionInfo();
     
             $visitorDetails = array_merge(

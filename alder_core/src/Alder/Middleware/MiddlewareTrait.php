@@ -24,6 +24,32 @@
          * @var \Psr\Http\Message\ResponseInterface
          */
         protected $response;
+
+        /**
+         * Middleware's entry point for executing its logic.
+         *
+         * @param callable|NULL $next The next middleware to be called.
+         *
+         * @return \Psr\Http\Message\ResponseInterface The response produced.
+         */
+        abstract protected function call(callable $next) : ResponseInterface;
+
+        /**
+         * Prepares the middleware for running.
+         *
+         * @param \Psr\Http\Message\ServerRequestInterface $request  The data of the request.
+         * @param \Psr\Http\Message\ResponseInterface      $response The response to be sent back.
+         * @param callable|NULL                            $next     The next middleware to be called.
+         *
+         * @return \Psr\Http\Message\ResponseInterface The response produced.
+         */
+         public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
+         callable $next = null) : ResponseInterface {
+            $this->request  = $request;
+            $this->response = $response;
+
+            return $this->call($next);
+        }
         
         /**
          * Determines if a parameter with the handle passed in was provided in the request.

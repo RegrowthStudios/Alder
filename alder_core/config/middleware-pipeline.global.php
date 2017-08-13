@@ -39,11 +39,20 @@
             // some conventional keys for middleware to execute early, routing
             // middleware, and error middleware.
 
-            // Middleware for installation.
+            // Middleware for independent helpers..
             [
                 "middleware" => [
-                    \Zend\Expressive\Helper\ServerUrlMiddleware::class,
-                    \Alder\Admin\Install\Middleware\InstallNeededMiddleware::class
+                    \Zend\Expressive\Helper\ServerUrlMiddleware::class
+                ],
+                "priority" => 100000
+            ],
+
+            // Middleware for installation reroute and admin authentication.
+            [
+                "path" => "/admin",
+                "middleware" => [
+                    \Alder\Middleware\Admin\InstallNeededMiddleware::class,
+                    \Alder\Middleware\Admin\AuthenticationMiddleware::class
                 ],
                 "priority" => 20000
             ],
@@ -55,7 +64,7 @@
                     \Alder\Middleware\LocalisationMiddleware::class,
                     \Alder\Middleware\SessionMiddleware::class,
                 ],
-                "priority" => 10000,
+                "priority" => 10000
             ],
             
             // Middleware for route-based validation and authorisation.

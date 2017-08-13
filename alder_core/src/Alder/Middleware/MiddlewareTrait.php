@@ -34,8 +34,8 @@
          */
         protected function hasParameter($parameterHandle) {
             $queryParams = $this->request->getQueryParams();
-            $parsedBody = $this->request->getParsedBody();
-            $attributes = $this->request->getAttributes();
+            $parsedBody  = $this->request->getParsedBody();
+            $attributes  = $this->request->getAttributes();
 
             return isset($queryParams[$parameterHandle])
                 || isset($parsedBody[$parameterHandle])
@@ -51,20 +51,20 @@
          *
          * @return string The parameter fetched.
          */
-        protected function getParameter(string $parameterHandle, $default = null) : string {
+        protected function getParameter(string $handle, $default = null) : string {
             $param = null;
             
             $params = $this->request->getQueryParams();
-            if (isset($params["$parameterHandle"])) {
-                $param = $params["$parameterHandle"];
+            if (isset($params["$handle"])) {
+                $param = $params["$handle"];
             }
             
             $parsedBody = $this->request->getParsedBody();
-            if ($parsedBody && isset($parsedBody["$parameterHandle"])) {
-                $param = $parsedBody["$parameterHandle"];
+            if ($parsedBody && isset($parsedBody["$handle"])) {
+                $param = $parsedBody["$handle"];
             }
             
-            $result = $this->request->getAttribute($parameterHandle, $param);
+            $result = $this->request->getAttribute($handle, $param);
             
             return is_null($result) ? $default : $result;
         }

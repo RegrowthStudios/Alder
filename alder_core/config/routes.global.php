@@ -7,115 +7,122 @@
     return [
         "routes" => [
             [
+                "name" => "login",
+                "path" => "/admin/login",
+                "middleware" => [
+                    new \Alder\Action\Admin\LoginAction()
+                ]
+            ],
+            [
                 "name" => "dashboard",
                 "path" => "/admin",
                 "middleware" => [
-                    new \Alder\Admin\Action\DashboardAction()
+                    new \Alder\Action\Admin\DashboardAction()
                 ]
             ],
             [
                 "name" => "demographics",
                 "path" => "/admin/stats/demographics",
                 "middleware" => [
-                    new \Alder\Admin\Action\DemographicsAction()
+                    new \Alder\Action\Admin\DemographicsAction()
                 ]
             ],
             [
                 "name" => "demographics",
                 "path" => "/admin/stats/api",
                 "middleware" => [
-                    new \Alder\Admin\Action\APIStatisticsAction()
+                    new \Alder\Action\Admin\APIStatisticsAction()
                 ]
             ],
             [
                 "name" => "settings",
                 "path" => "/admin/settings",
                 "middleware" => [
-                    new \Alder\Admin\Action\SettingsAction()
+                    new \Alder\Action\Admin\SettingsAction()
                 ]
             ],
             [
                 "name" => "tasks",
                 "path" => "/admin/tasks",
                 "middleware" => [
-                    new \Alder\Admin\Action\TasksAction()
+                    new \Alder\Action\Admin\TasksAction()
                 ]
             ],
             [
                 "name" => "cache-rebuilder",
                 "path" => "/admin/cache-rebuilder",
                 "middleware" => [
-                    new \Alder\Admin\Action\CacheRebuilderAction()
+                    new \Alder\Action\Admin\CacheRebuilderAction()
                 ]
             ],
             [
                 "name" => "file-verifier",
                 "path" => "/admin/file-verifier",
                 "middleware" => [
-                    new \Alder\Admin\Action\FileVerifierAction()
+                    new \Alder\Action\Admin\FileVerifierAction()
                 ]
             ],
             [
                 "name" => "action-log",
                 "path" => "/admin/action-log",
                 "middleware" => [
-                    new \Alder\Admin\Action\ActionLogAction()
+                    new \Alder\Action\Admin\ActionLogAction()
                 ]
             ],
             [
                 "name" => "server-error-log",
                 "path" => "/admin/server-error-log",
                 "middleware" => [
-                    new \Alder\Admin\Action\ServerErrorLogAction()
+                    new \Alder\Action\Admin\ServerErrorLogAction()
                 ]
             ],
             [
                 "name" => "alerts",
                 "path" => "/admin/alerts",
                 "middleware" => [
-                    new \Alder\Admin\Action\AlertsAction()
+                    new \Alder\Action\Admin\AlertsAction()
                 ]
             ],
             [
                 "name" => "messages",
                 "path" => "/admin/messages",
                 "middleware" => [
-                    new \Alder\Admin\Action\MessagesAction()
+                    new \Alder\Action\Admin\MessagesAction()
                 ]
             ],
             [
                 "name" => "install",
                 "path" => "/admin/install",
                 "middleware" => [
-                    new \Alder\Admin\Install\Action\InstallAction()
+                    new \Alder\Action\Admin\InstallAction()
                 ]
             ],
             [
                 "name" => "install-config",
                 "path" => "/admin/install/config",
                 "middleware" => [
-                    new \Alder\Admin\Install\Action\InstallConfigAction()
+                    new \Alder\Action\Admin\InstallConfigAction()
                 ]
             ],
             [
                 "name" => "install-database",
                 "path" => "/admin/install/database",
                 "middleware" => [
-                    new \Alder\Admin\Install\Action\InstallDatabaseAction()
+                    new \Alder\Action\Admin\InstallDatabaseAction()
                 ]
             ],
             [
                 "name" => "install-tasks",
                 "path" => "/admin/install/tasks",
                 "middleware" => [
-                    new \Alder\Admin\Install\Action\InstallTasksAction()
+                    new \Alder\Action\Admin\InstallTasksAction()
                 ]
             ],
             [
                 "name" => "install-complete",
                 "path" => "/admin/install/complete",
                 "middleware" => [
-                    new \Alder\Admin\Install\Action\InstallCompleteAction()
+                    new \Alder\Action\Admin\InstallCompleteAction()
                 ]
             ]
         ]

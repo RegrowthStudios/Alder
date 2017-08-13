@@ -37,8 +37,10 @@
                  */
                 $uri = DiContainer::get()->get(\Zend\Expressive\Helper\ServerUrlHelper::class);
 
-                // TODO(Matthew): Are we confident this gives the right URL for the request?
-                $request = $request->withUri(Uri($uri("/admin/install")));
+                $adminRouteRoot = DiContainer::get()->get("config")->alder->admin->route_root;
+                
+                header("Location: " . $uri("/$adminRouteRoot/install"), true, 303);
+                exit();
             }
             
             return $next($request, $response);

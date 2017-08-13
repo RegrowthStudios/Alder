@@ -31,6 +31,7 @@
     
     /* User Constants */
     define("USER_SESSION", "alis");
+    define("ADMIN_SESSION", "aalis");
     // Define password strictness consts.
     define("PASSWORD_STRICTNESS_NORMAL", "normal");
     define("PASSWORD_STRICTNESS_HIGH", "high");

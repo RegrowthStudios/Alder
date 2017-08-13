@@ -34,7 +34,8 @@
          */
         public function __invoke(ServerRequestInterface $request, ResponseInterface $response,
                                  callable $next = null) : ResponseInterface {
-            if (!DiContainer::get()->get("config")->alder->installed) {
+            if (!DiContainer::get()->get("config")->alder->installed ||
+                $request->getUri()->getPath() == "/admin/login") {
                 return $next($request, $response);
             }
 

@@ -29,9 +29,9 @@
         require_once $filename;
     }
     // Require core constants definitions file.
-    require_once file_build_path(dirname(__DIR__), "config", "constants.php");
+    require_once file_build_path(dirname(__DIR__), "constants.php");
     // Require component-specific constants definition files.
-    foreach (glob(file_build_path(CONFIG_DIRECTORY, "constants", "*.php")) as $filename) {
+    foreach (glob(file_build_path(APP_DIRECTORY, "constants", "*.php")) as $filename) {
         require_once $filename;
     }
     

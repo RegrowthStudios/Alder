@@ -3,6 +3,13 @@
     return [
         "alder" => [
             "installed" => false, // Flag for if application is installed.
+            "admin" => [ /* Admin Settings */
+                "security" => [
+                    "hide_access" => false, // Whether we wish to hide the admin access via 404 (vs. 403 & redirects).
+                    "route_root" => "admin" // The route part that distiniguishes admin functions (e.g. if this is "foo" then the route for admin dashboard is "/foo"
+                                            // and admin logic is "/foo/login" etc.).
+                ]
+            ],
             "app_name" => "Alder", // Title of the application.
             "db" => [ /* Database Settings */
                 "adapter" => [ /* Db Adapter Settings */

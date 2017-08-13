@@ -69,6 +69,27 @@
         /** @var \Zend\Expressive\Application $app */
         $app = $container->get(Application::class);
         
+        // Figure out admin route root.
+        $adminRootRoute = $container->get("config")->alder->admin->route_root;
+        // Route admin actions.
+        $app->route("/$adminRootRoute/login",              new \Alder\Action\Admin\LoginAction(),           [ "GET", "POST" ], "admin-login");
+        $app->route("/$adminRootRoute",                    new \Alder\Action\Admin\DashboardAction(),       [ "GET" ],         "admin-dashboard");
+        $app->route("/$adminRootRoute/stats/demographics", new \Alder\Action\Admin\DemographicsAction(),    [ "GET" ],         "admin-demographics");
+        $app->route("/$adminRootRoute/stats/api",          new \Alder\Action\Admin\APIStatisticsAction(),   [ "GET" ],         "admin-api-statistics");
+        $app->route("/$adminRootRoute/settings",           new \Alder\Action\Admin\SettingsAction(),        [ "GET", "POST" ], "admin-settings");
+        $app->route("/$adminRootRoute/tasks",              new \Alder\Action\Admin\TasksAction(),           [ "GET", "POST" ], "admin-tasks");
+        $app->route("/$adminRootRoute/cache-rebuilder",    new \Alder\Action\Admin\CacheRebuilderAction(),  [ "GET", "POST" ], "admin-cache-rebuilder");
+        $app->route("/$adminRootRoute/file-verifier",      new \Alder\Action\Admin\FileVerifierAction(),    [ "GET", "POST" ], "admin-file-verifier");
+        $app->route("/$adminRootRoute/action-log",         new \Alder\Action\Admin\ActionLogAction(),       [ "GET" ],         "admin-action-log");
+        $app->route("/$adminRootRoute/server-error-log",   new \Alder\Action\Admin\ServerErrorLogAction(),  [ "GET" ],         "admin-server-error-log");
+        $app->route("/$adminRootRoute/alerts",             new \Alder\Action\Admin\AlertsAction(),          [ "GET", "POST" ], "admin-alerts");
+        $app->route("/$adminRootRoute/messages",           new \Alder\Action\Admin\MessagesAction(),        [ "GET", "POST" ], "admin-messages");
+        $app->route("/$adminRootRoute/install",            new \Alder\Action\Admin\InstallAction(),         [ "GET", "POST" ], "admin-install");
+        $app->route("/$adminRootRoute/install/config",     new \Alder\Action\Admin\InstallConfigAction(),   [ "GET", "POST" ], "admin-install-config");
+        $app->route("/$adminRootRoute/install/database",   new \Alder\Action\Admin\InstallDatabaseAction(), [ "GET", "POST" ], "admin-install-database");
+        $app->route("/$adminRootRoute/install/tasks",      new \Alder\Action\Admin\InstallTasksAction(),    [ "GET", "POST" ], "admin-install-tasks");
+        $app->route("/$adminRootRoute/install/complete",   new \Alder\Action\Admin\InstallCompleteAction(), [ "GET" ],         "admin-install-complete");
+
         // Grab original request object.
         $request = ServerRequestFactory::fromGlobals();
         

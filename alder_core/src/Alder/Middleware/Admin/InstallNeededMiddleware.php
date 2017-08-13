@@ -1,6 +1,6 @@
 <?php
     
-    namespace Alder\Install\Middleware;
+    namespace Alder\Middleware\Admin;
     
     use Alder\DiContainer;
     

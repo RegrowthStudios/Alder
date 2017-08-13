@@ -66,6 +66,17 @@
                 ],
                 "priority" => 10000
             ],
+
+            // Middleware for fetching admin notifications.
+            [
+                "path" => "/admin",
+                "middleware" => [
+                    \Alder\Middleware\Admin\FetchAlertsMiddleware::class,
+                    \Alder\Middleware\Admin\FetchTasksMiddleware::class,
+                    \Alder\Middleware\Admin\FetchMessagesMiddleware::class
+                ],
+                "priority" => 5000
+            ],
             
             // Middleware for route-based validation and authorisation.
             [

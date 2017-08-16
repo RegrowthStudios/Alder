@@ -20,10 +20,10 @@
     {
         public static function doEvaluation(DependencyManager& $dependencyManager) : array {
             list ( $installDirNetEvaluation,
-                   $installDirEvaluations ) = static::evaluateDependenciesInDir(INSTALL_DATA_DIRECTORY);
+                   $installDirEvaluations ) = static::evaluateDependenciesInDir(INSTALL_DATA_DIRECTORY, $dependencyManager);
 
             list ( $liveDirNetEvaluation,
-                   $liveDirEvaluations ) = static::evaluateDependenciesInDir(DATA_DIRECTORY);
+                   $liveDirEvaluations ) = static::evaluateDependenciesInDir(DATA_DIRECTORY, $dependencyManager);
             
             return [
                 $installDirNetEvaluation && $liveDirNetEvaluation,
@@ -31,7 +31,7 @@
             ];
         }
 
-        protected static function evaluateDependenciesInDir(string $directory) : array {
+        protected static function evaluateDependenciesInDir(string $directory, DependencyManager& $dependencyManager) : array {
             $netEvaluation = true;
             $evaluations   = [];
 

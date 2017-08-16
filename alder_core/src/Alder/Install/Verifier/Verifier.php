@@ -57,7 +57,7 @@
             
             $infoDir = $installable ? INSTALL_DATA_DIRECTORY : DATA_DIRECTORY;
             foreach (\DirectoryIterator($infoDir) as $file) {
-                if (!$file->isDir()) continue;
+                if (!$file->isDir() || $file->isDot()) continue;
 
                 $name = $file->getBasename();
 

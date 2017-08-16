@@ -8,6 +8,7 @@
     use \Alder\Install\Verifier\Verifier;
 
     use \MikeRoetgers\DependencyGraph\DependencyManager;
+    use \MikeRoetgers\DependencyGraph\Exception\CycleException;
     
     use \Zend\Diactoros\Response\HtmlResponse;
 
@@ -81,7 +82,9 @@
                 // TODO(Matthew): Show error view for components whose dependencies are not satisfied.
             }
 
-            if (!@$dependencyManager->getExecutableOperations()) {
+            try {
+                $dependencyManager->getExecutableOperations();
+            } catch (CycleException $exception) {
                 // TODO(Matthew): Show error view for circular dependencies.
             }
 

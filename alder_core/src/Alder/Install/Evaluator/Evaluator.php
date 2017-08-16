@@ -36,17 +36,14 @@
             $evaluations   = [];
 
             foreach (\DirectoryIterator($directory) as $file) {
-                if ($file->isDir()) {
+                if ($file->isDir() && !$file->isDot()) {
                     $result = static::evaluateDependencies($file->getBasename(), $dependencyManager);
                     if ($result == null) {
                         continue;
                     }
 
-                    list ( $netEvaluation,
-                           $evaluations[$file->getBasename()] ) = [
-                               $result[0] && $netEvaluation,
-                               $result[1]
-                           ];
+                    $netEvaluation                     = $netEvaluation && $result[0];
+                    $evaluations[$file->getBasename()] = $result[1];
                 }
             }
 
@@ -95,7 +92,7 @@
                 ];
 
                 if (!Semver::satisfies($dependency->getLatestVersion(), $constraint)) {
-                    $netEvaluation = false;
+                    $netEvaluation                              = false;
                     $evaluations[$dependencyName]["evaluation"] = false;
                 } else {
                     $evaluations[$dependencyName]["evaluation"] = true;

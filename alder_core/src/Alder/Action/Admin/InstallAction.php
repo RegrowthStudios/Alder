@@ -73,6 +73,10 @@
             list ( $allDependenciesSatisfied,
                    $dependencyEvaluations ) = Evaluator::doEvaluation($dependencyManager);
 
+            if (empty($dependencyEvaluations)) {
+                // TODO(Matthew): Show no pending install/update view.
+            }
+            
             if (!$allDependenciesSatisfied) {
                 // TODO(Matthew): Show error view for components whose dependencies are not satisfied.
             }
@@ -91,8 +95,6 @@
 
             $data = DiContainer::get()->get("admin_info"); // Returns an array of alerts, messages and tasks.
             $data["modules"] = $this->listModules();
-
-            // TODO(Matthew): Handle case where no installs/updates are pending.
 
             $loader = DiContainer::get()->get("admin_template_loader");
 

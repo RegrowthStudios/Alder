@@ -89,9 +89,9 @@
                 // TODO(Matthew): Show error view for components whose files don't match their manifest.
             }
 
-            $data = [];
+            $data = DiContainer::get()->get("admin_info"); // Returns an array of alerts, messages and tasks.
             $data["modules"] = $this->listModules();
-            // TODO(Matthew): Construct arrays of components that are currently installed, and will be installed after this install.
+
             // TODO(Matthew): Handle case where no installs/updates are pending.
 
             $loader = DiContainer::get()->get("admin_template_loader");
@@ -144,7 +144,7 @@
         protected function cacheModulesInDir(string $directory) : void {
             foreach (\DirectoryIterator($directory) as $file) {
                 // TODO(Matthew): isDir may return true for dots... handle that! (Don't forget the other foreach over DirIterators...)
-                if (!$file->isDir()) {
+                if (!$file->isDir() || $file->isDot()) {
                     continue;
                 }
 

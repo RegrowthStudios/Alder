@@ -68,42 +68,11 @@
         }
 
         protected function showBegin() : void {
-            $dependencyManager = new DependencyManager();
-
-            // Evaluate satisfiability of dependencies.
-            list ( $allDependenciesSatisfied,
-                   $dependencyEvaluations ) = Evaluator::doEvaluation($dependencyManager);
-
-            if (empty($dependencyEvaluations)) {
-                // TODO(Matthew): Show no pending install/update view.
-            }
-            
-            if (!$allDependenciesSatisfied) {
-                // TODO(Matthew): Show error view for components whose dependencies are not satisfied.
-            }
-
-            try {
-                $dependencyManager->getExecutableOperations();
-            } catch (CycleException $exception) {
-                // TODO(Matthew): Show error view for circular dependencies.
-            }
-
-            // Validate to-be-installed/updated modules.
-            list ( $allValid,
-                   $results ) = Verifier::verifyInstallable();
-
-            if (!$allValid) {
-                // TODO(Matthew): Show error view for components whose files don't match their manifest.
-            }
-
-            $data = DiContainer::get()->get("admin_info"); // Returns an array of alerts, messages and tasks.
-            $data["modules"] = $this->listModules();
-
             $loader = DiContainer::get()->get("admin_template_loader");
 
             $template = $loader->load("install_overview.twig");
 
-            $this->response = new HtmlResponse($template->render($data));
+            $this->response = new HtmlResponse($template->render(getOverviewData()));
         }
 
         /**
@@ -114,6 +83,54 @@
          */
         protected function beginInstall() : void {
 
+        }
+
+        /**
+         * Figures out what data to provide for the overview.
+         *
+         * @return array The data to be displayed in the overview.
+         */
+        protected function getOverviewData() : array {
+            // Returns an array of admin notifications (e.g. alerts, messages and tasks).
+            $data = DiContainer::get()->get("admin_info");
+            
+            $dependencyManager = new DependencyManager();
+
+            // Evaluate satisfiability of dependencies.
+            list ( $allDependenciesSatisfied,
+                    $dependencyEvaluations ) = Evaluator::doEvaluation($dependencyManager);
+
+            if (empty($dependencyEvaluations)) {
+                $data["no_pending_installs"] = true;
+                return $data;
+            }
+            
+            if (!$allDependenciesSatisfied) {
+                $data["dependency_evaluations"] = $dependencyEvaluations;
+                return $data;
+            }
+            
+            try {
+                if (empty($dependencyManager->getExecutableOperations())) {
+                    throw new CycleException();
+                }
+            } catch (CycleException $exception) {
+                // TODO(Matthew): Can we show which modules have the circular dependency?
+                $data["circular_dependencies"] = true;
+                return $data;
+            }
+
+            // Validate to-be-installed/updated modules.
+            list ( $allValid,
+                    $verificationResults ) = Verifier::verifyInstallable();
+
+            if (!$allValid) {
+                $data["verification_results"] = $verificationResults;
+                return $data;
+            }
+
+            $data["modules"] = $this->listModules();
+            return $data;
         }
 
         /**

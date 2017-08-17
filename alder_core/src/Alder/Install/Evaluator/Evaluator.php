@@ -56,6 +56,15 @@
         protected static function evaluateDependencies(string $moduleName, DependencyManager& $dependencyManager) : ?array {
             $module = Cache::getModule($moduleName);
 
+            $evaluations = [
+                "module_info" => [
+                    "name"       => $module->getModuleName(),
+                    "url"        => $module->getUrl(),
+                    "author"     => $module->getAuthor(),
+                    "author_url" => $module->getAuthorUrl()
+                ]
+            ];
+
             if (isset($dependencyManager->getOperations()[$module->getId()])) {
                 return null;
             }
@@ -86,16 +95,17 @@
             foreach ($dependencies as $dependencyName => $constraint) {
                 $dependency = Cache::getModule($dependencyName);
 
-                $evaluations[$dependencyName] = [
+                $evaluations["dependencies"][$dependencyName] = [
+                    "required_version" => $constraint,
                     "current_version" => $dependency->getCurrentVersion(),
                     "future_version"  => $dependency->getFutureVersion()
                 ];
 
                 if (!Semver::satisfies($dependency->getLatestVersion(), $constraint)) {
                     $netEvaluation                              = false;
-                    $evaluations[$dependencyName]["evaluation"] = false;
+                    $evaluations["dependencies"][$dependencyName]["evaluation"] = false;
                 } else {
-                    $evaluations[$dependencyName]["evaluation"] = true;
+                    $evaluations["dependencies"][$dependencyName]["evaluation"] = true;
 
                     if ($dependencyManager) {
                         if (!isset($dependencyManager->getOperations()[$$dependency->getId()])) {
